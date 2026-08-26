@@ -1,0 +1,664 @@
+@import "tailwindcss";
+@plugin "daisyui"{
+  themes : winter --default 
+};
+@plugin "daisyui/theme" {
+  name: "liquid-glass";
+  default: true;
+  color-scheme: light;
+
+  /* Brand */
+  --color-primary: #00a86b;
+  --color-primary-content: #ffffff;
+
+  --color-secondary: #343434;
+  --color-secondary-content: #ffffff;
+
+  --color-accent: #e86c6e;
+  --color-accent-content: #ffffff;
+
+  --color-neutral: #727972;
+  --color-neutral-content: #ffffff;
+
+  /* Semantic */
+  --color-info: #5b9fb0;
+  --color-info-content: #ffffff;
+
+  --color-success: #00a86b;
+  --color-success-content: #ffffff;
+
+  --color-warning: #d89b45;
+  --color-warning-content: #ffffff;
+
+  --color-error: #c94b4b;
+  --color-error-content: #ffffff;
+
+  /* Surfaces */
+  --color-base-100: #eaf0e9;
+  --color-base-200: #e3eae3;
+  --color-base-300: #d7e0d8;
+  --color-base-content: #17201b;
+
+  /* Liquid shape */
+  --radius-selector: 999px;
+  --radius-field: 999px;
+  --radius-box: 1.75rem;
+
+  --size-selector: 0.25rem;
+  --size-field: 0.25rem;
+
+  --border: 1px;
+
+  --depth: 0;
+  --noise: 0;
+}
+
+
+/* =========================================================
+   LIQUID GLASS TOKENS
+   ========================================================= */
+
+:root {
+  /* Glass */
+  --glass-alpha: 0.28;
+  --glass-alpha-hover: 0.36;
+
+  --glass-white: rgba(255, 255, 255, 0.72);
+  --glass-border: rgba(255, 255, 255, 0.42);
+
+  --glass-highlight:
+    rgba(255, 255, 255, 0.72);
+
+  --glass-shadow:
+    0 20px 60px rgba(23, 32, 27, 0.10),
+    0 4px 16px rgba(23, 32, 27, 0.06);
+
+  --glass-shadow-hover:
+    0 28px 80px rgba(23, 32, 27, 0.15),
+    0 8px 24px rgba(23, 32, 27, 0.08);
+
+  /* Blur */
+  --glass-blur: 24px;
+  --glass-saturation: 180%;
+
+  /* Spring */
+  --spring:
+    cubic-bezier(0.16, 1, 0.3, 1);
+
+  --spring-soft:
+    cubic-bezier(0.22, 1, 0.36, 1);
+
+  /* Pointer */
+  --pointer-x: 50%;
+  --pointer-y: 50%;
+}
+
+
+/* =========================================================
+   BACKGROUND
+   ========================================================= */
+
+html {
+  background: #eaf0e9;
+}
+
+body {
+  min-height: 100vh;
+
+  color: #17201b;
+
+  background:
+    radial-gradient(
+      700px circle at var(--pointer-x) var(--pointer-y),
+      rgba(255, 255, 255, 0.72),
+      transparent 42%
+    ),
+
+    radial-gradient(
+      800px circle at 10% 15%,
+      rgba(0, 168, 107, 0.18),
+      transparent 48%
+    ),
+
+    radial-gradient(
+      700px circle at 90% 20%,
+      rgba(232, 108, 110, 0.16),
+      transparent 45%
+    ),
+
+    radial-gradient(
+      900px circle at 50% 100%,
+      rgba(114, 121, 114, 0.16),
+      transparent 50%
+    ),
+
+    #eaf0e9;
+
+  background-attachment: fixed;
+
+  transition:
+    background 700ms var(--spring-soft);
+}
+
+
+/* =========================================================
+   LIQUID GLASS
+   ========================================================= */
+
+.glass {
+  --glass-x: var(--pointer-x);
+  --glass-y: var(--pointer-y);
+
+  position: relative;
+
+  overflow: hidden;
+
+  background:
+    linear-gradient(
+      135deg,
+      rgba(255, 255, 255, 0.38),
+      rgba(255, 255, 255, 0.16)
+    );
+
+  backdrop-filter:
+    blur(24px)
+    saturate(180%);
+
+  -webkit-backdrop-filter:
+    blur(24px)
+    saturate(180%);
+
+  border:
+    1px solid rgba(255, 255, 255, 0.42);
+
+  box-shadow:
+    var(--glass-shadow),
+
+    inset 0 1px 0
+      rgba(255, 255, 255, 0.72),
+
+    inset 0 -1px 0
+      rgba(255, 255, 255, 0.10);
+
+  transform:
+    translate3d(0, 0, 0);
+
+  transition:
+    transform 650ms var(--spring),
+    box-shadow 650ms var(--spring),
+    background 650ms var(--spring);
+}
+
+
+/* =========================================================
+   DYNAMIC REFRACTION LIGHT
+   ========================================================= */
+
+.glass::before {
+  content: "";
+
+  position: absolute;
+  inset: -40%;
+
+  pointer-events: none;
+
+  background:
+    radial-gradient(
+      circle at var(--glass-x) var(--glass-y),
+      rgba(255, 255, 255, 0.55) 0%,
+      rgba(255, 255, 255, 0.20) 18%,
+      transparent 42%
+    );
+
+  filter: blur(18px);
+
+  opacity: 0.85;
+
+  transform:
+    translate3d(0, 0, 0)
+    scale(1.1);
+
+  transition:
+    transform 700ms var(--spring),
+    opacity 700ms var(--spring);
+}
+
+
+/* =========================================================
+   GLASS SPECULAR EDGE
+   ========================================================= */
+
+.glass::after {
+  content: "";
+
+  position: absolute;
+  inset: 0;
+
+  pointer-events: none;
+
+  border-radius: inherit;
+
+  background:
+    linear-gradient(
+      120deg,
+      rgba(255, 255, 255, 0.62),
+      rgba(255, 255, 255, 0.12) 20%,
+      transparent 42%,
+      transparent 65%,
+      rgba(255, 255, 255, 0.18)
+    );
+
+  opacity: 0.65;
+
+  mix-blend-mode: overlay;
+}
+
+
+/* =========================================================
+   GLASS HOVER
+   ========================================================= */
+
+/* .glass:hover {
+  background:
+    linear-gradient(
+      135deg,
+      rgba(255, 255, 255, 0.46),
+      rgba(255, 255, 255, 0.20)
+    );
+
+  box-shadow:
+    var(--glass-shadow-hover),
+
+    inset 0 1px 0
+      rgba(255, 255, 255, 0.85),
+
+    inset 0 -1px 0
+      rgba(255, 255, 255, 0.12);
+
+  transform:
+    translateY(-3px)
+    scale(1.008);
+} */
+
+
+/* =========================================================
+   GLASS PRESS
+   ========================================================= */
+
+.glass:active {
+  transform:
+    translateY(0)
+    scale(0.985);
+
+  transition-duration: 120ms;
+}
+
+
+/* =========================================================
+   GLASS CARD
+   ========================================================= */
+
+.glass-card {
+  border-radius: 1.75rem;
+}
+
+.card.glass {
+  border-radius: 1.75rem;
+}
+
+
+/* =========================================================
+   LIQUID GLASS BUTTON
+   ========================================================= */
+
+.btn {
+  position: relative;
+
+  overflow: hidden;
+
+  border:
+    1px solid rgba(255, 255, 255, 0.38);
+
+  backdrop-filter:
+    blur(18px)
+    saturate(180%);
+
+  -webkit-backdrop-filter:
+    blur(18px)
+    saturate(180%);
+
+  box-shadow:
+    0 8px 24px rgba(23, 32, 27, 0.08),
+
+    inset 0 1px 0
+      rgba(255, 255, 255, 0.45),
+
+    inset 0 -1px 0
+      rgba(255, 255, 255, 0.08);
+
+  transform:
+    translateZ(0);
+
+  transition:
+    transform 500ms var(--spring),
+    box-shadow 500ms var(--spring),
+    filter 500ms var(--spring);
+}
+
+
+/* Button shine */
+
+.btn::after {
+  content: "";
+
+  position: absolute;
+
+  top: -100%;
+  left: -30%;
+
+  width: 45%;
+  height: 300%;
+
+  background:
+    linear-gradient(
+      90deg,
+      transparent,
+      rgba(255, 255, 255, 0.38),
+      transparent
+    );
+
+  transform:
+    rotate(20deg)
+    translateX(-180%);
+
+  transition:
+    transform 700ms var(--spring);
+}
+
+.btn:hover::after {
+  transform:
+    rotate(20deg)
+    translateX(420%);
+}
+
+
+/* Button hover */
+
+.btn:hover {
+  transform:
+    translateY(-2px)
+    scale(1.015);
+
+  box-shadow:
+    0 14px 34px rgba(23, 32, 27, 0.12),
+
+    inset 0 1px 0
+      rgba(255, 255, 255, 0.62);
+}
+
+
+/* Button press */
+
+.btn:active {
+  transform:
+    translateY(1px)
+    scale(0.94);
+
+  transition-duration: 100ms;
+}
+
+
+/* =========================================================
+   PRIMARY BUTTON
+   ========================================================= */
+
+.btn-primary {
+  background:
+    linear-gradient(
+      135deg,
+      rgba(0, 168, 107, 0.86),
+      rgba(0, 168, 107, 0.62)
+    );
+
+  color: white;
+
+  border-color:
+    rgba(255, 255, 255, 0.42);
+
+  box-shadow:
+    0 10px 30px rgba(0, 168, 107, 0.22),
+
+    inset 0 1px 0
+      rgba(255, 255, 255, 0.55),
+
+    inset 0 -1px 0
+      rgba(0, 90, 55, 0.10);
+}
+
+.btn-primary:hover {
+  background:
+    linear-gradient(
+      135deg,
+      rgba(0, 168, 107, 0.94),
+      rgba(0, 168, 107, 0.72)
+    );
+
+  box-shadow:
+    0 16px 40px rgba(0, 168, 107, 0.28),
+
+    inset 0 1px 0
+      rgba(255, 255, 255, 0.68);
+}
+
+
+/* =========================================================
+   SECONDARY
+   ========================================================= */
+
+.btn-secondary {
+  background:
+    linear-gradient(
+      135deg,
+      rgba(52, 52, 52, 0.82),
+      rgba(52, 52, 52, 0.64)
+    );
+
+  color: white;
+}
+
+
+/* =========================================================
+   ACCENT
+   ========================================================= */
+
+.btn-accent {
+  background:
+    linear-gradient(
+      135deg,
+      rgba(232, 108, 110, 0.86),
+      rgba(232, 108, 110, 0.62)
+    );
+
+  color: white;
+}
+
+
+/* =========================================================
+   GHOST
+   ========================================================= */
+
+.btn-ghost {
+  background:
+    rgba(255, 255, 255, 0.18);
+
+  border-color:
+    rgba(255, 255, 255, 0.28);
+
+  color:
+    #17201b;
+}
+
+
+/* =========================================================
+   GLASS INPUT
+   ========================================================= */
+
+.input,
+.textarea,
+.select {
+  background:
+    rgba(255, 255, 255, 0.24);
+
+  border:
+    1px solid rgba(255, 255, 255, 0.38);
+
+  backdrop-filter:
+    blur(22px)
+    saturate(180%);
+
+  -webkit-backdrop-filter:
+    blur(22px)
+    saturate(180%);
+
+  box-shadow:
+    inset 0 1px 0
+      rgba(255, 255, 255, 0.48),
+
+    0 6px 20px
+      rgba(23, 32, 27, 0.05);
+
+  transition:
+    transform 450ms var(--spring),
+    background 450ms var(--spring),
+    box-shadow 450ms var(--spring);
+}
+
+
+.input:hover,
+.textarea:hover,
+.select:hover {
+  background:
+    rgba(255, 255, 255, 0.32);
+}
+
+
+.input:focus,
+.textarea:focus,
+.select:focus {
+  background:
+    rgba(255, 255, 255, 0.38);
+
+  transform:
+    scale(1.008);
+
+  box-shadow:
+    0 0 0 4px
+      rgba(0, 168, 107, 0.10),
+
+    0 10px 30px
+      rgba(23, 32, 27, 0.08),
+
+    inset 0 1px 0
+      rgba(255, 255, 255, 0.62);
+}
+
+
+/* =========================================================
+   GLASS NAVBAR
+   ========================================================= */
+
+.navbar.glass {
+  border-radius: 999px;
+
+  padding:
+    0.65rem
+    0.8rem;
+}
+
+
+/* =========================================================
+   FLOATING GLASS
+   ========================================================= */
+
+.glass-floating {
+  animation:
+    liquid-float 6s ease-in-out infinite;
+}
+
+@keyframes liquid-float {
+  0%,
+  100% {
+    transform:
+      translateY(0);
+  }
+
+  50% {
+    transform:
+      translateY(-5px);
+  }
+}
+
+
+/* =========================================================
+   DARK MODE
+   ========================================================= */
+
+[data-theme="liquid-glass-dark"] {
+  color-scheme: dark;
+
+  --color-base-100: #111613;
+  --color-base-200: #171d19;
+  --color-base-300: #202923;
+  --color-base-content: #f2f5f2;
+}
+
+[data-theme="liquid-glass-dark"] body {
+  color: #f2f5f2;
+
+  background:
+    radial-gradient(
+      700px circle at var(--pointer-x) var(--pointer-y),
+      rgba(255, 255, 255, 0.10),
+      transparent 42%
+    ),
+
+    radial-gradient(
+      700px circle at 10% 10%,
+      rgba(0, 168, 107, 0.18),
+      transparent 45%
+    ),
+
+    #111613;
+}
+
+[data-theme="liquid-glass-dark"] .glass {
+  background:
+    linear-gradient(
+      135deg,
+      rgba(255, 255, 255, 0.13),
+      rgba(255, 255, 255, 0.05)
+    );
+
+  border-color:
+    rgba(255, 255, 255, 0.18);
+
+  box-shadow:
+    0 24px 70px rgba(0, 0, 0, 0.30),
+
+    inset 0 1px 0
+      rgba(255, 255, 255, 0.20);
+}
+
+
+/* =========================================================
+   ACCESSIBILITY
+   ========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+}
