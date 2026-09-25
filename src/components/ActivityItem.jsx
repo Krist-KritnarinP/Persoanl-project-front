@@ -7,11 +7,15 @@ export default function ActivityItem({
   formatZonedTime,
   onEdit,
   onDelete,
+  onView,
 }) {
   const Icon = typeConfig?.icon || FiClock;
 
   return (
-    <div className="flex items-center justify-between p-4 rounded-2xl glass bg-white/5 hover:bg-white/10 transition-all border border-white/10 gap-3">
+    <div
+      onClick={() => onView && onView(activity)}
+      className={`flex items-center justify-between p-4 rounded-2xl glass bg-white/5 hover:bg-white/10 transition-all border border-white/10 gap-3 ${onView ? "cursor-pointer" : ""}`}
+    >
       <div className="flex items-center gap-3 min-w-0">
         {/* Type Icon */}
         <div className={`p-3 rounded-xl shrink-0 ${typeConfig?.color || "badge-primary"}`}>
@@ -49,14 +53,14 @@ export default function ActivityItem({
       {/* Action Buttons */}
       <div className="flex sm:flex-col md:flex-row items-center gap-1 shrink-0">
         <button
-          onClick={() => onEdit(activity)}
+          onClick={(e) => { e.stopPropagation(); onEdit(activity); }}
           className="btn btn-ghost btn-sm text-info hover:bg-white/20"
           aria-label="edit"
         >
           <FiEdit2 />
         </button>
         <button
-          onClick={() => onDelete(activity.id)}
+          onClick={(e) => { e.stopPropagation(); onDelete(activity.id); }}
           className="btn btn-ghost btn-sm text-error hover:bg-white/20"
           aria-label="delete"
         >

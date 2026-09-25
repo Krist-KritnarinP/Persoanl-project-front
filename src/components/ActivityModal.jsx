@@ -1,5 +1,13 @@
-import React from "react";
+import React, { useState } from "react";
+import { FiHome, FiTruck, FiCoffee, FiNavigation, FiChevronDown, FiCheck } from "react-icons/fi";
 import { useLang } from "@/i18n";
+
+const TYPE_OPTIONS = [
+  { value: "ATTRACTION", icon: FiNavigation, color: "badge-accent" },
+  { value: "RESTAURANT", icon: FiCoffee, color: "badge-warning" },
+  { value: "ACCOMMODATION", icon: FiHome, color: "badge-primary" },
+  { value: "TRANSPORT", icon: FiTruck, color: "badge-info" },
+];
 
 export default function ActivityModal({
   isOpen,
@@ -10,7 +18,17 @@ export default function ActivityModal({
   setActivityFormData,
 }) {
   const { t } = useLang();
+  const [typeOpen, setTypeOpen] = useState(false);
   if (!isOpen) return null;
+
+  const TYPE_LABELS = {
+    ATTRACTION: t("act.attr"),
+    RESTAURANT: t("act.rest"),
+    ACCOMMODATION: t("act.accom"),
+    TRANSPORT: t("act.transp"),
+  };
+  const current = TYPE_OPTIONS.find((o) => o.value === (activityFormData.activityType || "ATTRACTION")) || TYPE_OPTIONS[0];
+  const CurrentIcon = current.icon;
 
   return (
     <dialog className="modal modal-open px-4">
@@ -37,23 +55,55 @@ export default function ActivityModal({
             />
           </div>
 
-          {/* ประเภทกิจกรรม */}
+          {/* ประเภทกิจกรรม (custom dropdown มี icon) */}
           <div className="form-control">
             <label className="label py-1">
               <span className="label-text font-semibold text-sm text-slate-700">{t("act.attr")} / {t("act.rest")}</span>
             </label>
-            <select
-              className="select select-bordered w-full rounded-xl bg-white text-slate-900 border-slate-300 text-base"
-              value={activityFormData.activityType || "ATTRACTION"}
-              onChange={(e) =>
-                setActivityFormData({ ...activityFormData, activityType: e.target.value })
-              }
-            >
-              <option value="ATTRACTION" className="bg-white text-slate-900">{t("act.attr")}</option>
-              <option value="RESTAURANT" className="bg-white text-slate-900">{t("act.rest")}</option>
-              <option value="ACCOMMODATION" className="bg-white text-slate-900">{t("act.accom")}</option>
-              <option value="TRANSPORT" className="bg-white text-slate-900">{t("act.transp")}</option>
-            </select>
+            <div className="relative">
+              <button
+                type="button"
+                onClick={() => setTypeOpen((v) => !v)}
+                className="input input-bordered rounded-xl w-full bg-white text-slate-900 border-slate-300 text-base flex items-center gap-2.5 justify-between"
+              >
+                <span className="flex items-center gap-2.5 min-w-0">
+                  <span className={`p-1.5 rounded-lg shrink-0 ${current.color}`}>
+                    <CurrentIcon className="text-base" />
+                  </span>
+                  <span className="truncate">{TYPE_LABELS[current.value]}</span>
+                </span>
+                <FiChevronDown className={`shrink-0 transition-transform ${typeOpen ? "rotate-180" : ""}`} />
+              </button>
+              {typeOpen && (
+                <>
+                  <div className="fixed inset-0 z-10" onClick={() => setTypeOpen(false)} />
+                  <ul className="absolute z-20 mt-1 w-full rounded-2xl border border-slate-200 bg-white shadow-xl overflow-hidden py-1">
+                    {TYPE_OPTIONS.map((opt) => {
+                      const Icon = opt.icon;
+                      const selected = opt.value === current.value;
+                      return (
+                        <li key={opt.value}>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setActivityFormData({ ...activityFormData, activityType: opt.value });
+                              setTypeOpen(false);
+                            }}
+                            className={`w-full flex items-center gap-2.5 px-3 py-2.5 text-base hover:bg-slate-100 ${selected ? "bg-slate-50 font-bold" : ""}`}
+                          >
+                            <span className={`p-1.5 rounded-lg shrink-0 ${opt.color}`}>
+                              <Icon className="text-base" />
+                            </span>
+                            <span className="flex-1 text-left truncate">{TYPE_LABELS[opt.value]}</span>
+                            {selected && <FiCheck className="text-primary shrink-0" />}
+                          </button>
+                        </li>
+                      );
+                    })}
+                  </ul>
+                </>
+              )}
+            </div>
           </div>
 
           {/* ช่องกรอกเวลา */}

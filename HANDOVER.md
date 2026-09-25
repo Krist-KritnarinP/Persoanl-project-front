@@ -1,7 +1,7 @@
 # HANDOVER — AI LHOUNG Travel Planner
 
 เอกสารส่งมอบงานสำหรับ dev คนต่อไป / คน deploy / คนสอบ
-อัปเดตล่าสุด: 2026-09-25 (รอบ 5: ซ่อม scroll timeline, กับดัก .glass vs overflow)
+อัปเดตล่าสุด: 2026-09-25 (รอบ 6: dropdown มี icon, ธงภาษา, แท็บ Overview, modal ดูข้อมูล, perf มือถือ)
 
 ## 1. Repo Structure (2 repos แยกกัน)
 
@@ -148,6 +148,20 @@ Auth: `Authorization: Bearer <token>` (จาก `localStorage.authState.state.t
 **⚠️ กับดัก CSS (สาเหตุ timeline ล้นไม่มี scroll):** `.glass{overflow:hidden}` เขียนแบบ unlayered จึงชนะ overflow-* utilities ของ Tailwind (layered) เสมอ → `lg:overflow-y-auto` ไม่เคยทำงาน + class `custom-scrollbar`/`scrollbar-none` ถูกใช้แต่ไม่เคยนิยามไว้ — แก้ใน `index.css`: เพิ่ม opt-out rules (`.glass.overflow-y-auto` ฯลฯ) + นิยาม scrollbar ทั้งสองแบบ
 
 **Timeline scroll ทุกจอ:** คอลัมน์ภาพรวมล็อกความสูง (`62vh` มือถือ / `70vh` แท็บเล็ต / `100vh-2rem` desktop) + scroll แนวตั้งมีแถบให้เห็น — modal แชร์/DayModal กันล้นจอเล็กด้วย (`max-h-85vh` + scroll)
+
+## 5.4 งานรอบ 6 (2026-09-25 ดึก)
+
+**Activity dropdown มี icon:** `<select>` ธรรมดาใส่ icon ไม่ได้ → เปลี่ยนเป็น custom dropdown (ปุ่ม + เมนู) มี icon + สีตามประเภท + ติ๊กถูกอันที่เลือก
+
+**ภาษาใส่ธง:** dropdown ภาษาโชว์ธง 🇹🇭🇬🇧🇨🇳🇰🇷 ทั้งในกล่องและ options
+
+**badge Trip#:** เลิกใช้ `badge` (padding เพี้ยนข้อความล้น) → pill `inline-flex items-center` จัดกลางจริง
+
+**แท็บ Overview หน้าสุด:** แถบ Day มีปุ่มภาพรวมอันแรก (default) → panel สรุปรายวัน (กดเข้าวันนั้นได้) — เลิก auto-select วันแรก
+
+**Modal ดูข้อมูล:** `DetailModals.jsx` — กดที่การ์ด activity ดูป๊อปอัปอ่านอย่างเดียว (มีปุ่มแก้ต่อ) + ปุ่ม 👁 ที่หัว Day ดูสรุปวันพร้อมรายการกิจกรรม
+
+**Perf รอบ 2:** จอ <768px ตัด backdrop-blur/เงากระจก/shine ปุ่ม/focus-scale ออก (desktop เหมือนเดิม) — การ์ดใช้พื้นขาวโปร่งแทน
 
 ## 6. TODO ที่เหลือ (ยังไม่ทำ)
 - [ ] ไม่มี test อัตโนมัติ / ไม่มี docker — มีแค่เทส manual (รอบ 2: predict→history→delete ผ่าน 2026-09-25)

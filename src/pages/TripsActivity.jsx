@@ -17,6 +17,8 @@ import {
   FiShare2,
   FiCopy,
   FiLink,
+  FiChevronRight,
+  FiEye,
 } from "react-icons/fi";
 import { useTripActivityStore } from "@/stores/tripActivityStore";
 import { toast } from "react-toastify";
@@ -24,6 +26,7 @@ import { useLang } from "@/i18n";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
 import DayModal from "@/components/DayModal";
 import ActivityModal from "@/components/ActivityModal";
+import ActivityDetailModal, { DayDetailModal } from "@/components/DetailModals";
 import GeminiWeatherCard from "@/components/GeminiWeatherCard";
 import TripInfoCard from "@/components/TripInfoCard";
 import ActivityItem from "@/components/ActivityItem";
@@ -67,6 +70,10 @@ export default function TripActivity() {
   const [shareToken, setShareToken] = useState(null);
   const [shareLoading, setShareLoading] = useState(false);
   const [copied, setCopied] = useState(false);
+
+  // Modals ดูข้อมูล (read-only)
+  const [viewingActivity, setViewingActivity] = useState(null);
+  const [viewingDay, setViewingDay] = useState(null);
 
   const openShare = async () => {
     setShareOpen(true);
@@ -136,13 +143,8 @@ export default function TripActivity() {
     if (tripId) fetchTripDetails(tripId);
   }, [tripId]);
 
-  useEffect(() => {
-    if (trip?.days && trip.days.length > 0 && !selectedDayId) {
-      setSelectedDayId(trip.days[0].id);
-    }
-  }, [trip]);
-
-  const activeDay = trip?.days?.find((d) => d.id === selectedDayId) || trip?.days?.[0];
+  // ไม่ auto-select วันแรก — เริ่มที่แท็บภาพรวม (selectedDayId === null)
+  const activeDay = trip?.days?.find((d) => d.id === selectedDayId) || null;
 
   const formatDate = (dateString) => {
     if (!dateString) return "-";
@@ -348,7 +350,7 @@ export default function TripActivity() {
           >
             <FiShare2 /> {t("share.btn")}
           </button>
-          <span className="hidden sm:inline text-sm badge badge-outline glass px-3 py-2">Trip #{tripId}</span>
+          <span className="hidden sm:inline-flex items-center rounded-full border border-base-content/20 bg-white/20 px-3 py-1.5 text-sm font-semibold leading-none whitespace-nowrap">Trip #{tripId}</span>
         </div>
       </div>
 
@@ -487,7 +489,17 @@ export default function TripActivity() {
               </button>
             </div>
 
-            <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none">
+            <div className="flex items-center gap-2 overflow-x-auto pb-2 custom-scrollbar">
+              <button
+                onClick={() => setSelectedDayId(null)}
+                className={`btn btn-sm rounded-2xl whitespace-nowrap transition-all shrink-0 ${
+                  !activeDay
+                    ? "btn-primary shadow-lg scale-105"
+                    : "btn-ghost glass text-base-content hover:bg-white/30"
+                }`}
+              >
+                <FiFlag /> {t("day.overview")}
+              </button>
               {trip?.days?.map((day) => {
                 const isActive = activeDay?.id === day.id;
                 return (
@@ -508,7 +520,7 @@ export default function TripActivity() {
             </div>
           </div>
 
-          {activeDay && (
+          {activeDay ? (
             <div className="glass glass-card p-4 md:p-6 rounded-3xl space-y-6">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-white/20 pb-4 gap-2">
                 <div className="min-w-0">
@@ -519,6 +531,13 @@ export default function TripActivity() {
                   <p className="text-sm sm:text-base opacity-80 mt-1">{activeDay.description}</p>
                 </div>
                 <div className="flex items-center gap-2 shrink-0">
+                  <button
+                    onClick={() => setViewingDay(activeDay)}
+                    title={t("common.view")}
+                    className="btn btn-ghost btn-sm text-base-content/70 hover:bg-white/20"
+                  >
+                    <FiEye /> <span className="hidden sm:inline">{t("common.view")}</span>
+                  </button>
                   <button
                     onClick={() => handleOpenEditDayModal(activeDay)}
                     className="btn btn-ghost btn-sm text-info hover:bg-white/20"
@@ -569,6 +588,7 @@ export default function TripActivity() {
                         formatZonedTime={formatZonedTime}
                         onEdit={handleOpenEditActivityModal}
                         onDelete={handleDeleteActivity}
+                        onView={setViewingActivity}
                       />
                     ))}
                   </div>
@@ -578,6 +598,44 @@ export default function TripActivity() {
                   </div>
                 )}
               </div>
+            </div>
+          ) : (
+            /* OVERVIEW PANEL: สรุปรายวัน กดเพื่อเข้าแต่ละวัน */
+            <div className="glass glass-card p-4 md:p-6 rounded-3xl space-y-4">
+              <h3 className="text-xl sm:text-2xl font-bold flex items-center gap-2">
+                <FiFlag className="text-primary" /> {t("day.overview")}
+              </h3>
+              {trip?.days?.length > 0 ? (
+                <div className="grid grid-cols-1 gap-3">
+                  {trip.days.map((d) => {
+                    const n = d.activities?.length || 0;
+                    const budget = d.activities?.reduce((s, a) => s + (Number(a.price) || 0), 0) || 0;
+                    return (
+                      <button
+                        key={d.id}
+                        onClick={() => setSelectedDayId(d.id)}
+                        className="flex items-center justify-between gap-3 p-4 rounded-2xl bg-white/5 hover:bg-white/15 border border-white/10 transition-all text-left"
+                      >
+                        <div className="min-w-0">
+                          <div className="font-bold text-base sm:text-lg">
+                            Day {d.dayCount}
+                            <span className="ml-2 text-sm font-normal opacity-70">{formatDate(d.dayDate)}</span>
+                          </div>
+                          <div className="text-sm text-base-content/70 mt-0.5">
+                            {n} {t("day.ovActs")} • {budget.toLocaleString(locale)} {t("day.baht")}
+                          </div>
+                          {d.description && (
+                            <div className="text-sm opacity-60 truncate mt-0.5">{d.description}</div>
+                          )}
+                        </div>
+                        <FiChevronRight className="text-primary text-xl shrink-0" />
+                      </button>
+                    );
+                  })}
+                </div>
+              ) : (
+                <p className="text-sm sm:text-base text-base-content/60 text-center py-6">{t("day.noDays")}</p>
+              )}
             </div>
           )}
         </div>
@@ -650,6 +708,22 @@ export default function TripActivity() {
         editingActivity={editingActivity}
         activityFormData={activityFormData}
         setActivityFormData={setActivityFormData}
+      />
+
+      {/* VIEW MODALS (read-only) */}
+      <ActivityDetailModal
+        activity={viewingActivity}
+        typeConfig={viewingActivity ? (ACTIVITY_TYPES[viewingActivity.activityType] || ACTIVITY_TYPES.ATTRACTION) : null}
+        formatZonedTime={formatZonedTime}
+        onClose={() => setViewingActivity(null)}
+        onEdit={handleOpenEditActivityModal}
+      />
+      <DayDetailModal
+        day={viewingDay}
+        formatDate={formatDate}
+        formatZonedTime={formatZonedTime}
+        typeLabel={(type) => (ACTIVITY_TYPES[type] || ACTIVITY_TYPES.ATTRACTION).label}
+        onClose={() => setViewingDay(null)}
       />
     </div>
   );

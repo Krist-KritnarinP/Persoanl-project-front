@@ -13,7 +13,8 @@ const dict = {
   th: {
     "common.back": "ย้อนกลับ", "common.cancel": "ยกเลิก", "common.save": "บันทึก",
     "common.delete": "ลบ", "common.edit": "แก้ไข", "common.add": "เพิ่ม",
-    "common.close": "ปิด", "common.loading": "กำลังโหลด...",
+    "common.close": "ปิด",
+    "common.view": "ดู", "common.loading": "กำลังโหลด...",
     "nav.tagline": "Travel Planner Dashboard", "nav.searchPh": "ค้นหาทริป, จุดหมาย...",
     "nav.logout": "ออกจากระบบ",
     "auth.heroSub": "นี่ไม่ใช่เครื่องมือกันหลงเธอ แต่ไว้กันหลงทาง",
@@ -84,7 +85,8 @@ const dict = {
   en: {
     "common.back": "Back", "common.cancel": "Cancel", "common.save": "Save",
     "common.delete": "Delete", "common.edit": "Edit", "common.add": "Add",
-    "common.close": "Close", "common.loading": "Loading...",
+    "common.close": "Close",
+    "common.view": "View", "common.loading": "Loading...",
     "nav.tagline": "Travel Planner Dashboard", "nav.searchPh": "Search trips, destinations...",
     "nav.logout": "Log out",
     "auth.heroSub": "Not a tool to keep her from getting lost — but to keep you on track.",
@@ -155,7 +157,8 @@ const dict = {
   zh: {
     "common.back": "返回", "common.cancel": "取消", "common.save": "保存",
     "common.delete": "删除", "common.edit": "编辑", "common.add": "添加",
-    "common.close": "关闭", "common.loading": "加载中...",
+    "common.close": "关闭",
+    "common.view": "查看", "common.loading": "加载中...",
     "nav.tagline": "旅行规划仪表盘", "nav.searchPh": "搜索旅行、目的地...",
     "nav.logout": "退出登录",
     "auth.heroSub": "不是防止迷路她的工具,而是防止你迷路。",
@@ -226,7 +229,8 @@ const dict = {
   ko: {
     "common.back": "뒤로", "common.cancel": "취소", "common.save": "저장",
     "common.delete": "삭제", "common.edit": "수정", "common.add": "추가",
-    "common.close": "닫기", "common.loading": "불러오는 중...",
+    "common.close": "닫기",
+    "common.view": "보기", "common.loading": "불러오는 중...",
     "nav.tagline": "여행 플래너 대시보드", "nav.searchPh": "여행, 목적지 검색...",
     "nav.logout": "로그아웃",
     "auth.heroSub": "그녀를 위한 길잡이가 아니라, 당신의 길을 위한 도구.",
