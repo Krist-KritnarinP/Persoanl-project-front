@@ -11,6 +11,8 @@ export const useTripActivityStore = create((set, get) => ({
   weatherPrediction: null,
   weatherLoading: false,
   weatherError: null,
+  weatherHistory: [],
+  historyLoading: false,
 
   // 1. Fetch รายละเอียด Trip พร้อม Days และ Activities
   fetchTripDetails: async (tripId) => {
@@ -149,23 +151,55 @@ export const useTripActivityStore = create((set, get) => ({
       ) || [];
 
       const payload = {
+        tripId: Number(tripId),
         location: trip.destination,
         startDate: trip.startDate,
         endDate: trip.endDate,
         activities: activitiesData,
       };
 
-      const res = await mainApi.post("/weather/predict-weather", payload);
-      set({ 
-        weatherPrediction: res.data.prediction, 
-        weatherLoading: false 
+      // AI ใช้เวลาตอบ ~20 วินาที: ขยาย timeout เฉพาะเส้นนี้ (default 15s ไม่พอ)
+      const res = await mainApi.post("/weather/predict-weather", payload, { timeout: 120000 });
+      set({
+        weatherPrediction: res.data.prediction,
+        weatherLoading: false
       });
+      // โหลดประวัติใหม่เพื่อโชว์วันเวลาที่กด
+      get().fetchWeatherHistory(tripId);
     } catch (error) {
       console.error("Get weather forecast error:", error);
-      set({ 
-        weatherError: error.response?.data?.message || error.message || "ไม่สามารถดึงข้อมูลสภาพอากาศได้", 
-        weatherLoading: false 
+      const isTimeout = error?.code === "ECONNABORTED";
+      set({
+        weatherError: isTimeout
+          ? "AI ตอบช้าเกินกำหนด กรุณากดใหม่อีกครั้ง"
+          : (error.response?.data?.message || error.message || "ไม่สามารถดึงข้อมูลสภาพอากาศได้"),
+        weatherLoading: false
       });
+    }
+  },
+
+  // ประวัติการทำนายของทริป (มี createdAt = วันที่ user กด)
+  fetchWeatherHistory: async (tripId) => {
+    set({ historyLoading: true });
+    try {
+      const res = await mainApi.get(`/weather/history/${tripId}`);
+      set({ weatherHistory: res.data?.data || [], historyLoading: false });
+    } catch (error) {
+      console.error("Fetch weather history error:", error);
+      set({ weatherHistory: [], historyLoading: false });
+    }
+  },
+
+  // ลบประวัติ 1 รายการ
+  deleteWeatherHistory: async (tripId, messageId) => {
+    try {
+      await mainApi.delete(`/weather/history/${messageId}`);
+      set((state) => ({
+        weatherHistory: state.weatherHistory.filter((m) => m.id !== messageId),
+      }));
+    } catch (error) {
+      console.error("Delete weather history error:", error);
+      throw error;
     }
   },
 

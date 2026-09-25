@@ -11,25 +11,31 @@ import {
   FiCoffee,
   FiNavigation,
   FiCheckCircle,
+  FiDollarSign,
+  FiList,
+  FiFlag,
 } from "react-icons/fi";
 import { useTripActivityStore } from "@/stores/tripActivityStore";
 import { toast } from "react-toastify";
+import { useLang } from "@/i18n";
+import LanguageSwitcher from "@/components/LanguageSwitcher";
 import DayModal from "@/components/DayModal";
 import ActivityModal from "@/components/ActivityModal";
 import GeminiWeatherCard from "@/components/GeminiWeatherCard";
 import TripInfoCard from "@/components/TripInfoCard";
 import ActivityItem from "@/components/ActivityItem";
 
-const ACTIVITY_TYPES = {
-  ACCOMMODATION: { label: "ที่พัก", icon: FiHome, color: "badge-primary" },
-  TRANSPORT: { label: "การเดินทาง", icon: FiTruck, color: "badge-info" },
-  RESTAURANT: { label: "อาหาร/ร้านค้า", icon: FiCoffee, color: "badge-warning" },
-  ATTRACTION: { label: "สถานที่ท่องเที่ยว", icon: FiNavigation, color: "badge-accent" },
-};
-
 export default function TripActivity() {
   const { tripId } = useParams();
   const navigate = useNavigate();
+  const { t, locale } = useLang();
+
+  const ACTIVITY_TYPES = {
+    ACCOMMODATION: { label: t("act.accom"), icon: FiHome, color: "badge-primary" },
+    TRANSPORT: { label: t("act.transp"), icon: FiTruck, color: "badge-info" },
+    RESTAURANT: { label: t("act.rest"), icon: FiCoffee, color: "badge-warning" },
+    ATTRACTION: { label: t("act.attr"), icon: FiNavigation, color: "badge-accent" },
+  };
 
   const trip = useTripActivityStore((state) => state.trip);
   const loading = useTripActivityStore((state) => state.loading);
@@ -48,6 +54,9 @@ export default function TripActivity() {
   const weatherLoading = useTripActivityStore((state) => state.weatherLoading);
   const weatherError = useTripActivityStore((state) => state.weatherError);
   const getWeatherForecast = useTripActivityStore((state) => state.getWeatherForecast);
+  const weatherHistory = useTripActivityStore((state) => state.weatherHistory);
+  const fetchWeatherHistory = useTripActivityStore((state) => state.fetchWeatherHistory);
+  const deleteWeatherHistory = useTripActivityStore((state) => state.deleteWeatherHistory);
 
   const [selectedDayId, setSelectedDayId] = useState(null);
   const [isDayModalOpen, setIsDayModalOpen] = useState(false);
@@ -81,12 +90,19 @@ export default function TripActivity() {
 
   const formatDate = (dateString) => {
     if (!dateString) return "-";
-    return new Date(dateString).toLocaleDateString("th-TH", {
+    return new Date(dateString).toLocaleDateString(locale, {
       year: "numeric",
       month: "short",
       day: "numeric",
     });
   };
+
+  // สถิติภาพรวมทริป
+  const totalDays = trip?.days?.length || 0;
+  const totalActs = trip?.days?.reduce((s, d) => s + (d.activities?.length || 0), 0) || 0;
+  const totalBudget = trip?.days?.reduce(
+    (s, d) => s + (d.activities?.reduce((a, x) => a + (Number(x.price) || 0), 0) || 0), 0
+  ) || 0;
 
   // Helper ดึงข้อความเวลามาแสดงผลโดยตรง (เก็บ wall-time แบบ UTC เพื่อกันเพี้ยน +7)
   const formatZonedTime = (timeString) => {
@@ -138,7 +154,7 @@ export default function TripActivity() {
   };
 
   const handleDeleteDay = async (dayId) => {
-    if (window.confirm("คุณต้องการลบวันนี้และกิจกรรมทั้งหมดในวันนี้หรือไม่?")) {
+    if (window.confirm(t("day.confirmDelDay"))) {
       try {
         await deleteDay(dayId, tripId);
         if (selectedDayId === dayId) setSelectedDayId(null);
@@ -151,7 +167,7 @@ export default function TripActivity() {
   // Activity Handlers
   const handleOpenAddActivityModal = () => {
     if (!activeDay) {
-      toast.warn("กรุณาสร้างวันเดินทางก่อนเพิ่มกิจกรรม");
+      toast.warn(t("day.needDayFirst"));
       return;
     }
     setEditingActivity(null);
@@ -218,8 +234,18 @@ export default function TripActivity() {
   };
 
   const handleDeleteActivity = async (actId) => {
-    if (window.confirm("คุณต้องการลบกิจกรรมนี้ใช่หรือไม่?")) {
+    if (window.confirm(t("act.confirmDel"))) {
       await deleteActivity(tripId, actId);
+    }
+  };
+
+  const handleDeleteHistory = async (messageId) => {
+    if (window.confirm(t("weather.delHist"))) {
+      try {
+        await deleteWeatherHistory(tripId, messageId);
+      } catch {
+        toast.error(t("weather.noHistory"));
+      }
     }
   };
 
@@ -234,42 +260,87 @@ export default function TripActivity() {
   return (
     <div className="min-h-screen w-full px-4 md:px-8 py-4 space-y-6">
       {/* NAVBAR */}
-      <header className="navbar glass rounded-full justify-between px-6 shadow-lg shrink-0 mb-4 w-full">
-        <div className="flex items-center gap-3">
-          <div className="w-12 h-12 rounded-full bg-primary/20 border border-primary/30 flex items-center justify-center text-primary font-bold overflow-hidden">
+      <header className="navbar glass rounded-3xl md:rounded-full justify-between px-4 md:px-6 py-3 shadow-lg shrink-0 mb-4 w-full gap-2">
+        <div className="flex items-center gap-2 md:gap-3 min-w-0">
+          <div className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-primary/20 border border-primary/30 flex items-center justify-center text-primary font-bold overflow-hidden shrink-0">
             <img src="/image/MiniDog.PNG" alt="Minidog" className="w-full h-full object-cover" />
           </div>
-          <div>
-            <span className="text-2xl font-black tracking-wider bg-linear-to-r from-primary to-accent bg-clip-text text-transparent">
+          <div className="min-w-0">
+            <span className="text-xl md:text-2xl font-black tracking-wider bg-linear-to-r from-primary to-accent bg-clip-text text-transparent whitespace-nowrap">
               AI LHOUNG
             </span>
-            <span className="text-[10px] block text-base-content/60 font-medium -mt-1">
-              Travel Planner Dashboard
+            <span className="hidden sm:block text-xs text-base-content/60 font-medium -mt-1">
+              {t("nav.tagline")}
             </span>
           </div>
         </div>
+        <LanguageSwitcher />
       </header>
 
       {/* HEADER / NAVIGATION */}
-      <div className="flex items-center justify-between w-full">
+      <div className="flex items-center justify-between w-full gap-2">
         <button
           onClick={() => navigate(-1)}
           className="btn btn-ghost glass gap-2 text-base-content hover:bg-white/20"
         >
-          <FiArrowLeft /> ย้อนกลับ
+          <FiArrowLeft /> {t("common.back")}
         </button>
-        <span className="text-xs badge badge-outline glass px-3 py-2">Trip ID: #{tripId}</span>
+        <span className="text-sm badge badge-outline glass px-3 py-2 shrink-0">Trip #{tripId}</span>
       </div>
 
       {/* TRIP INFO CARD */}
       <TripInfoCard trip={trip} formatDate={formatDate} />
 
+      {/* TRIP OVERVIEW STATS */}
+      <section className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
+        <div className="glass glass-card p-4 md:p-5 flex items-center gap-3">
+          <div className="w-11 h-11 rounded-2xl bg-primary/15 text-primary flex items-center justify-center text-xl shrink-0">
+            <FiCalendar />
+          </div>
+          <div className="min-w-0">
+            <div className="text-sm text-base-content/60">{t("day.ovDays")}</div>
+            <div className="text-lg md:text-xl font-black">{totalDays}</div>
+          </div>
+        </div>
+        <div className="glass glass-card p-4 md:p-5 flex items-center gap-3">
+          <div className="w-11 h-11 rounded-2xl bg-accent/15 text-accent flex items-center justify-center text-xl shrink-0">
+            <FiList />
+          </div>
+          <div className="min-w-0">
+            <div className="text-sm text-base-content/60">{t("day.ovActs")}</div>
+            <div className="text-lg md:text-xl font-black">{totalActs}</div>
+          </div>
+        </div>
+        <div className="glass glass-card p-4 md:p-5 flex items-center gap-3">
+          <div className="w-11 h-11 rounded-2xl bg-warning/15 text-warning flex items-center justify-center text-xl shrink-0">
+            <FiDollarSign />
+          </div>
+          <div className="min-w-0">
+            <div className="text-sm text-base-content/60">{t("day.ovBudget")}</div>
+            <div className="text-lg md:text-xl font-black truncate">
+              {totalBudget.toLocaleString(locale)} <span className="text-sm font-normal text-base-content/50">{t("day.baht")}</span>
+            </div>
+          </div>
+        </div>
+        <div className="glass glass-card p-4 md:p-5 flex items-center gap-3">
+          <div className="w-11 h-11 rounded-2xl bg-info/15 text-info flex items-center justify-center text-xl shrink-0">
+            <FiFlag />
+          </div>
+          <div className="min-w-0">
+            <div className="text-sm text-base-content/60">{t("day.ovDuration")}</div>
+            <div className="text-base md:text-lg font-black truncate">
+              {formatDate(trip?.startDate)} – {formatDate(trip?.endDate)}
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* 3-COLUMN LAYOUT */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start w-full">
         {/* LEFT COLUMN: Overview Waterfall Timeline */}
-        <div className="lg:col-span-3 glass glass-card p-5 rounded-3xl space-y-4 sticky top-4 max-h-[calc(100vh-2rem)] overflow-y-auto">
+        <div className="order-2 lg:order-1 lg:col-span-3 glass glass-card p-5 rounded-3xl space-y-4 lg:sticky lg:top-4 lg:max-h-[calc(100vh-2rem)] lg:overflow-y-auto">
           <h3 className="text-lg font-bold flex items-center gap-2 border-b border-white/20 pb-3">
-            <FiCheckCircle className="text-primary" /> Overview
+            <FiCheckCircle className="text-primary" /> {t("day.overview")}
           </h3>
 
           {trip?.days && trip.days.length > 0 ? (
@@ -299,13 +370,13 @@ export default function TripActivity() {
                           : "bg-white/5 hover:bg-white/10"
                       }`}
                     >
-                      <div className="flex items-center justify-between">
-                        <span className="font-bold text-sm text-primary">Day {d.dayCount}</span>
-                        <span className="text-[10px] opacity-70">{formatDate(d.dayDate)}</span>
+                      <div className="flex items-center justify-between gap-2">
+                        <span className="font-bold text-sm sm:text-base text-primary">Day {d.dayCount}</span>
+                        <span className="text-xs opacity-70 whitespace-nowrap">{formatDate(d.dayDate)}</span>
                       </div>
 
                       {d.activities && d.activities.length > 0 ? (
-                        <ul className="mt-2 space-y-2 border-t border-white/10 pt-2 text-xs">
+                        <ul className="mt-2 space-y-2 border-t border-white/10 pt-2 text-sm">
                           {d.activities.map((act) => (
                             <li key={act.id} className="space-y-1">
                               <div className="flex items-center gap-1.5 text-base-content/90 font-medium">
@@ -314,7 +385,7 @@ export default function TripActivity() {
                               </div>
 
                               {act.activityTime && (
-                                <div className="flex items-center gap-1.5 pl-3 text-[10px]">
+                                <div className="flex items-center gap-1.5 pl-3 text-xs">
                                   <span className="bg-base-200/60 px-1.5 py-0.5 rounded flex items-center gap-1">
                                     <span>⏰</span>
                                     <span>{formatZonedTime(act.activityTime)}</span>
@@ -325,7 +396,7 @@ export default function TripActivity() {
                           ))}
                         </ul>
                       ) : (
-                        <p className="text-[11px] opacity-50 mt-1 italic">ไม่มีกิจกรรม</p>
+                        <p className="text-xs opacity-50 mt-1 italic">{t("dash.noActivity")}</p>
                       )}
                     </div>
                   </div>
@@ -333,22 +404,22 @@ export default function TripActivity() {
               })}
             </div>
           ) : (
-            <p className="text-xs text-base-content/60 text-center py-4">ยังไม่มีข้อมูลวันเดินทาง</p>
+            <p className="text-sm text-base-content/60 text-center py-4">{t("day.noDays")}</p>
           )}
         </div>
 
         {/* CENTER COLUMN: Main Days & Activities */}
-        <div className="lg:col-span-6 space-y-6">
+        <div className="order-1 lg:order-2 lg:col-span-6 space-y-6 min-w-0">
           <div className="space-y-3">
-            <div className="flex items-center justify-between">
-              <h2 className="text-lg font-bold flex items-center gap-2">
-                <FiCalendar /> แผนการเดินทางรายวัน
+            <div className="flex items-center justify-between gap-2">
+              <h2 className="text-xl font-bold flex items-center gap-2">
+                <FiCalendar /> {t("day.plan")}
               </h2>
               <button
                 onClick={handleOpenAddDayModal}
-                className="btn btn-primary btn-sm rounded-full gap-1"
+                className="btn btn-primary btn-sm rounded-full gap-1 shrink-0"
               >
-                <FiPlus /> เพิ่มวัน
+                <FiPlus /> {t("day.addDay")}
               </button>
             </div>
 
@@ -374,39 +445,39 @@ export default function TripActivity() {
           </div>
 
           {activeDay && (
-            <div className="glass glass-card p-6 rounded-3xl space-y-6">
+            <div className="glass glass-card p-4 md:p-6 rounded-3xl space-y-6">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-white/20 pb-4 gap-2">
-                <div>
-                  <div className="flex items-center gap-3">
+                <div className="min-w-0">
+                  <div className="flex items-center gap-3 flex-wrap">
                     <h3 className="text-2xl font-bold">Day {activeDay.dayCount}</h3>
                     <span className="text-sm opacity-70">{formatDate(activeDay.dayDate)}</span>
                   </div>
-                  <p className="text-sm opacity-80 mt-1">{activeDay.description}</p>
+                  <p className="text-sm sm:text-base opacity-80 mt-1">{activeDay.description}</p>
                 </div>
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 shrink-0">
                   <button
                     onClick={() => handleOpenEditDayModal(activeDay)}
-                    className="btn btn-ghost btn-xs text-info hover:bg-white/20"
+                    className="btn btn-ghost btn-sm text-info hover:bg-white/20"
                   >
-                    <FiEdit2 /> แก้ไขวัน
+                    <FiEdit2 /> {t("day.editDay")}
                   </button>
                   <button
                     onClick={() => handleDeleteDay(activeDay.id)}
-                    className="btn btn-ghost btn-xs text-error hover:bg-white/20"
+                    className="btn btn-ghost btn-sm text-error hover:bg-white/20"
                   >
-                    <FiTrash2 /> ลบวัน
+                    <FiTrash2 /> {t("day.delDay")}
                   </button>
                 </div>
               </div>
 
               <div className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <h4 className="font-semibold text-lg">รายการกิจกรรม</h4>
+                <div className="flex items-center justify-between gap-2">
+                  <h4 className="font-semibold text-lg">{t("day.actList")}</h4>
                   <button
                     onClick={handleOpenAddActivityModal}
-                    className="btn btn-primary btn-sm glass rounded-full gap-1"
+                    className="btn btn-primary btn-sm glass rounded-full gap-1 shrink-0"
                   >
-                    <FiPlus /> เพิ่มกิจกรรม
+                    <FiPlus /> {t("act.addAct")}
                   </button>
                 </div>
 
@@ -427,7 +498,7 @@ export default function TripActivity() {
                   </div>
                 ) : (
                   <div className="text-center py-10 glass rounded-2xl opacity-60">
-                    <p>ยังไม่มีกิจกรรมในวันนี้</p>
+                    <p className="text-sm sm:text-base">{t("day.noActs")}</p>
                   </div>
                 )}
               </div>
@@ -436,13 +507,16 @@ export default function TripActivity() {
         </div>
 
         {/* RIGHT COLUMN: Gemini Weather Card */}
-        <div className="lg:col-span-3 sticky top-4 max-h-[calc(100vh-2rem)] flex flex-col">
+        <div className="order-3 lg:col-span-3 lg:sticky lg:top-4 lg:max-h-[calc(100vh-2rem)] flex flex-col min-w-0">
           <GeminiWeatherCard
             tripId={tripId}
             weatherPrediction={weatherPrediction}
             weatherLoading={weatherLoading}
             weatherError={weatherError}
             onGetForecast={getWeatherForecast}
+            weatherHistory={weatherHistory}
+            onFetchHistory={fetchWeatherHistory}
+            onDeleteHistory={handleDeleteHistory}
           />
         </div>
       </div>

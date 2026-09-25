@@ -6,8 +6,11 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+import { useLang } from "@/i18n";
+import LanguageSwitcher from "@/components/LanguageSwitcher";
 
 function Login() {
+  const { t } = useLang();
   const login = useUserStore((state) => state.login);
   const { formState, register, handleSubmit } = useForm({
     resolver: zodResolver(loginSchema),
@@ -23,34 +26,37 @@ function Login() {
   const onSubmit = async (data) => {
     try {
       await login(data);
-      toast.success("Login Success!!");
+      toast.success(t("auth.loginOk"));
       navigate("/dashboard");
     } catch (err) {
-      toast.error(err?.response?.data?.message || "Login Fail!");
+      toast.error(err?.response?.data?.message || t("auth.loginFail"));
     }
   };
 
   return (
     <>
-      <div className="min-h-screen pt-20 pb-28 flex items-center justify-center">
-        <div className="p-5 mx-auto max-w-5xl min-h-135 flex justify-between items-center w-full">
+      <div className="min-h-screen px-4 pt-10 md:pt-20 pb-20 md:pb-28 flex items-center justify-center">
+        <div className="absolute top-4 right-4">
+          <LanguageSwitcher />
+        </div>
+        <div className="p-2 sm:p-5 mx-auto max-w-5xl min-h-135 flex flex-col md:flex-row justify-between items-center w-full gap-8">
           {/* ฝั่งซ้าย: ข้อความต้อนรับ */}
-          <div className="flex flex-col gap-4 basis-3/5">
-            <div className="text-6xl p-2 text-primary font-bold">AI LHOUNG</div>
+          <div className="flex flex-col gap-4 md:basis-3/5 text-center md:text-left">
+            <div className="text-5xl sm:text-6xl p-2 text-primary font-bold">AI LHOUNG</div>
             <div>
-              <h2 className="text-[20px] leading-8 mt-3 w-129 text-base-content/80 max-md:hidden">
-                นี่ไม่ใช่เครื่องมือกันหลงเธอ แต่ไว้กันหลงทาง
+              <h2 className="text-lg sm:text-[20px] leading-8 mt-3 text-base-content/80">
+                {t("auth.heroSub")}
               </h2>
-            
+
             </div>
           </div>
 
           {/* ฝั่งขวา: ฟอร์ม Login */}
-          <div className="aura aura-dual w-full shadow-xl">
+          <div className="aura aura-dual w-full max-w-md shadow-xl">
             <div className="card bg-base-100">
-              <div className="card-body">
-                <span className="flex justify-center text-xl mx-1">
-                  Ready for your next
+              <div className="card-body p-4 sm:p-8">
+                <span className="flex flex-wrap justify-center text-lg sm:text-xl mx-1 text-center">
+                  {t("auth.readyFor")}
                   <span className="text-rotate">
                     <span>
                       <span className="bg-emerald-400 text-emerald-950 px-2 rounded-full mx-1">
@@ -67,13 +73,13 @@ function Login() {
                 </span>
 
                 <form onSubmit={handleSubmit(onSubmit)}>
-                  <div className="card-body flex justify-center w-full gap-4 p-6">
+                  <div className="card-body flex justify-center w-full gap-4 p-4 sm:p-6">
                     <div className="w-full">
                       <input
                         type="email"
                         {...register("email")}
-                        className="input input-bordered w-full"
-                        placeholder="E-mail"
+                        className="input input-bordered w-full text-base"
+                        placeholder={t("auth.email")}
                       />
                       <p className="text-sm text-error mt-1">
                         {errors.email?.message}
@@ -84,27 +90,27 @@ function Login() {
                       <input
                         type="password"
                         {...register("password")}
-                        className="input input-bordered w-full"
-                        placeholder="Password"
+                        className="input input-bordered w-full text-base"
+                        placeholder={t("auth.password")}
                       />
                       <p className="text-sm text-error mt-1">
                         {errors.password?.message}
                       </p>
                     </div>
 
-                    <button className="btn btn-primary text-xl w-full">
-                      Login
+                    <button className="btn btn-primary text-lg w-full">
+                      {t("auth.login")}
                     </button>
                     <div className="divider my-0"></div>
 
                     <button
-                      className="btn btn-secondary text-lg text-white w-full"
+                      className="btn btn-secondary text-base sm:text-lg text-white w-full"
                       type="button"
                       onClick={() =>
                         document.getElementById("createaccount")?.showModal()
                       }
                     >
-                      Create new account
+                      {t("auth.createAccount")}
                     </button>
                   </div>
                 </form>
@@ -115,8 +121,8 @@ function Login() {
       </div>
 
       {/* Modal register */}
-      <dialog id="createaccount" className="modal">
-        <div className="modal-box relative">
+      <dialog id="createaccount" className="modal px-4">
+        <div className="modal-box relative w-full max-w-md">
           <form method="dialog">
             <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">
               ✕

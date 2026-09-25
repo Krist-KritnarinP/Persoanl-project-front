@@ -1,8 +1,10 @@
 import React, { useState } from "react";
 import useTripStore from "@/stores/tripStore";
+import { useLang } from "@/i18n";
 
 function UserTrip({ onClose }) {
   const { createTrip, loading } = useTripStore();
+  const { t } = useLang();
 
   const [formData, setFormData] = useState({
     tripName: "",
@@ -24,11 +26,11 @@ function UserTrip({ onClose }) {
     setErrorMessage("");
 
     if (!formData.tripName.trim()) {
-      setErrorMessage("กรุณากรอกชื่อทริป");
+      setErrorMessage(t("tripForm.needName"));
       return;
     }
     if (formData.startDate && formData.endDate && formData.endDate < formData.startDate) {
-      setErrorMessage("วันสิ้นสุดต้องไม่น้อยกว่าวันเริ่มต้น");
+      setErrorMessage(t("tripForm.badDates"));
       return;
     }
 
@@ -58,7 +60,7 @@ function UserTrip({ onClose }) {
           onClose();
         }
       } else {
-        setErrorMessage("เกิดข้อผิดพลาด ไม่สามารถสร้างทริปได้");
+        setErrorMessage(t("tripForm.failCreate"));
       }
     } catch (err) {
       console.error("Submit Create Trip Error:", err);
@@ -66,17 +68,17 @@ function UserTrip({ onClose }) {
       const msg =
         err?.response?.data?.message ||
         err?.message ||
-        "สร้างทริปไม่สำเร็จ: เกิดข้อผิดพลาด";
+        t("tripForm.failCreate");
       setErrorMessage(msg);
     }
   };
 
   return (
     <div className="w-full">
-      <h3 className="font-bold text-lg mb-4 text-primary">สร้างทริปใหม่</h3>
+      <h3 className="font-bold text-xl mb-4 text-primary">{t("tripForm.title")}</h3>
 
       {errorMessage && (
-        <div className="alert alert-error text-xs mb-4 p-2 rounded-lg text-white">
+        <div className="alert alert-error text-sm mb-4 p-3 rounded-lg text-white">
           <span>{errorMessage}</span>
         </div>
       )}
@@ -84,71 +86,71 @@ function UserTrip({ onClose }) {
       <form onSubmit={handleSubmit} className="space-y-4">
         <div className="form-control">
           <label className="label">
-            <span className="label-text text-xs font-semibold">ชื่อทริป *</span>
+            <span className="label-text text-sm font-semibold">{t("tripForm.name")}</span>
           </label>
           <input
             type="text"
             name="tripName"
             value={formData.tripName}
             onChange={handleChange}
-            placeholder="เช่น ทริปเที่ยวเชียงใหม่ 3 วัน 2 คืน"
-            className="input input-bordered input-sm w-full rounded-xl"
+            placeholder={t("tripForm.namePh")}
+            className="input input-bordered w-full rounded-xl text-base"
             required
           />
         </div>
 
         <div className="form-control">
           <label className="label">
-            <span className="label-text text-xs font-semibold">จุดหมายปลายทาง</span>
+            <span className="label-text text-sm font-semibold">{t("tripForm.dest")}</span>
           </label>
           <input
             type="text"
             name="destination"
             value={formData.destination}
             onChange={handleChange}
-            placeholder="เช่น เชียงใหม่, ญี่ปุ่น"
-            className="input input-bordered input-sm w-full rounded-xl"
+            placeholder={t("tripForm.destPh")}
+            className="input input-bordered w-full rounded-xl text-base"
           />
         </div>
 
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div className="form-control">
             <label className="label">
-              <span className="label-text text-xs font-semibold">วันเริ่มต้น</span>
+              <span className="label-text text-sm font-semibold">{t("tripForm.start")}</span>
             </label>
             <input
               type="date"
               name="startDate"
               value={formData.startDate}
               onChange={handleChange}
-              className="input input-bordered input-sm w-full rounded-xl"
+              className="input input-bordered w-full rounded-xl text-base"
             />
           </div>
 
           <div className="form-control">
             <label className="label">
-              <span className="label-text text-xs font-semibold">วันสิ้นสุด</span>
+              <span className="label-text text-sm font-semibold">{t("tripForm.end")}</span>
             </label>
             <input
               type="date"
               name="endDate"
               value={formData.endDate}
               onChange={handleChange}
-              className="input input-bordered input-sm w-full rounded-xl"
+              className="input input-bordered w-full rounded-xl text-base"
             />
           </div>
         </div>
 
         <div className="form-control">
           <label className="label">
-            <span className="label-text text-xs font-semibold">รายละเอียดเพิ่มเติม</span>
+            <span className="label-text text-sm font-semibold">{t("tripForm.desc")}</span>
           </label>
           <textarea
             name="tripDescription"
             value={formData.tripDescription}
             onChange={handleChange}
-            placeholder="คำอธิบาย หรือบันทึกเพิ่มเติมเกี่ยวกับทริป..."
-            className="textarea textarea-bordered textarea-sm w-full rounded-xl h-20 resize-none"
+            placeholder={t("tripForm.descPh")}
+            className="textarea textarea-bordered w-full rounded-xl h-20 resize-none text-base"
           />
         </div>
 
@@ -156,16 +158,16 @@ function UserTrip({ onClose }) {
           <button
             type="button"
             onClick={onClose}
-            className="btn btn-sm btn-ghost rounded-full text-xs"
+            className="btn btn-ghost rounded-full"
           >
-            ยกเลิก
+            {t("common.cancel")}
           </button>
           <button
             type="submit"
             disabled={loading}
-            className="btn btn-sm btn-primary rounded-full text-xs px-6"
+            className="btn btn-primary rounded-full px-6"
           >
-            {loading ? "กำลังบันทึก..." : "สร้างทริป"}
+            {loading ? t("tripForm.saving") : t("tripForm.create")}
           </button>
         </div>
       </form>

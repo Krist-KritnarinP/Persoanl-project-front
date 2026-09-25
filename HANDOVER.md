@@ -1,7 +1,7 @@
 # HANDOVER — AI LHOUNG Travel Planner
 
 เอกสารส่งมอบงานสำหรับ dev คนต่อไป / คน deploy / คนสอบ
-อัปเดตล่าสุด: 2026-09-25 (รอบแก้ใหญ่: ย้าย DB, ซ่อม AI, อุดช่องโหว่ auth)
+อัปเดตล่าสุด: 2026-09-25 (รอบ 2: ซ่อม AI timeout, ประวัติ AI + ลบได้, i18n 4 ภาษา, typography, overview, responsive)
 
 ## 1. Repo Structure (2 repos แยกกัน)
 
@@ -88,8 +88,9 @@ npm run build  # ✅ ผ่านแล้ว (1.8s) → serve dist/
 | POST | `/api/trips/:tripId/days` | Y | Day 1 ต้องมี dayDate, Day ถัดไป auto +1 วัน |
 | PUT/DELETE | `/api/days/:dayId` | Y | mount ใต้ `/api` (แก้ path ชนกันแล้ว) |
 | POST/PUT/DELETE | `/api/activities[/:activityId]` | Y | มีเช็ก ownership ถึง trip |
-| POST | `/api/weather/predict-weather` | Y | รับ `tripId?` ด้วย → บันทึกประวัติ, retry 429/503 อัตโนมัติ → `{prediction, model, messageId}` |
-| GET | `/api/weather/history/:tripId` | Y | (ใหม่) ประวัติคำตอบ AI ของทริป |
+| POST | `/api/weather/predict-weather` | Y | รับ `tripId?` ด้วย → บันทึกประวัติ, retry 429/503 อัตโนมัติ, ตอบช้า ~20s → `{prediction, model, messageId}` |
+| GET | `/api/weather/history/:tripId` | Y | (ใหม่) ประวัติคำตอบ AI ของทริป (มี `createdAt` = วันที่กด) |
+| DELETE | `/api/weather/history/:messageId` | Y | (ใหม่) ลบประวัติ 1 รายการ (เช็ก ownership) |
 
 Auth: `Authorization: Bearer <token>` (จาก `localStorage.authState.state.token`), token หมดอายุ → 401 `token expired`, หน้าบ้าน auto-redirect หน้า login
 
@@ -105,12 +106,24 @@ Auth: `Authorization: Bearer <token>` (จาก `localStorage.authState.state.t
 
 **Docs/config:** `.env.example` 2 ฝั่ง, `.gitignore` กัน `.env*`/`*.bak`, `HANDOVER.md` ฉบับนี้
 
+## 5.1 งานรอบ 2 (2026-09-25 บ่าย)
+
+**AI timeout:** สาเหตุ `timeout of 15000ms` = axios default 15s แต่ Gemini ตอบ ~19s → เส้น predict ขอ timeout 120s โดยเฉพาะ + ข้อความแยกกรณี timeout ("AI ตอบช้าเกินกำหนด กรุณากดใหม่อีกครั้ง")
+
+**ประวัติ AI:** ใช้ตาราง `ai_messages` (มีแล้วรอบก่อน) + เพิ่ม `DELETE /history/:messageId` (เช็ก ownership, เทสแล้ว: ลบผ่าน, ลบซ้ำได้ 404) — หน้าบ้าน `GeminiWeatherCard` โชว์ประวัตพร้อมวันเวลาที่กด + ปุ่มลบ
+
+**i18n 4 ภาษา:** `src/i18n/index.jsx` (ไทย/อังกฤษ/จีน/เกาหลี, ~100 keys, fallback ไทย) + `LanguageSwitcher` ใน navbar ทุกหน้า + วันที่ตาม locale — จำไว้ใน `localStorage.lang`
+
+**Typography:** คง theme liquid-glass เดิม, base 16px + ฟอนต์ Noto Sans Thai (+fallback จีน/เกาหลี), ลบ class ผิด (`text-s`, `btn-s`, `text-[10px]`) — ข้อความจิ๋วอัปเป็น `text-xs/sm/base` หมด
+
+**Overview:** แถบสถิติใน `/trips/:id` (จำนวนวัน/กิจกรรม/งบรวม/ช่วงวันที่) + timeline เดิม — Dashboard มีสถิติอยู่แล้ว
+
+**Responsive:** navbar เป็น `rounded-3xl` บนมือถือ, โลโก้/อีเมลย่อ, search ซ่อน < lg, stats 2 คอลัมน์บนมือถือ, คอลัมน์ทริปเรียง Plan → Timeline → Weather บนจอเล็ก, modal เต็มจอบนมือถือ (`npm run build` ผ่าน)
+
 ## 6. TODO ที่เหลือ (ยังไม่ทำ)
-- [ ] i18n 4 ภาษา (ไทย/อังกฤษ/จีน/เกาหลี) + Language Switcher
-- [ ] ยกเครื่อง typography (ตัวอักษรเล็ก) + responsive mobile/tablet เต็มรูปแบบ
-- [ ] Trip Overview (สรุปวัน/กิจกรรม/งบ) ในหน้าแผนรายวัน
-- [ ] ไม่มี test อัตโนมัติ / ไม่มี docker — มีแค่เทส manual (register→login→trips→weather ผ่านหมด 2026-09-25)
+- [ ] ไม่มี test อัตโนมัติ / ไม่มี docker — มีแค่เทส manual (รอบ 2: predict→history→delete ผ่าน 2026-09-25)
 - [ ] JS bundle 518KB (เตือน code-split) — ยังไม่แตก chunk
+- [ ] ฟีเจอร์ `AI สร้างทริป` ยังเป็นปุ่ม disabled (รอ backend)
 
 ## 7. Deploy Checklist
 - [ ] ตั้ง env หลังบ้าน: `DATABASE_URL, DIRECT_URL, JWT_SECRET, GEMINI_API_KEY, GEMINI_MODEL, FRONTEND_URL, PORT`
