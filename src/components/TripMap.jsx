@@ -1,0 +1,210 @@
+import React, { useEffect, useMemo, useState } from "react";
+import { Link } from "react-router-dom";
+import { MapContainer, TileLayer, Marker, Popup, Polyline, LayersControl, useMap } from "react-leaflet";
+import L from "leaflet";
+import "leaflet/dist/leaflet.css";
+import { FiMaximize2, FiX, FiNavigation, FiMapPin } from "react-icons/fi";
+import { useLang } from "@/i18n";
+import { gmapsSearchUrl } from "@/utils/gmaps";
+
+export const TYPE_COLORS = {
+  ATTRACTION: "#8b5cf6",
+  RESTAURANT: "#f59e0b",
+  ACCOMMODATION: "#3b82f6",
+  TRANSPORT: "#0ea5e9",
+};
+
+function numberedIcon(n, type, dimmed = false) {
+  const color = TYPE_COLORS[type] || "#10b981";
+  return L.divIcon({
+    className: "trip-pin",
+    html: `<div style="background:${color};color:#fff;width:28px;height:28px;border-radius:9999px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:13px;border:2px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,.35);${dimmed ? "opacity:.35;filter:grayscale(1);" : ""}">${n}</div>`,
+    iconSize: [28, 28],
+    iconAnchor: [14, 14],
+    popupAnchor: [0, -14],
+  });
+}
+
+function FitBounds({ points }) {
+  const map = useMap();
+  const key = JSON.stringify((points || []).map((p) => [p.lat, p.lng]));
+  useEffect(() => {
+    if (!points || points.length === 0) return;
+    if (points.length === 1) {
+      map.setView([points[0].lat, points[0].lng], 13);
+      return;
+    }
+    map.fitBounds(
+      points.map((p) => [p.lat, p.lng]),
+      { padding: [32, 32] }
+    );
+  }, [map, key]);
+  return null;
+}
+
+export function MapBody({ points, typeLabel, height, dimmedIds, route }) {
+  const line = (route || points).map((p) => [p.lat, p.lng]);
+  return (
+    <MapContainer
+      center={points.length > 0 ? [points[0].lat, points[0].lng] : [13.7563, 100.5018]}
+      zoom={points.length > 0 ? 11 : 5}
+      style={{ height, width: "100%", borderRadius: "1rem", zIndex: 0 }}
+      scrollWheelZoom
+    >
+      <LayersControl position="topright">
+        <LayersControl.BaseLayer checked name="2D · OpenStreetMap">
+          <TileLayer
+            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+          />
+        </LayersControl.BaseLayer>
+        <LayersControl.BaseLayer name="Satellite · Esri">
+          <TileLayer
+            attribution="Imagery &copy; Esri, Maxar, Earthstar Geographics"
+            url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
+          />
+        </LayersControl.BaseLayer>
+      </LayersControl>
+      <FitBounds points={points} />
+      {line.length > 1 && <Polyline positions={line} pathOptions={{ weight: 3, opacity: 0.7 }} />}
+      {points.map((p, i) => (
+        <Marker
+          key={p.id ?? `${p.lat}-${p.lng}-${i}`}
+          position={[p.lat, p.lng]}
+          icon={numberedIcon(i + 1, p.activityType, dimmedIds?.has(p.id))}
+        >
+          <Popup>
+            <div style={{ minWidth: 180 }}>
+              <b>
+                {i + 1}. {p.locationName}
+              </b>
+              <div style={{ fontSize: 12, opacity: 0.75 }}>
+                {typeLabel(p.activityType)}
+                {p.dayCount != null ? ` · Day ${p.dayCount}` : ""}
+              </div>
+              {p.description && (
+                <div style={{ fontSize: 12, marginTop: 4 }} className="line-clamp-3">
+                  {p.description}
+                </div>
+              )}
+              <a
+                href={gmapsSearchUrl(`${p.lat},${p.lng} (${p.locationName})`)}
+                target="_blank"
+                rel="noreferrer"
+                style={{ display: "inline-block", marginTop: 8, fontSize: 12, fontWeight: 700, color: "#2563eb" }}
+              >
+                Open in Google Maps →
+              </a>
+            </div>
+          </Popup>
+        </Marker>
+      ))}
+    </MapContainer>
+  );
+}
+
+// การ์ดแผนที่กล่องเล็ก (เช่น ใต้สภาพอากาศ) — ปุ่มขยายลิงก์ไปหน้าแผนที่เต็มแทน modal
+export default function TripMap({
+  points = [],
+  title,
+  subtitle,
+  loading = false,
+  height = 320,
+  compact = false,
+  expandHref = null,
+}) {
+  const { t } = useLang();
+  const [full, setFull] = useState(false);
+
+  const typeLabel = (type) =>
+    ({ ATTRACTION: t("act.attr"), RESTAURANT: t("act.rest"), ACCOMMODATION: t("act.accom"), TRANSPORT: t("act.transp") }[type] ||
+      type ||
+      "-");
+
+  const pinned = useMemo(() => (points || []).filter((p) => p.lat != null && p.lng != null), [points]);
+
+  const expandBtnClass = "btn btn-sm btn-ghost glass rounded-full gap-1 shrink-0";
+
+  return (
+    <section className="glass glass-card p-4 md:p-5 rounded-3xl space-y-3">
+      <div className="flex items-start justify-between gap-2">
+        <div className="min-w-0">
+          <h3 className="text-lg md:text-xl font-bold flex items-center gap-2">
+            <FiMapPin className="text-primary shrink-0" />
+            <span className="truncate">{title || t("map.title")}</span>
+          </h3>
+          {subtitle && <p className="text-sm text-base-content/60 mt-0.5 truncate">{subtitle}</p>}
+        </div>
+        {pinned.length > 0 &&
+          (expandHref ? (
+            <Link to={expandHref} className={expandBtnClass}>
+              <FiMaximize2 /> {t("map.full")}
+            </Link>
+          ) : (
+            <button onClick={() => setFull(true)} className={expandBtnClass}>
+              <FiMaximize2 /> {t("map.full")}
+            </button>
+          ))}
+      </div>
+
+      {pinned.length === 0 && loading ? (
+        <div className="flex items-center justify-center gap-2 py-10 text-sm text-base-content/60">
+          <span className="loading loading-spinner loading-sm text-primary"></span>
+          {t("map.locating")}
+        </div>
+      ) : pinned.length === 0 ? (
+        <div className="text-center py-8 text-sm text-base-content/60 glass rounded-2xl">
+          <FiNavigation className="mx-auto text-2xl mb-2 opacity-50" />
+          {t("map.empty")}
+        </div>
+      ) : (
+        <>
+          <MapBody points={pinned} typeLabel={typeLabel} height={height} />
+          {loading && (
+            <p className="text-xs text-base-content/50 flex items-center gap-1.5">
+              <span className="loading loading-spinner loading-xs text-primary"></span>
+              {t("map.locating")} ({pinned.length})
+            </p>
+          )}
+          {!compact && (
+            <ol className="grid sm:grid-cols-2 gap-1.5 text-sm max-h-36 overflow-y-auto custom-scrollbar pr-1">
+              {pinned.map((p, i) => (
+                <li key={p.id ?? i} className="flex items-center gap-2 truncate bg-white/5 rounded-xl px-2.5 py-1.5">
+                  <span
+                    className="w-5 h-5 rounded-full text-[11px] font-extrabold text-white flex items-center justify-center shrink-0"
+                    style={{ background: TYPE_COLORS[p.activityType] || "#10b981" }}
+                  >
+                    {i + 1}
+                  </span>
+                  <span className="truncate">{p.locationName}</span>
+                </li>
+              ))}
+            </ol>
+          )}
+          <p className="text-[11px] text-base-content/40">
+            © OpenStreetMap contributors · Esri World Imagery · {t("map.note")}
+          </p>
+        </>
+      )}
+
+      {full && !expandHref && pinned.length > 0 && (
+        <div className="fixed inset-0 z-[1000] bg-black/60 backdrop-blur-sm p-3 md:p-6" onClick={() => setFull(false)}>
+          <div
+            className="bg-base-100 rounded-3xl p-3 md:p-4 h-full flex flex-col gap-2 max-w-6xl mx-auto"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between gap-2 px-1">
+              <b className="truncate">{title || t("map.title")}</b>
+              <button onClick={() => setFull(false)} className="btn btn-sm btn-circle btn-ghost">
+                <FiX />
+              </button>
+            </div>
+            <div className="flex-1 min-h-0">
+              <MapBody points={pinned} typeLabel={typeLabel} height="100%" />
+            </div>
+          </div>
+        </div>
+      )}
+    </section>
+  );
+}

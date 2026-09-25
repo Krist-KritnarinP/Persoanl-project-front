@@ -9,6 +9,7 @@ import {
 import Dashboard from "@/pages/Dashboard";
 import Login from "@/pages/Login";
 import Trips from "@/pages/TripsActivity";
+import TripMapPage from "@/pages/TripMapPage";
 import ShareTripView from "@/pages/ShareTripView";
 import Userprofile from "@/pages/userprofile";
 import useUserStore from "@/stores/userStore";
@@ -41,6 +42,7 @@ const router = createBrowserRouter([
       { path: "/userprofile", element: <Userprofile /> },
       { path: "/trips", element: <Trips /> },
       { path: "/trips/:tripId", element: <Trips /> },
+      { path: "/trips/:tripId/map", element: <TripMapPage /> },
     ],
   },
   { path: "*", element: <Navigate to="/" replace /> },

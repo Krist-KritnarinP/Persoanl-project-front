@@ -1,7 +1,7 @@
 # HANDOVER — AI LHOUNG Travel Planner
 
 เอกสารส่งมอบงานสำหรับ dev คนต่อไป / คน deploy / คนสอบ
-อัปเดตล่าสุด: 2026-09-25 (รอบ 7: ธงเดี่ยว, modal พื้นทึบอ่านง่าย)
+อัปเดตล่าสุด: 2026-09-25 (รอบ 9: แผนที่ + optimize geocode เร็ว)
 
 ## 1. Repo Structure (2 repos แยกกัน)
 
@@ -10,9 +10,10 @@ Personal project  AI/
 ├── PersonalProject_Front/  → https://github.com/Krist-KritnarinP/Persoanl-project-front.git (branch main)
 │   ├── src/
 │   │   ├── api/mainApi.js      # axios baseURL จาก VITE_API_URL + JWT interceptor + 401 auto-logout
-│   │   ├── routes/AppRouter.jsx # / , /dashboard, /userprofile, /trips, /trips/:tripId
-│   │   ├── pages/ Login, Dashboard, TripsActivity, Userprofile (ทำจริงแล้ว ไม่ใช่ placeholder)
-│   │   ├── components/ UserTrip, DayModal, ActivityModal, ActivityItem, TripInfoCard, GeminiWeatherCard
+│   │   ├── routes/AppRouter.jsx # / , /dashboard, /userprofile, /trips, /trips/:tripId, /trips/:tripId/map (ใหม่)
+│   │   ├── pages/ Login, Dashboard, TripsActivity, TripMapPage (ใหม่), ShareTripView, Userprofile
+│   │   ├── components/ UserTrip, DayModal, ActivityModal(+ช่อง lat/lng+ปุ่มค้นหาพิกัด), ActivityItem, TripInfoCard, GeminiWeatherCard, TripMap (ใหม่), TripNavCard (ใหม่)
+│   │   ├── utils/ geocode.js (ใหม่: Photon+Nominatim+cache+save-back), gmaps.js (ใหม่: ลิงก์ Google Maps)
 │   │   ├── stores/ userStore(authState+register), tripStore, tripActivityStore
 │   │   └── validations/schema.js
 │   ├── PROJECT_CONCEPT.md / HANDOVER.md
@@ -28,8 +29,8 @@ Personal project  AI/
     │   ├── services/ user, trips, days, activities, ai(ใหม่)
     │   ├── middlewares/ auth.middleware(Bearer+expired), errorHandler, pathNotfound
     │   └── validations/schema.js # register/login/weather(+tripId)
-    ├── src/generated/prisma/  # ⚠️ Prisma client ถูก commit อยู่ใน repo (ตั้งใจ — deploy ไม่ต้อง generate)
-    ├── prisma/schema.prisma   # provider=postgresql: User, Trip, Day, Activity, AiMessage(ใหม่)
+    ├── src/generated/prisma/  # ⚠️ Prisma client ถูก commit อยู่ใน repo (ตั้งใจ — deploy ไม่ต้อง generate; แก้ schema แล้วต้อง generate ใหม่ก่อน commit)
+    ├── prisma/schema.prisma   # provider=postgresql: User, Trip, Day, Activity(+latitude/longitude ใหม่), AiMessage
     └── .env.example
 ```
 
@@ -87,7 +88,7 @@ npm run build  # ✅ ผ่านแล้ว (1.8s) → serve dist/
 | GET/PUT/DELETE | `/api/trips/:tripId` | Y | GET พร้อม days+activities, DELETE cascade |
 | POST | `/api/trips/:tripId/days` | Y | Day 1 ต้องมี dayDate, Day ถัดไป auto +1 วัน |
 | PUT/DELETE | `/api/days/:dayId` | Y | mount ใต้ `/api` (แก้ path ชนกันแล้ว) |
-| POST/PUT/DELETE | `/api/activities[/:activityId]` | Y | มีเช็ก ownership ถึง trip |
+| POST/PUT/DELETE | `/api/activities[/:activityId]` | Y | มีเช็ก ownership ถึง trip; POST/PUT รับ `latitude/longitude` (optional, เก็บพิกัดหมุดแผนที่) |
 | POST | `/api/weather/predict-weather` | Y | รับ `tripId?` → บันทึกประวัติ, retry เฉพาะ 500/502/503 (**ห้าม retry 429** เดี๋ยวเผาโควต้า), โควต้าหมด → 429 ข้อความไทย → `{prediction, model, messageId}` |
 | GET | `/api/weather/history/:tripId` | Y | (ใหม่) ประวัติคำตอบ AI ของทริป (มี `createdAt` = วันที่กด) |
 | DELETE | `/api/weather/history/:messageId` | Y | (ใหม่) ลบประวัติ 1 รายการ (เช็ก ownership) |
@@ -168,6 +169,28 @@ Auth: `Authorization: Bearer <token>` (จาก `localStorage.authState.state.t
 **ธงเดี่ยว:** เอาธงหน้ากล่องออก เหลือธงแค่ในรายการตัวเลือก (เดิมโชว์ 2 ธงซ้อน)
 
 **Modal อ่านง่าย:** `DetailModals` เปลี่ยนจากพื้นกระจก (ตัวหนังสือกลืนพื้นหลัง) เป็นพื้นขาวทึบขอบเท่าสไตล์เดียวกับ ActivityModal + แถวกิจกรรมพื้น `slate-50`
+
+## 5.5 งานรอบ 8 (2026-09-25 แผนที่)
+
+**ของฟรีที่ใช้:** Leaflet + OpenStreetMap (2D) + Esri World Imagery (satellite, สลับชั้นมุมขวาบน) — ไม่ต้องใช้ API key ทั้งหมด (`npm i leaflet react-leaflet qrcode.react`)
+
+**Backend:** `Activity` เพิ่ม `latitude/longitude` (nullable) → `npx prisma db push` แล้ว → `activities.service` รับ/แก้พิกัดได้ → shared-trip API ส่งพิกัดออกด้วย
+
+**Frontend:**
+- `TripMap` (กล่องเล็กใต้สภาพอากาศ, `height=220 compact`) หมุดเลขสีตามประเภท + เส้นเส้นทาง เปลี่ยนตามแท็บ Day ปุ่มขยายลิงก์ไปหน้าเต็ม (หน้า share ไม่มีลิงก์ ใช้ modal เดิม)
+- `TripNavCard` (ใต้แผนที่เล็ก) QR เส้นทางทั้งวัน + ปุ่มเปิด Google Maps + ปุ่ม "เลือกจุดเอง" ไปหน้าแผนที่
+- หน้าเต็ม `/trips/:tripId/map` (`TripMapPage`, ต้อง login): แท็บวัน + ติ๊กเลือกจุดด้วย +/✓ (default ติ๊กทุกจุด = เส้นทางทั้งวัน) จุดที่ไม่เลือกจางลง QR/ปุ่มนำทางอัปเดตตามจุดที่เลือก สูงสุด 10 จุด (โควตา URL Google Maps)
+- `ActivityModal` มีช่อง lat/lng + ปุ่มค้นหาพิกัดจากชื่อ; i18n เพิ่ม `map.*` 4 ภาษา; `index.css` มี fix z-index Leaflet
+
+## 5.6 งานรอบ 9 (2026-09-25 optimize แผนที่ช้า)
+
+**สาเหตุช้า:** เดิม geocode ผ่าน Nominatim ตัวเดียวแบบต่อคิว 1.1 วิ/จุด ทริป 27 จุด ≈ 30 วิ + รอครบทุกจุดค่อยวาดหมุด
+
+**แก้ 4 ชั้น (`src/utils/geocode.js`):**
+1. DB ก่อนเสมอ + **save-back**: หน้าของเจ้าของทริป (`persistCoords`) ยิง `PUT /activities/:id` เก็บพิกัดที่หาได้แบบ fire-and-forget → เปิดครั้งต่อไปแทบจะทันที (หน้า share ไม่เซฟ เพราะ read-only)
+2. **dedupe** ชื่อซ้ำ (เช่น โรงแรมเดิมนอน 2 คืน) เหลือ 1 request
+3. **Photon (komoot) เป็นตัวหลัก ยิงขนาน 5 ตัว** (~1 วิ/จุด → 15 ชื่อจบใน ~3-4 วิ) + Nominatim เหลือเป็น fallback เฉพาะจุดที่ Photon หาไม่เจอ
+4. **progressive render**: `onProgress(snapshot)` วาดหมุดทีละจุดที่ได้ ไม่รอครบ + การ์ดแผนที่โชว์หมุดทันทีที่มี (เหลือ spinner เล็ก "กำลังค้นหา (n)")
 
 ## 6. TODO ที่เหลือ (ยังไม่ทำ)
 - [ ] ไม่มี test อัตโนมัติ / ไม่มี docker — มีแค่เทส manual (รอบ 2: predict→history→delete ผ่าน 2026-09-25)

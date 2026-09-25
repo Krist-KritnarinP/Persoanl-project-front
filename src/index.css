@@ -774,3 +774,27 @@ body {
     transition: none !important;
   }
 }
+
+/* =========================================================
+   LEAFLET MAP FIX — กัน glass theme + z-index ทับแผนที่
+   ========================================================= */
+.leaflet-container {
+  font-family: inherit;
+  background: #dde5dd;
+}
+.leaflet-container .leaflet-control-zoom a {
+  color: #17201b;
+}
+.leaflet-pane,
+.leaflet-control,
+.leaflet-top,
+.leaflet-bottom {
+  z-index: 400 !important;
+}
+.glass .leaflet-container {
+  overflow: hidden;
+}
+.trip-pin {
+  background: transparent;
+  border: none;
+}

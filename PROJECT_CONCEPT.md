@@ -42,6 +42,7 @@
 - CRUD Activity: `activityType, locationName, activityDate/Time, price, status` → `/api/activities`
 - `ActivityType = ACCOMMODATION | TRANSPORT | RESTAURANT | ATTRACTION`
 - UI: `TripsActivity.jsx + DayModal.jsx + ActivityModal.jsx + ActivityItem.jsx + TripInfoCard.jsx`
+- แผนที่: `TripMap.jsx + TripNavCard.jsx + TripMapPage.jsx (/trips/:tripId/map)` — Leaflet + OSM/Esri (ฟรี, ไม่ใช้ key), geocode ผ่าน Photon+Nominatim (`utils/geocode.js`), QR/ลิงก์ Google Maps (`utils/gmaps.js`), พิกัดเก็บใน `Activity.latitude/longitude`
 
 ### 3.4 AI Weather
 - Flow: Front `GeminiWeatherCard.jsx` → `POST /api/weather/predict-weather` → `weather.controller.js` → Gemini `gemini-3.6-flash`
@@ -51,7 +52,7 @@
 ## 4. Tech Stack
 
 **Frontend (`PersonalProject_Front/`):**
-React 19 + Vite, Tailwind v4 + DaisyUI, Zustand 5, React Router 7/8, Axios, React Hook Form + Zod, lucide / react-icons, react-toastify
+React 19 + Vite, Tailwind v4 + DaisyUI, Zustand 5, React Router 7/8, Axios, React Hook Form + Zod, lucide / react-icons, react-toastify, Leaflet + react-leaflet + qrcode.react (แผนที่)
 
 **Backend (`PersonalProject_API/`):**
 Express 5, Prisma 7 + MySQL/MariaDB, JWT, bcrypt, Zod, @google/genai, CORS, dotenv
@@ -83,7 +84,7 @@ Backend layer: `routes → middlewares/authCheck → controllers → services �
 ## 7. Non-Goals / Phase 2
 - AI auto-generate trip (UI มีช่อง input แล้ว แต่ยังไม่ต่อ API จริง)
 - คำนวณงบรวมอัตโนมัติ (ตอนนี้ขึ้น `จ่ายเงินเพื่อปลด`)
-- แชร์ทริป / multi-user / upload รูป / map / export PDF
+- แชร์ทริป / multi-user / upload รูป / export PDF
 - Payment / Premium
 
 ## 8. Success Criteria

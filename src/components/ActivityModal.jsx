@@ -1,6 +1,8 @@
 import React, { useState } from "react";
-import { FiHome, FiTruck, FiCoffee, FiNavigation, FiChevronDown, FiCheck } from "react-icons/fi";
+import { FiHome, FiTruck, FiCoffee, FiNavigation, FiChevronDown, FiCheck, FiCrosshair } from "react-icons/fi";
 import { useLang } from "@/i18n";
+import { geocodePlace } from "@/utils/geocode";
+import { toast } from "react-toastify";
 
 const TYPE_OPTIONS = [
   { value: "ATTRACTION", icon: FiNavigation, color: "badge-accent" },
@@ -19,7 +21,24 @@ export default function ActivityModal({
 }) {
   const { t } = useLang();
   const [typeOpen, setTypeOpen] = useState(false);
+  const [geoLoading, setGeoLoading] = useState(false);
   if (!isOpen) return null;
+
+  const handleFindCoords = async () => {
+    if (!activityFormData.locationName?.trim()) return;
+    setGeoLoading(true);
+    try {
+      const hit = await geocodePlace(activityFormData.locationName);
+      if (hit) {
+        setActivityFormData({ ...activityFormData, latitude: hit.lat.toFixed(6), longitude: hit.lng.toFixed(6) });
+        toast.success(t("map.coordsFound"));
+      } else {
+        toast.warn(t("map.coordsNotFound"));
+      }
+    } finally {
+      setGeoLoading(false);
+    }
+  };
 
   const TYPE_LABELS = {
     ATTRACTION: t("act.attr"),
@@ -151,6 +170,42 @@ export default function ActivityModal({
                 setActivityFormData({ ...activityFormData, description: e.target.value })
               }
             />
+          </div>
+
+          {/* พิกัดแผนที่ (optional — เว้นว่างได้ ระบบจะค้นหาจากชื่อให้เอง) */}
+          <div className="form-control">
+            <div className="flex items-center justify-between gap-2">
+              <label className="label py-1">
+                <span className="label-text font-semibold text-sm text-slate-700">📍 Map (optional)</span>
+              </label>
+              <button
+                type="button"
+                onClick={handleFindCoords}
+                disabled={geoLoading || !activityFormData.locationName?.trim()}
+                className="btn btn-ghost btn-xs rounded-full gap-1 text-primary disabled:opacity-40"
+              >
+                {geoLoading ? <span className="loading loading-spinner loading-xs"></span> : <FiCrosshair />}
+                {t("map.findCoords")}
+              </button>
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <input
+                type="number"
+                step="any"
+                placeholder={t("map.lat")}
+                className="input input-bordered rounded-xl bg-white text-slate-900 border-slate-300 text-base"
+                value={activityFormData.latitude ?? ""}
+                onChange={(e) => setActivityFormData({ ...activityFormData, latitude: e.target.value })}
+              />
+              <input
+                type="number"
+                step="any"
+                placeholder={t("map.lng")}
+                className="input input-bordered rounded-xl bg-white text-slate-900 border-slate-300 text-base"
+                value={activityFormData.longitude ?? ""}
+                onChange={(e) => setActivityFormData({ ...activityFormData, longitude: e.target.value })}
+              />
+            </div>
           </div>
 
           <div className="modal-action pt-2 border-t border-slate-100">

@@ -30,6 +30,9 @@ import ActivityDetailModal, { DayDetailModal } from "@/components/DetailModals";
 import GeminiWeatherCard from "@/components/GeminiWeatherCard";
 import TripInfoCard from "@/components/TripInfoCard";
 import ActivityItem from "@/components/ActivityItem";
+import TripMap from "@/components/TripMap";
+import TripNavCard from "@/components/TripNavCard";
+import { resolveActivityCoords, persistCoords } from "@/utils/geocode";
 
 export default function TripActivity() {
   const { tripId } = useParams();
@@ -137,7 +140,42 @@ export default function TripActivity() {
     price: 0,
     description: "",
     status: "planned",
+    latitude: "",
+    longitude: "",
   });
+
+  // ---- MAP: แปลงชื่อสถานที่/โรงแรม/ร้านอาหาร -> พิกัด (DB ก่อน, ไม่เจอค่อย geocode ฟรี) ----
+  const [geoPoints, setGeoPoints] = useState([]);
+  const [geoLoading, setGeoLoading] = useState(false);
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      const flat = (trip?.days || []).flatMap((d) =>
+        (d.activities || []).map((a) => ({ ...a, dayId: d.id, dayCount: d.dayCount }))
+      );
+      if (flat.length === 0) {
+        setGeoPoints([]);
+        return;
+      }
+      setGeoLoading(true);
+      try {
+        // วาดหมุดทีละจุดตามที่ resolve ได้ (ไม่ต้องรอครบ) + เซฟพิกัดกลับ DB ให้ครั้งต่อไปเร็ว
+        const resolved = await resolveActivityCoords(flat, trip?.destination || "", (snap) => {
+          if (!cancelled) setGeoPoints(snap);
+        });
+        if (!cancelled) {
+          setGeoPoints(resolved);
+          persistCoords(resolved);
+        }
+      } finally {
+        if (!cancelled) setGeoLoading(false);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [trip?.id, trip?.destination, JSON.stringify((trip?.days || []).map((d) => [d.id, (d.activities || []).map((a) => [a.id, a.locationName, a.latitude, a.longitude])]))]);
 
   useEffect(() => {
     if (tripId) fetchTripDetails(tripId);
@@ -161,6 +199,12 @@ export default function TripActivity() {
   const totalBudget = trip?.days?.reduce(
     (s, d) => s + (d.activities?.reduce((a, x) => a + (Number(x.price) || 0), 0) || 0), 0
   ) || 0;
+
+  // ---- MAP: จุดที่แสดงเปลี่ยนตามแท็บ "แผนการเดินทางรายวัน" ----
+  const mapPoints = activeDay ? geoPoints.filter((p) => p.dayId === activeDay.id) : geoPoints;
+  const mapSubtitle = activeDay
+    ? `Day ${activeDay.dayCount}${activeDay.dayDate ? ` · ${formatDate(activeDay.dayDate)}` : ""}`
+    : t("day.overview");
 
   // Helper ดึงข้อความเวลามาแสดงผลโดยตรง (เก็บ wall-time แบบ UTC เพื่อกันเพี้ยน +7)
   const formatZonedTime = (timeString) => {
@@ -240,6 +284,8 @@ export default function TripActivity() {
       price: 0,
       description: "",
       status: "planned",
+      latitude: "",
+      longitude: "",
     });
     setIsActivityModalOpen(true);
   };
@@ -259,6 +305,8 @@ export default function TripActivity() {
       price: act.price || 0,
       description: act.description || "",
       status: act.status || "planned",
+      latitude: act.latitude ?? "",
+      longitude: act.longitude ?? "",
     });
     setIsActivityModalOpen(true);
   };
@@ -278,6 +326,8 @@ export default function TripActivity() {
         ...activityFormData,
         price: Number(activityFormData.price) || 0,
         activityTime: formattedTime,
+        latitude: activityFormData.latitude === "" || activityFormData.latitude == null ? null : Number(activityFormData.latitude),
+        longitude: activityFormData.longitude === "" || activityFormData.longitude == null ? null : Number(activityFormData.longitude),
       };
 
       if (editingActivity) {
@@ -640,8 +690,8 @@ export default function TripActivity() {
           )}
         </div>
 
-        {/* RIGHT COLUMN: Gemini Weather Card */}
-        <div className="order-3 lg:col-span-3 lg:sticky lg:top-4 lg:max-h-[calc(100vh-2rem)] flex flex-col min-w-0">
+        {/* RIGHT COLUMN: สภาพอากาศ + แผนที่เล็ก + นำทาง/QR */}
+        <div className="order-3 lg:col-span-3 lg:sticky lg:top-4 lg:max-h-[calc(100vh-2rem)] lg:overflow-y-auto custom-scrollbar flex flex-col gap-6 min-w-0">
           <GeminiWeatherCard
             tripId={tripId}
             weatherPrediction={weatherPrediction}
@@ -652,6 +702,15 @@ export default function TripActivity() {
             onFetchHistory={fetchWeatherHistory}
             onDeleteHistory={handleDeleteHistory}
           />
+          <TripMap
+            points={mapPoints}
+            subtitle={mapSubtitle}
+            loading={geoLoading}
+            height={220}
+            compact
+            expandHref={`/trips/${tripId}/map`}
+          />
+          <TripNavCard points={mapPoints} label={mapSubtitle} mapHref={`/trips/${tripId}/map`} />
         </div>
       </div>
 
