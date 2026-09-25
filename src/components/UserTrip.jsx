@@ -23,12 +23,24 @@ function UserTrip({ onClose }) {
     e.preventDefault();
     setErrorMessage("");
 
+    if (!formData.tripName.trim()) {
+      setErrorMessage("กรุณากรอกชื่อทริป");
+      return;
+    }
+    if (formData.startDate && formData.endDate && formData.endDate < formData.startDate) {
+      setErrorMessage("วันสิ้นสุดต้องไม่น้อยกว่าวันเริ่มต้น");
+      return;
+    }
+
     try {
       // 1. เรียกใช้งาน createTrip จาก Zustand Store
-      const res = await createTrip(formData);
-
-      // 2. Debug Log เพื่อตรวจสอบโครงสร้าง Response ใน Console
-      console.log("Create Trip API Response:", res);
+      const res = await createTrip({
+        ...formData,
+        tripName: formData.tripName.trim(),
+        destination: formData.destination.trim() || undefined,
+        startDate: formData.startDate || undefined,
+        endDate: formData.endDate || undefined,
+      });
 
       // 3. ตรวจสอบการสร้างสำเร็จ (รองรับทั้ง res.data, res.id, หรือ res.message)
       if (res) {
@@ -162,107 +174,3 @@ function UserTrip({ onClose }) {
 }
 
 export default UserTrip;
-// import { useForm } from "react-hook-form";
-// import { toast } from "react-toastify";
-// import { mainApi } from "@/api/mainApi";
-
-// function CreateTrip() {
-//   const { register, handleSubmit, reset } = useForm({
-//     mode: "onSubmit",
-//     defaultValues: {
-//       tripName: "",
-//       destination: "",
-//       startDate: "",
-//       endDate: "",
-//       tripDescription: "",
-//     }
-//   });
-
-//   const onSubmit = async (data) => {
-//     try {
-//       const resp = await mainApi.post('/trips', data);
-//       toast.success(resp.data?.message || "สร้างทริปสำเร็จ!");
-//       reset();
-//     } catch (err) {
-//       console.log(err, err.response?.data);
-//       toast.error(err.response?.data?.message || err.response?.data?.error || "เกิดข้อผิดพลาดในการสร้างทริป");
-//     }
-//   };
-
-//   return (
-//     <>
-//       <div className="text-3xl text-center opacity-70">
-//         Create New Trip
-//       </div>
-//       <div className="divider opacity-60"></div>
-
-//       <form
-//         onSubmit={handleSubmit(onSubmit)}
-//         className="flex flex-col gap-5 p-4 pt-3"
-//       >
-//         {/* Trip Name */}
-//         <div className="w-full">
-//           <input
-//             type="text"
-//             {...register('tripName')}
-//             placeholder="ชื่อทริป (Trip Name)"
-//             className="input input-bordered w-full"  
-//           />
-//         </div>
-
-//         {/* Destination */}
-//         <div className="w-full">
-//           <input
-//             type="text"
-//             {...register('destination')}
-//             placeholder="จุดหมายปลายทาง (Destination)"
-//             className="input input-bordered w-full"
-//           />
-//         </div>
-
-//         {/* Start Date */}
-//         <div className="w-full">
-//           <label className="label text-xs opacity-70 pb-1">วันเริ่มทริป</label>
-//           <input
-//             type="date"
-//             {...register('startDate')}
-//             className="input input-bordered w-full"
-//           />
-//         </div>
-
-//         {/* End Date */}
-//         <div className="w-full">
-//           <label className="label text-xs opacity-70 pb-1">วันสิ้นสุดทริป</label>
-//           <input
-//             type="date"
-//             {...register('endDate')}
-//             className="input input-bordered w-full"
-//           />
-//         </div>
-
-//         {/* Trip Description */}
-//         <div className="w-full">
-//           <textarea
-//             {...register('tripDescription')}
-//             placeholder="รายละเอียดทริปเพิ่มเติม (Trip Description)"
-//             className="textarea textarea-bordered w-full h-24"
-//           />
-//         </div>
-
-//         <button className="btn btn-primary text-xl text-white" type="submit">
-//           Create Plan
-//         </button>
-//         <button 
-//           className="btn btn-warning text-xl text-white"
-//           type="button" 
-//           onClick={() => reset()}
-//         >
-//           Reset
-//         </button>
-//       </form>
-//     </>
-//   );
-// }
-
-// export default CreateTrip;
-

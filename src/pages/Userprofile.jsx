@@ -1,9 +1,98 @@
-
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { FiArrowLeft, FiUser, FiSave } from "react-icons/fi";
+import { mainApi } from "@/api/mainApi";
+import useUserStore from "@/stores/userStore";
+import { toast } from "react-toastify";
 
 function Userprofile() {
+  const navigate = useNavigate();
+  const user = useUserStore((s) => s.user);
+  const [form, setForm] = useState({ username: "", password: "" });
+  const [loading, setLoading] = useState(false);
+  const [fetching, setFetching] = useState(true);
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const resp = await mainApi.get("/users/me");
+        setForm({ username: resp.data?.username || "", password: "" });
+      } catch {
+        toast.error("ดึงข้อมูลโปรไฟล์ไม่สำเร็จ");
+      } finally {
+        setFetching(false);
+      }
+    })();
+  }, []);
+
+  const onSubmit = async (e) => {
+    e.preventDefault();
+    if (form.username.trim().length < 4) {
+      toast.error("username ต้องมีอย่างน้อย 4 ตัวอักษร");
+      return;
+    }
+    if (form.password && form.password.length < 4) {
+      toast.error("password ต้องมีอย่างน้อย 4 ตัวอักษร");
+      return;
+    }
+    setLoading(true);
+    try {
+      const payload = { username: form.username.trim() };
+      if (form.password) payload.password = form.password;
+      const resp = await mainApi.put("/users/me", payload);
+      toast.success(resp.data?.message || "อัปเดตโปรไฟล์สำเร็จ");
+      setForm((f) => ({ ...f, password: "" }));
+    } catch (err) {
+      toast.error(err?.response?.data?.message || "อัปเดตไม่สำเร็จ");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
-    <div>userprofile</div>
-  )
+    <div className="min-h-screen w-full px-4 md:px-8 py-4 space-y-6 max-w-3xl mx-auto">
+      <button onClick={() => navigate(-1)} className="btn btn-ghost gap-2">
+        <FiArrowLeft /> ย้อนกลับ
+      </button>
+
+      <div className="glass glass-card p-6 rounded-3xl space-y-4">
+        <h1 className="text-2xl font-extrabold flex items-center gap-2">
+          <FiUser className="text-primary" /> โปรไฟล์ของฉัน
+        </h1>
+        <p className="text-sm text-base-content/60">{user?.email || ""}</p>
+
+        {fetching ? (
+          <span className="loading loading-spinner text-primary" />
+        ) : (
+          <form onSubmit={onSubmit} className="space-y-4">
+            <div className="form-control">
+              <label className="label"><span className="label-text text-xs font-semibold">Username</span></label>
+              <input
+                className="input input-bordered w-full"
+                value={form.username}
+                onChange={(e) => setForm((f) => ({ ...f, username: e.target.value }))}
+                minLength={4}
+                required
+              />
+            </div>
+            <div className="form-control">
+              <label className="label"><span className="label-text text-xs font-semibold">รหัสผ่านใหม่ (เว้นว่างถ้าไม่เปลี่ยน)</span></label>
+              <input
+                type="password"
+                className="input input-bordered w-full"
+                value={form.password}
+                onChange={(e) => setForm((f) => ({ ...f, password: e.target.value }))}
+                placeholder="••••••"
+              />
+            </div>
+            <button type="submit" disabled={loading} className="btn btn-primary rounded-full gap-2">
+              <FiSave /> {loading ? "กำลังบันทึก..." : "บันทึก"}
+            </button>
+          </form>
+        )}
+      </div>
+    </div>
+  );
 }
 
-export default Userprofile
+export default Userprofile;

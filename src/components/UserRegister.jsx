@@ -20,11 +20,18 @@ function UserRegister() {
   const onSubmit = async (data) => {
 
        try {
-     const resp = await mainApi.post('/auth/register',data);
-     toast(resp.data.message)
+     const { confirmPassword: _omit, ...payload } = data;
+     const resp = await mainApi.post('/auth/register', payload);
+     toast.success(resp.data.message || "สมัครสมาชิกสำเร็จ! กรุณาเข้าสู่ระบบ");
+     reset();
+     document.getElementById("createaccount")?.close();
    } catch (err) {
-     console.log(err, err.response?.data?.error);
-     toast(err.response?.data?.error)
+     const msg =
+       err.response?.data?.message ||
+       err.response?.data?.error ||
+       Object.values(err.response?.data?.error || {}).flat()[0] ||
+       "สมัครสมาชิกไม่สำเร็จ";
+     toast.error(msg);
    }
 
   }
