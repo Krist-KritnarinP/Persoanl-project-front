@@ -401,8 +401,8 @@ export default function TripActivity() {
 
       {/* 3-COLUMN LAYOUT */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start w-full">
-        {/* LEFT COLUMN: Overview Waterfall Timeline */}
-        <div className="order-2 lg:order-1 lg:col-span-3 glass glass-card p-5 rounded-3xl space-y-4 lg:sticky lg:top-4 lg:max-h-[calc(100vh-2rem)] lg:overflow-y-auto">
+        {/* LEFT COLUMN: Overview Waterfall Timeline (กรอบสูงคงที่ + scroll ทุกจอ) */}
+        <div className="order-2 lg:order-1 lg:col-span-3 glass glass-card p-5 rounded-3xl space-y-4 lg:sticky lg:top-4 max-h-[62vh] md:max-h-[70vh] lg:max-h-[calc(100vh-2rem)] overflow-y-auto custom-scrollbar">
           <h3 className="text-lg font-bold flex items-center gap-2 border-b border-white/20 pb-3">
             <FiCheckCircle className="text-primary" /> {t("day.overview")}
           </h3>
@@ -609,7 +609,7 @@ export default function TripActivity() {
       {/* SHARE MODAL */}
       {shareOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm px-4" onClick={() => setShareOpen(false)}>
-          <div className="glass rounded-3xl border border-white/30 p-5 md:p-6 w-full max-w-md space-y-4" onClick={(e) => e.stopPropagation()}>
+          <div className="glass rounded-3xl border border-white/30 p-5 md:p-6 w-full max-w-md max-h-[85vh] overflow-y-auto custom-scrollbar space-y-4" onClick={(e) => e.stopPropagation()}>
             <h3 className="font-bold text-xl flex items-center gap-2">
               <FiShare2 className="text-primary" /> {t("share.title")}
             </h3>

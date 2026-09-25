@@ -1,7 +1,7 @@
 # HANDOVER — AI LHOUNG Travel Planner
 
 เอกสารส่งมอบงานสำหรับ dev คนต่อไป / คน deploy / คนสอบ
-อัปเดตล่าสุด: 2026-09-25 (รอบ 4: share link, แก้ route order, ลด motion)
+อัปเดตล่าสุด: 2026-09-25 (รอบ 5: ซ่อม scroll timeline, กับดัก .glass vs overflow)
 
 ## 1. Repo Structure (2 repos แยกกัน)
 
@@ -142,6 +142,12 @@ Auth: `Authorization: Bearer <token>` (จาก `localStorage.authState.state.t
 **⚠️ กับดัก route order (เจอตอนทำ share):** `DaysRoute` mount ใต้ `/api` พร้อม `authCheck` ดักทุก request ที่ขึ้นต้น `/api/*` ทำให้ route public โดน 401 หมด — แก้โดย mount `/api/shared` **ก่อน** `/api` (มีคอมเมนต์เตือนใน `app.js` แล้ว)
 
 **Share link (view-only):** DB เพิ่ม `trips.share_token` (unique, nullable) → เจ้าของกดแชร์ได้ token (base64url 43 ตัว) → คนมีลิงก์เปิด `/share/:token` ดูได้โดยไม่ login (ซ่อนปุ่มแก้ไข + ซ่อน weather ประหยัดโควต้า) → ยกเลิกได้ (ลิงก์เดิมใช้ไม่ได้ทันที) — เทสแล้ว: public GET ผ่าน/ไม่รั่ว userId, token มั่วได้ 404, revoke แล้วเข้าไม่ได้, auth เดิมไม่พัง
+
+## 5.4 งานรอบ 5 (2026-09-25 ดึก)
+
+**⚠️ กับดัก CSS (สาเหตุ timeline ล้นไม่มี scroll):** `.glass{overflow:hidden}` เขียนแบบ unlayered จึงชนะ overflow-* utilities ของ Tailwind (layered) เสมอ → `lg:overflow-y-auto` ไม่เคยทำงาน + class `custom-scrollbar`/`scrollbar-none` ถูกใช้แต่ไม่เคยนิยามไว้ — แก้ใน `index.css`: เพิ่ม opt-out rules (`.glass.overflow-y-auto` ฯลฯ) + นิยาม scrollbar ทั้งสองแบบ
+
+**Timeline scroll ทุกจอ:** คอลัมน์ภาพรวมล็อกความสูง (`62vh` มือถือ / `70vh` แท็บเล็ต / `100vh-2rem` desktop) + scroll แนวตั้งมีแถบให้เห็น — modal แชร์/DayModal กันล้นจอเล็กด้วย (`max-h-85vh` + scroll)
 
 ## 6. TODO ที่เหลือ (ยังไม่ทำ)
 - [ ] ไม่มี test อัตโนมัติ / ไม่มี docker — มีแค่เทส manual (รอบ 2: predict→history→delete ผ่าน 2026-09-25)

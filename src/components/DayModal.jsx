@@ -15,7 +15,7 @@ export default function DayModal({
 
   return (
     <div className="modal modal-open px-4">
-      <div className="modal-box glass rounded-3xl border border-white/30 w-full max-w-lg">
+      <div className="modal-box glass rounded-3xl border border-white/30 w-full max-w-lg max-h-[85vh] overflow-y-auto custom-scrollbar">
         <h3 className="font-bold text-xl mb-4">
           {editingDay ? `${t("day.editDay")} ${editingDay.dayCount}` : t("day.newDay")}
         </h3>

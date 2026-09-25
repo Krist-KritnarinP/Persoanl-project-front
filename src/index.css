@@ -326,6 +326,53 @@ body {
   border-radius: 1.75rem;
 }
 
+/* =========================================================
+   SCROLL FIX — .glass อยู่แบบ unlayered จึงชนะ overflow-*
+   utilities ของ Tailwind (layered) เสมอ ต้อง opt-out ตรงนี้
+   ========================================================= */
+
+.glass.overflow-y-auto {
+  overflow-y: auto;
+}
+
+.glass.overflow-x-auto {
+  overflow-x: auto;
+}
+
+@media (min-width: 1024px) {
+  .glass.lg\:overflow-y-auto {
+    overflow-y: auto;
+  }
+}
+
+/* แถบ scrollbar ที่มองเห็นได้ (ของเดิมใช้ class นี้แต่ไม่เคยนิยาม) */
+.custom-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0, 168, 107, 0.45) transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(0, 168, 107, 0.4);
+  border-radius: 999px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.scrollbar-none {
+  scrollbar-width: none;
+}
+
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
+}
+
 .card.glass {
   border-radius: 1.75rem;
 }
