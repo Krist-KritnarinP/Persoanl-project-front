@@ -1,7 +1,7 @@
 # HANDOVER — AI LHOUNG Travel Planner
 
 เอกสารส่งมอบงานสำหรับ dev คนต่อไป / คน deploy / คนสอบ
-อัปเดตล่าสุด: 2026-09-25 (รอบ 2: ซ่อม AI timeout, ประวัติ AI + ลบได้, i18n 4 ภาษา, typography, overview, responsive)
+อัปเดตล่าสุด: 2026-09-25 (รอบ 3: แก้ 429 quota, ภาษา dropdown, overview scrollbar, ฟอนต์ลายมือ)
 
 ## 1. Repo Structure (2 repos แยกกัน)
 
@@ -88,7 +88,7 @@ npm run build  # ✅ ผ่านแล้ว (1.8s) → serve dist/
 | POST | `/api/trips/:tripId/days` | Y | Day 1 ต้องมี dayDate, Day ถัดไป auto +1 วัน |
 | PUT/DELETE | `/api/days/:dayId` | Y | mount ใต้ `/api` (แก้ path ชนกันแล้ว) |
 | POST/PUT/DELETE | `/api/activities[/:activityId]` | Y | มีเช็ก ownership ถึง trip |
-| POST | `/api/weather/predict-weather` | Y | รับ `tripId?` ด้วย → บันทึกประวัติ, retry 429/503 อัตโนมัติ, ตอบช้า ~20s → `{prediction, model, messageId}` |
+| POST | `/api/weather/predict-weather` | Y | รับ `tripId?` → บันทึกประวัติ, retry เฉพาะ 500/502/503 (**ห้าม retry 429** เดี๋ยวเผาโควต้า), โควต้าหมด → 429 ข้อความไทย → `{prediction, model, messageId}` |
 | GET | `/api/weather/history/:tripId` | Y | (ใหม่) ประวัติคำตอบ AI ของทริป (มี `createdAt` = วันที่กด) |
 | DELETE | `/api/weather/history/:messageId` | Y | (ใหม่) ลบประวัติ 1 รายการ (เช็ก ownership) |
 
@@ -119,6 +119,16 @@ Auth: `Authorization: Bearer <token>` (จาก `localStorage.authState.state.t
 **Overview:** แถบสถิติใน `/trips/:id` (จำนวนวัน/กิจกรรม/งบรวม/ช่วงวันที่) + timeline เดิม — Dashboard มีสถิติอยู่แล้ว
 
 **Responsive:** navbar เป็น `rounded-3xl` บนมือถือ, โลโก้/อีเมลย่อ, search ซ่อน < lg, stats 2 คอลัมน์บนมือถือ, คอลัมน์ทริปเรียง Plan → Timeline → Weather บนจอเล็ก, modal เต็มจอบนมือถือ (`npm run build` ผ่าน)
+
+## 5.2 งานรอบ 3 (2026-09-25 เย็น)
+
+**สาเหตุ 502 รอบใหม่:** ไม่ใช่บั๊ก — โควต้า Gemini free tier หมด (`429 quota exceeded`, ลิมิต 20 req) → แก้: เลิก retry 429 (ตอบ 429 ตรงๆ ใน 0.8s ไม่เผาโควต้า), ข้อความไทยชัดเจน, หน้าบ้านแปลข้อความโควต้าหมดตามภาษาที่เลือก (`weather.quota`) — ถ้าเจออีก = รอโควต้ารีเซ็ต/อัปเกรดแพ็กเกจที่ ai.google.dev
+
+**ภาพรวมแบบ scrollbar:** แถบสถิติทริปเป็นแนวนอน scroll-snap บนมือถือ (grid 4 คอลัมน์บน desktop) + เพิ่ม overview ระดับวันในการ์ด Day (จำนวนกิจกรรม/งบวันนั้น/วันที่)
+
+**ภาษา dropdown:** `LanguageSwitcher` เปลี่ยนจากปุ่ม 4 ปุ่มเป็น `<select>` dropdown (ประหยัดที่ navbar มือถือ)
+
+**Human-made + ฟอนต์:** คงสี/theme เดิม, base 16px→17px, ฟอนต์ display `Sriracha` (ลายมือ, รองรับไทย) ใช้กับโลโก้ + หัวข้อ hero ทุกหน้า
 
 ## 6. TODO ที่เหลือ (ยังไม่ทำ)
 - [ ] ไม่มี test อัตโนมัติ / ไม่มี docker — มีแค่เทส manual (รอบ 2: predict→history→delete ผ่าน 2026-09-25)

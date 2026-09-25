@@ -266,7 +266,7 @@ export default function TripActivity() {
             <img src="/image/MiniDog.PNG" alt="Minidog" className="w-full h-full object-cover" />
           </div>
           <div className="min-w-0">
-            <span className="text-xl md:text-2xl font-black tracking-wider bg-linear-to-r from-primary to-accent bg-clip-text text-transparent whitespace-nowrap">
+            <span className="font-display text-2xl md:text-3xl tracking-wider bg-linear-to-r from-primary to-accent bg-clip-text text-transparent whitespace-nowrap">
               AI LHOUNG
             </span>
             <span className="hidden sm:block text-xs text-base-content/60 font-medium -mt-1">
@@ -291,43 +291,43 @@ export default function TripActivity() {
       {/* TRIP INFO CARD */}
       <TripInfoCard trip={trip} formatDate={formatDate} />
 
-      {/* TRIP OVERVIEW STATS */}
-      <section className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
-        <div className="glass glass-card p-4 md:p-5 flex items-center gap-3">
+      {/* TRIP OVERVIEW STATS — horizontal scroll on mobile, grid on desktop */}
+      <section className="flex lg:grid lg:grid-cols-4 gap-3 md:gap-4 overflow-x-auto lg:overflow-visible pb-2 lg:pb-0 snap-x snap-mandatory custom-scrollbar">
+        <div className="glass glass-card p-4 md:p-5 flex items-center gap-3 min-w-[220px] sm:min-w-[240px] lg:min-w-0 snap-start">
           <div className="w-11 h-11 rounded-2xl bg-primary/15 text-primary flex items-center justify-center text-xl shrink-0">
             <FiCalendar />
           </div>
           <div className="min-w-0">
-            <div className="text-sm text-base-content/60">{t("day.ovDays")}</div>
-            <div className="text-lg md:text-xl font-black">{totalDays}</div>
+            <div className="text-sm sm:text-base text-base-content/60">{t("day.ovDays")}</div>
+            <div className="text-xl md:text-2xl font-black">{totalDays}</div>
           </div>
         </div>
-        <div className="glass glass-card p-4 md:p-5 flex items-center gap-3">
+        <div className="glass glass-card p-4 md:p-5 flex items-center gap-3 min-w-[220px] sm:min-w-[240px] lg:min-w-0 snap-start">
           <div className="w-11 h-11 rounded-2xl bg-accent/15 text-accent flex items-center justify-center text-xl shrink-0">
             <FiList />
           </div>
           <div className="min-w-0">
-            <div className="text-sm text-base-content/60">{t("day.ovActs")}</div>
-            <div className="text-lg md:text-xl font-black">{totalActs}</div>
+            <div className="text-sm sm:text-base text-base-content/60">{t("day.ovActs")}</div>
+            <div className="text-xl md:text-2xl font-black">{totalActs}</div>
           </div>
         </div>
-        <div className="glass glass-card p-4 md:p-5 flex items-center gap-3">
+        <div className="glass glass-card p-4 md:p-5 flex items-center gap-3 min-w-[220px] sm:min-w-[240px] lg:min-w-0 snap-start">
           <div className="w-11 h-11 rounded-2xl bg-warning/15 text-warning flex items-center justify-center text-xl shrink-0">
             <FiDollarSign />
           </div>
           <div className="min-w-0">
-            <div className="text-sm text-base-content/60">{t("day.ovBudget")}</div>
-            <div className="text-lg md:text-xl font-black truncate">
+            <div className="text-sm sm:text-base text-base-content/60">{t("day.ovBudget")}</div>
+            <div className="text-xl md:text-2xl font-black truncate">
               {totalBudget.toLocaleString(locale)} <span className="text-sm font-normal text-base-content/50">{t("day.baht")}</span>
             </div>
           </div>
         </div>
-        <div className="glass glass-card p-4 md:p-5 flex items-center gap-3">
+        <div className="glass glass-card p-4 md:p-5 flex items-center gap-3 min-w-[220px] sm:min-w-[240px] lg:min-w-0 snap-start">
           <div className="w-11 h-11 rounded-2xl bg-info/15 text-info flex items-center justify-center text-xl shrink-0">
             <FiFlag />
           </div>
           <div className="min-w-0">
-            <div className="text-sm text-base-content/60">{t("day.ovDuration")}</div>
+            <div className="text-sm sm:text-base text-base-content/60">{t("day.ovDuration")}</div>
             <div className="text-base md:text-lg font-black truncate">
               {formatDate(trip?.startDate)} – {formatDate(trip?.endDate)}
             </div>
@@ -471,8 +471,20 @@ export default function TripActivity() {
               </div>
 
               <div className="space-y-4">
+                {/* Day overview: สรุปของวันนี้ */}
+                <div className="flex flex-wrap items-center gap-2 text-sm sm:text-base">
+                  <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-primary/10 text-primary font-semibold">
+                    <FiList /> {activeDay.activities?.length || 0} {t("day.ovActs")}
+                  </span>
+                  <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-warning/10 text-warning font-semibold">
+                    <FiDollarSign /> {(activeDay.activities?.reduce((s, a) => s + (Number(a.price) || 0), 0) || 0).toLocaleString(locale)} {t("day.baht")}
+                  </span>
+                  <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/20 font-medium text-base-content/70">
+                    {formatDate(activeDay.dayDate)}
+                  </span>
+                </div>
                 <div className="flex items-center justify-between gap-2">
-                  <h4 className="font-semibold text-lg">{t("day.actList")}</h4>
+                  <h4 className="font-semibold text-lg sm:text-xl">{t("day.actList")}</h4>
                   <button
                     onClick={handleOpenAddActivityModal}
                     className="btn btn-primary btn-sm glass rounded-full gap-1 shrink-0"

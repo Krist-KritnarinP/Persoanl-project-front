@@ -66,9 +66,9 @@ export default function GeminiWeatherCard({
         )}
 
         {weatherError && !weatherLoading && (
-          <div className="alert alert-error/20 border border-error/30 text-error text-sm p-3 rounded-2xl flex items-start gap-2">
+          <div className="alert alert-error/20 border border-error/30 text-error text-sm sm:text-base p-3 rounded-2xl flex items-start gap-2">
             <FiAlertCircle className="text-lg shrink-0 mt-0.5" />
-            <span>{weatherError}</span>
+            <span>{weatherError === "__QUOTA__" ? t("weather.quota") : weatherError}</span>
           </div>
         )}
 

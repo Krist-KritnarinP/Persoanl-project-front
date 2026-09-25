@@ -169,12 +169,14 @@ export const useTripActivityStore = create((set, get) => ({
     } catch (error) {
       console.error("Get weather forecast error:", error);
       const isTimeout = error?.code === "ECONNABORTED";
-      set({
-        weatherError: isTimeout
-          ? "AI ตอบช้าเกินกำหนด กรุณากดใหม่อีกครั้ง"
-          : (error.response?.data?.message || error.message || "ไม่สามารถดึงข้อมูลสภาพอากาศได้"),
-        weatherLoading: false
-      });
+      const status = error?.response?.status;
+      // "__QUOTA__" เป็น marker ให้ component แปลเป็นภาษาปัจจุบันเอง (store เรียก useLang ไม่ได้)
+      const msg = isTimeout
+        ? "AI ตอบช้าเกินกำหนด กรุณากดใหม่อีกครั้ง"
+        : status === 429
+          ? "__QUOTA__"
+          : (error.response?.data?.message || error.message || "ไม่สามารถดึงข้อมูลสภาพอากาศได้");
+      set({ weatherError: msg, weatherLoading: false });
     }
   },
 

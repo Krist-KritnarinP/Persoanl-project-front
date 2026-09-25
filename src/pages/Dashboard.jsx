@@ -125,7 +125,7 @@ function Dashboard() {
             />
           </div>
           <div className="min-w-0">
-            <span className="text-xl md:text-2xl font-black tracking-wider bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent whitespace-nowrap">
+            <span className="font-display text-2xl md:text-3xl tracking-wider bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent whitespace-nowrap">
               AI LHOUNG
             </span>
             <span className="hidden sm:block text-xs text-base-content/60 font-medium -mt-1">
@@ -195,10 +195,10 @@ function Dashboard() {
               />
               {t("dash.ready")}
             </div>
-            <h1 className="text-2xl md:text-3xl font-extrabold tracking-tight">
+            <h1 className="font-display text-3xl md:text-4xl tracking-tight">
               {t("dash.hello")} <span className="text-primary">{t("dash.welcomeBack")}</span>
             </h1>
-            <p className="text-sm md:text-base text-base-content/70 leading-relaxed">
+            <p className="text-base md:text-lg text-base-content/70 leading-relaxed">
               {t("dash.sub")}
             </p>
           </div>

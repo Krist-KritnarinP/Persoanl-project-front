@@ -103,8 +103,19 @@
    ========================================================= */
 
 html {
-  font-size: 16px;
+  font-size: 17px;
   background: #eaf0e9;
+}
+
+/* ฟอนต์ลายมือสำหรับหัวข้อ — ให้ความรู้สึก human-made (คงสี/theme เดิม) */
+.font-display {
+  font-family:
+    "Sriracha",
+    "Noto Sans Thai",
+    "Noto Sans",
+    system-ui,
+    cursive;
+  letter-spacing: 0.01em;
 }
 
 body {

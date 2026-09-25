@@ -42,9 +42,9 @@ function Login() {
         <div className="p-2 sm:p-5 mx-auto max-w-5xl min-h-135 flex flex-col md:flex-row justify-between items-center w-full gap-8">
           {/* ฝั่งซ้าย: ข้อความต้อนรับ */}
           <div className="flex flex-col gap-4 md:basis-3/5 text-center md:text-left">
-            <div className="text-5xl sm:text-6xl p-2 text-primary font-bold">AI LHOUNG</div>
+            <div className="font-display text-6xl sm:text-7xl p-2 text-primary">AI LHOUNG</div>
             <div>
-              <h2 className="text-lg sm:text-[20px] leading-8 mt-3 text-base-content/80">
+              <h2 className="text-xl sm:text-2xl leading-9 mt-3 text-base-content/80">
                 {t("auth.heroSub")}
               </h2>
 
