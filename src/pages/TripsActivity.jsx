@@ -14,6 +14,9 @@ import {
   FiDollarSign,
   FiList,
   FiFlag,
+  FiShare2,
+  FiCopy,
+  FiLink,
 } from "react-icons/fi";
 import { useTripActivityStore } from "@/stores/tripActivityStore";
 import { toast } from "react-toastify";
@@ -57,6 +60,59 @@ export default function TripActivity() {
   const weatherHistory = useTripActivityStore((state) => state.weatherHistory);
   const fetchWeatherHistory = useTripActivityStore((state) => state.fetchWeatherHistory);
   const deleteWeatherHistory = useTripActivityStore((state) => state.deleteWeatherHistory);
+  const createShareLink = useTripActivityStore((state) => state.createShareLink);
+  const revokeShareLink = useTripActivityStore((state) => state.revokeShareLink);
+
+  const [shareOpen, setShareOpen] = useState(false);
+  const [shareToken, setShareToken] = useState(null);
+  const [shareLoading, setShareLoading] = useState(false);
+  const [copied, setCopied] = useState(false);
+
+  const openShare = async () => {
+    setShareOpen(true);
+    setCopied(false);
+    if (trip?.shareToken) {
+      setShareToken(trip.shareToken);
+      return;
+    }
+    setShareLoading(true);
+    try {
+      const token = await createShareLink(tripId);
+      setShareToken(token);
+    } catch (err) {
+      console.error("Create share link error:", err);
+      setShareOpen(false);
+    } finally {
+      setShareLoading(false);
+    }
+  };
+
+  const copyShareLink = async () => {
+    const url = `${window.location.origin}/share/${shareToken}`;
+    try {
+      await navigator.clipboard.writeText(url);
+    } catch {
+      const ta = document.createElement("textarea");
+      ta.value = url;
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand("copy");
+      document.body.removeChild(ta);
+    }
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  const handleRevokeShare = async () => {
+    if (!window.confirm(t("share.revoke") + "?")) return;
+    try {
+      await revokeShareLink(tripId);
+      setShareToken(null);
+      setShareOpen(false);
+    } catch (err) {
+      console.error("Revoke share error:", err);
+    }
+  };
 
   const [selectedDayId, setSelectedDayId] = useState(null);
   const [isDayModalOpen, setIsDayModalOpen] = useState(false);
@@ -285,15 +341,23 @@ export default function TripActivity() {
         >
           <FiArrowLeft /> {t("common.back")}
         </button>
-        <span className="text-sm badge badge-outline glass px-3 py-2 shrink-0">Trip #{tripId}</span>
+        <div className="flex items-center gap-2 shrink-0">
+          <button
+            onClick={openShare}
+            className="btn btn-primary btn-sm rounded-full gap-1.5 shadow-md"
+          >
+            <FiShare2 /> {t("share.btn")}
+          </button>
+          <span className="hidden sm:inline text-sm badge badge-outline glass px-3 py-2">Trip #{tripId}</span>
+        </div>
       </div>
 
       {/* TRIP INFO CARD */}
       <TripInfoCard trip={trip} formatDate={formatDate} />
 
-      {/* TRIP OVERVIEW STATS — horizontal scroll on mobile, grid on desktop */}
-      <section className="flex lg:grid lg:grid-cols-4 gap-3 md:gap-4 overflow-x-auto lg:overflow-visible pb-2 lg:pb-0 snap-x snap-mandatory custom-scrollbar">
-        <div className="glass glass-card p-4 md:p-5 flex items-center gap-3 min-w-[220px] sm:min-w-[240px] lg:min-w-0 snap-start">
+      {/* TRIP OVERVIEW STATS — horizontal scroll strip on all screens */}
+      <section className="flex gap-3 md:gap-4 overflow-x-auto pb-2 snap-x snap-mandatory custom-scrollbar">
+        <div className="glass glass-card p-4 md:p-5 flex items-center gap-3 min-w-[220px] sm:min-w-[240px] xl:min-w-0 xl:flex-1 snap-start">
           <div className="w-11 h-11 rounded-2xl bg-primary/15 text-primary flex items-center justify-center text-xl shrink-0">
             <FiCalendar />
           </div>
@@ -302,7 +366,7 @@ export default function TripActivity() {
             <div className="text-xl md:text-2xl font-black">{totalDays}</div>
           </div>
         </div>
-        <div className="glass glass-card p-4 md:p-5 flex items-center gap-3 min-w-[220px] sm:min-w-[240px] lg:min-w-0 snap-start">
+        <div className="glass glass-card p-4 md:p-5 flex items-center gap-3 min-w-[220px] sm:min-w-[240px] xl:min-w-0 xl:flex-1 snap-start">
           <div className="w-11 h-11 rounded-2xl bg-accent/15 text-accent flex items-center justify-center text-xl shrink-0">
             <FiList />
           </div>
@@ -311,7 +375,7 @@ export default function TripActivity() {
             <div className="text-xl md:text-2xl font-black">{totalActs}</div>
           </div>
         </div>
-        <div className="glass glass-card p-4 md:p-5 flex items-center gap-3 min-w-[220px] sm:min-w-[240px] lg:min-w-0 snap-start">
+        <div className="glass glass-card p-4 md:p-5 flex items-center gap-3 min-w-[220px] sm:min-w-[240px] xl:min-w-0 xl:flex-1 snap-start">
           <div className="w-11 h-11 rounded-2xl bg-warning/15 text-warning flex items-center justify-center text-xl shrink-0">
             <FiDollarSign />
           </div>
@@ -322,7 +386,7 @@ export default function TripActivity() {
             </div>
           </div>
         </div>
-        <div className="glass glass-card p-4 md:p-5 flex items-center gap-3 min-w-[220px] sm:min-w-[240px] lg:min-w-0 snap-start">
+        <div className="glass glass-card p-4 md:p-5 flex items-center gap-3 min-w-[220px] sm:min-w-[240px] xl:min-w-0 xl:flex-1 snap-start">
           <div className="w-11 h-11 rounded-2xl bg-info/15 text-info flex items-center justify-center text-xl shrink-0">
             <FiFlag />
           </div>
@@ -541,6 +605,43 @@ export default function TripActivity() {
         dayFormData={dayFormData}
         setDayFormData={setDayFormData}
       />
+
+      {/* SHARE MODAL */}
+      {shareOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm px-4" onClick={() => setShareOpen(false)}>
+          <div className="glass rounded-3xl border border-white/30 p-5 md:p-6 w-full max-w-md space-y-4" onClick={(e) => e.stopPropagation()}>
+            <h3 className="font-bold text-xl flex items-center gap-2">
+              <FiShare2 className="text-primary" /> {t("share.title")}
+            </h3>
+            <p className="text-sm sm:text-base text-base-content/70 leading-relaxed">
+              {t("share.desc")}
+            </p>
+            {shareLoading ? (
+              <div className="flex justify-center py-4">
+                <span className="loading loading-spinner text-primary"></span>
+              </div>
+            ) : shareToken ? (
+              <div className="space-y-3">
+                <div className="flex items-center gap-2 rounded-2xl bg-white/20 border border-white/20 px-3 py-2.5 text-sm break-all">
+                  <FiLink className="shrink-0 text-primary" />
+                  <span className="truncate">{`${window.location.origin}/share/${shareToken}`}</span>
+                </div>
+                <div className="flex flex-col sm:flex-row gap-2">
+                  <button onClick={copyShareLink} className="btn btn-primary rounded-full gap-2 flex-1">
+                    <FiCopy /> {copied ? t("share.copied") : t("share.copy")}
+                  </button>
+                  <button onClick={handleRevokeShare} className="btn btn-ghost glass rounded-full text-error">
+                    <FiTrash2 /> {t("share.revoke")}
+                  </button>
+                </div>
+              </div>
+            ) : null}
+            <button onClick={() => setShareOpen(false)} className="btn btn-ghost w-full rounded-full">
+              {t("common.close")}
+            </button>
+          </div>
+        </div>
+      )}
 
       <ActivityModal
         isOpen={isActivityModalOpen}

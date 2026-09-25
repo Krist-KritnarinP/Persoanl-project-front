@@ -9,6 +9,7 @@ import {
 import Dashboard from "@/pages/Dashboard";
 import Login from "@/pages/Login";
 import Trips from "@/pages/TripsActivity";
+import ShareTripView from "@/pages/ShareTripView";
 import Userprofile from "@/pages/userprofile";
 import useUserStore from "@/stores/userStore";
 
@@ -25,6 +26,8 @@ const GuestRoute = () => {
 };
 
 const router = createBrowserRouter([
+  // Public: ลิงก์แชร์ดูได้อย่างเดียว (ไม่ต้อง login, เข้าได้ทั้งคนนอกและคนมีบัญชี)
+  { path: "/share/:token", element: <ShareTripView /> },
   {
     element: <GuestRoute />,
     children: [

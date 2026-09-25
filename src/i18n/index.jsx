@@ -79,6 +79,7 @@ const dict = {
     "profile.needPass": "password ต้องมีอย่างน้อย 4 ตัวอักษร",
     "profile.ok": "อัปเดตโปรไฟล์สำเร็จ", "profile.fail": "อัปเดตไม่สำเร็จ",
     "profile.fetchFail": "ดึงข้อมูลโปรไฟล์ไม่สำเร็จ",
+    "share.btn": "แชร์", "share.title": "แชร์ทริปแบบดูได้อย่างเดียว", "share.desc": "ใครมีลิงก์นี้ดูแผนทริปได้โดยไม่ต้องล็อกอิน", "share.copy": "คัดลอกลิงก์", "share.copied": "คัดลอกลิงก์แล้ว", "share.revoke": "ยกเลิกการแชร์", "share.revoked": "ยกเลิกการแชร์แล้ว", "share.viewOnly": "ดูได้อย่างเดียว", "share.by": "แชร์โดย", "share.notFound": "ไม่พบทริปที่แชร์ หรือลิงก์ถูกยกเลิกแล้ว", "share.openApp": "เปิดแอป AI LHOUNG",
   },
   en: {
     "common.back": "Back", "common.cancel": "Cancel", "common.save": "Save",
@@ -149,6 +150,7 @@ const dict = {
     "profile.needPass": "Password must be at least 4 characters",
     "profile.ok": "Profile updated", "profile.fail": "Update failed",
     "profile.fetchFail": "Failed to load profile",
+    "share.btn": "Share", "share.title": "Share read-only trip", "share.desc": "Anyone with this link can view the plan without logging in", "share.copy": "Copy link", "share.copied": "Link copied", "share.revoke": "Revoke share", "share.revoked": "Share revoked", "share.viewOnly": "View only", "share.by": "Shared by", "share.notFound": "Shared trip not found or link revoked", "share.openApp": "Open AI LHOUNG app",
   },
   zh: {
     "common.back": "返回", "common.cancel": "取消", "common.save": "保存",
@@ -219,6 +221,7 @@ const dict = {
     "profile.needPass": "密码至少4个字符",
     "profile.ok": "资料更新成功", "profile.fail": "更新失败",
     "profile.fetchFail": "加载资料失败",
+    "share.btn": "分享", "share.title": "分享只读旅程", "share.desc": "有此链接者无需登录即可查看行程", "share.copy": "复制链接", "share.copied": "已复制链接", "share.revoke": "取消分享", "share.revoked": "已取消分享", "share.viewOnly": "仅查看", "share.by": "分享者", "share.notFound": "找不到分享的旅程或链接已取消", "share.openApp": "打开 AI LHOUNG",
   },
   ko: {
     "common.back": "뒤로", "common.cancel": "취소", "common.save": "저장",
@@ -289,6 +292,7 @@ const dict = {
     "profile.needPass": "비밀번호는 4자 이상이어야 합니다",
     "profile.ok": "프로필이 업데이트되었습니다", "profile.fail": "업데이트 실패",
     "profile.fetchFail": "프로필을 불러오지 못했습니다",
+    "share.btn": "공유", "share.title": "읽기 전용 여행 공유", "share.desc": "이 링크가 있으면 로그인 없이 일정을 볼 수 있습니다", "share.copy": "링크 복사", "share.copied": "링크가 복사되었습니다", "share.revoke": "공유 취소", "share.revoked": "공유가 취소되었습니다", "share.viewOnly": "보기 전용", "share.by": "공유자", "share.notFound": "공유된 여행을 찾을 수 없거나 링크가 취소되었습니다", "share.openApp": "AI LHOUNG 앱 열기",
   },
 };
 

@@ -205,5 +205,19 @@ export const useTripActivityStore = create((set, get) => ({
     }
   },
 
+  // เปิดแชร์ลิงก์ดูได้อย่างเดียว (คืน token เดิมถ้ามี)
+  createShareLink: async (tripId) => {
+    const res = await mainApi.post(`/trips/${tripId}/share`);
+    const token = res.data?.data?.shareToken;
+    set((state) => (state.trip ? { trip: { ...state.trip, shareToken: token } } : state));
+    return token;
+  },
+
+  // ปิดแชร์ลิงก์
+  revokeShareLink: async (tripId) => {
+    await mainApi.delete(`/trips/${tripId}/share`);
+    set((state) => (state.trip ? { trip: { ...state.trip, shareToken: null } } : state));
+  },
+
   clearError: () => set({ error: null, weatherError: null }),
 }));

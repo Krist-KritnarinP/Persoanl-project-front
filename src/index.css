@@ -145,32 +145,21 @@ body {
 
   background:
     radial-gradient(
-      700px circle at var(--pointer-x) var(--pointer-y),
-      rgba(255, 255, 255, 0.72),
-      transparent 42%
+      800px circle at 10% 0%,
+      rgba(0, 168, 107, 0.14),
+      transparent 55%
     ),
 
     radial-gradient(
-      800px circle at 10% 15%,
-      rgba(0, 168, 107, 0.18),
-      transparent 48%
-    ),
-
-    radial-gradient(
-      700px circle at 90% 20%,
-      rgba(232, 108, 110, 0.16),
-      transparent 45%
-    ),
-
-    radial-gradient(
-      900px circle at 50% 100%,
-      rgba(114, 121, 114, 0.16),
-      transparent 50%
+      700px circle at 90% 10%,
+      rgba(232, 108, 110, 0.12),
+      transparent 55%
     ),
 
     #eaf0e9;
 
-  background-attachment: fixed;
+  /* หมายเหตุ: ห้ามใช้ background-attachment: fixed — ทำให้ scroll กระตุกหนัก */
+  background-attachment: scroll;
 
   transition:
     background 700ms var(--spring-soft);
@@ -197,12 +186,12 @@ body {
     );
 
   backdrop-filter:
-    blur(24px)
-    saturate(180%);
+    blur(18px)
+    saturate(160%);
 
   -webkit-backdrop-filter:
-    blur(24px)
-    saturate(180%);
+    blur(18px)
+    saturate(160%);
 
   border:
     1px solid rgba(255, 255, 255, 0.42);
@@ -234,21 +223,20 @@ body {
   content: "";
 
   position: absolute;
-  inset: -40%;
+  inset: -20%;
 
   pointer-events: none;
 
+  /* gradient นุ่มอยู่แล้ว ไม่ต้อง filter: blur (ตัวกิน GPU หลัก) */
   background:
     radial-gradient(
       circle at var(--glass-x) var(--glass-y),
-      rgba(255, 255, 255, 0.55) 0%,
-      rgba(255, 255, 255, 0.20) 18%,
-      transparent 42%
+      rgba(255, 255, 255, 0.45) 0%,
+      rgba(255, 255, 255, 0.16) 20%,
+      transparent 45%
     );
 
-  filter: blur(18px);
-
-  opacity: 0.85;
+  opacity: 0.8;
 
   transform:
     translate3d(0, 0, 0)

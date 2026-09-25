@@ -1,7 +1,7 @@
 # HANDOVER — AI LHOUNG Travel Planner
 
 เอกสารส่งมอบงานสำหรับ dev คนต่อไป / คน deploy / คนสอบ
-อัปเดตล่าสุด: 2026-09-25 (รอบ 3: แก้ 429 quota, ภาษา dropdown, overview scrollbar, ฟอนต์ลายมือ)
+อัปเดตล่าสุด: 2026-09-25 (รอบ 4: share link, แก้ route order, ลด motion)
 
 ## 1. Repo Structure (2 repos แยกกัน)
 
@@ -91,6 +91,9 @@ npm run build  # ✅ ผ่านแล้ว (1.8s) → serve dist/
 | POST | `/api/weather/predict-weather` | Y | รับ `tripId?` → บันทึกประวัติ, retry เฉพาะ 500/502/503 (**ห้าม retry 429** เดี๋ยวเผาโควต้า), โควต้าหมด → 429 ข้อความไทย → `{prediction, model, messageId}` |
 | GET | `/api/weather/history/:tripId` | Y | (ใหม่) ประวัติคำตอบ AI ของทริป (มี `createdAt` = วันที่กด) |
 | DELETE | `/api/weather/history/:messageId` | Y | (ใหม่) ลบประวัติ 1 รายการ (เช็ก ownership) |
+| POST | `/api/trips/:tripId/share` | Y | (ใหม่) เปิดแชร์ลิงก์ → `{shareToken}` (มีอยู่แล้วคืน token เดิม) |
+| DELETE | `/api/trips/:tripId/share` | Y | (ใหม่) ปิดแชร์ลิงก์ |
+| GET | `/api/shared/:token` | - | (ใหม่) **public** ดูทริปแบบ read-only (ไม่คืน userId, มี `sharedBy`) — หน้าบ้าน `/share/:token` |
 
 Auth: `Authorization: Bearer <token>` (จาก `localStorage.authState.state.token`), token หมดอายุ → 401 `token expired`, หน้าบ้าน auto-redirect หน้า login
 
@@ -129,6 +132,16 @@ Auth: `Authorization: Bearer <token>` (จาก `localStorage.authState.state.t
 **ภาษา dropdown:** `LanguageSwitcher` เปลี่ยนจากปุ่ม 4 ปุ่มเป็น `<select>` dropdown (ประหยัดที่ navbar มือถือ)
 
 **Human-made + ฟอนต์:** คงสี/theme เดิม, base 16px→17px, ฟอนต์ display `Sriracha` (ลายมือ, รองรับไทย) ใช้กับโลโก้ + หัวข้อ hero ทุกหน้า
+
+## 5.3 งานรอบ 4 (2026-09-25 ค่ำ)
+
+**Overview scroll ทุกจอ:** แถบสถิติเป็น horizontal scroll-snap strip ทุก breakpoint (เดิม `lg:overflow-visible` ทำให้ desktop เลื่อนไม่ได้)
+
+**ลด motion (เว็บอืด):** สาเหตุหลัก = `background-attachment: fixed` + `filter: blur(18px)` บน `.glass::before` ทุกการ์ด + backdrop-blur 24px → แก้: bg เหลือ 2 gradients + attachment scroll, ตัด blur ใน ::before, glass blur 24→18px, เอา spin ไร้สาระออก — หน้าตาใกล้เคียงเดิม
+
+**⚠️ กับดัก route order (เจอตอนทำ share):** `DaysRoute` mount ใต้ `/api` พร้อม `authCheck` ดักทุก request ที่ขึ้นต้น `/api/*` ทำให้ route public โดน 401 หมด — แก้โดย mount `/api/shared` **ก่อน** `/api` (มีคอมเมนต์เตือนใน `app.js` แล้ว)
+
+**Share link (view-only):** DB เพิ่ม `trips.share_token` (unique, nullable) → เจ้าของกดแชร์ได้ token (base64url 43 ตัว) → คนมีลิงก์เปิด `/share/:token` ดูได้โดยไม่ login (ซ่อนปุ่มแก้ไข + ซ่อน weather ประหยัดโควต้า) → ยกเลิกได้ (ลิงก์เดิมใช้ไม่ได้ทันที) — เทสแล้ว: public GET ผ่าน/ไม่รั่ว userId, token มั่วได้ 404, revoke แล้วเข้าไม่ได้, auth เดิมไม่พัง
 
 ## 6. TODO ที่เหลือ (ยังไม่ทำ)
 - [ ] ไม่มี test อัตโนมัติ / ไม่มี docker — มีแค่เทส manual (รอบ 2: predict→history→delete ผ่าน 2026-09-25)
