@@ -10,7 +10,7 @@ export default function ActivityDetailModal({ activity, typeConfig, formatZonedT
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm px-4" onClick={onClose}>
       <div
-        className="glass rounded-3xl border border-white/30 p-5 md:p-6 w-full max-w-md max-h-[85vh] overflow-y-auto custom-scrollbar space-y-4"
+        className="rounded-3xl bg-white text-slate-800 border border-slate-200 shadow-2xl p-5 md:p-6 w-full max-w-md max-h-[85vh] overflow-y-auto custom-scrollbar space-y-4"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-start gap-3">
@@ -75,7 +75,7 @@ export function DayDetailModal({ day, formatDate, formatZonedTime, onClose, type
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm px-4" onClick={onClose}>
       <div
-        className="glass rounded-3xl border border-white/30 p-5 md:p-6 w-full max-w-lg max-h-[85vh] overflow-y-auto custom-scrollbar space-y-4"
+        className="rounded-3xl bg-white text-slate-800 border border-slate-200 shadow-2xl p-5 md:p-6 w-full max-w-lg max-h-[85vh] overflow-y-auto custom-scrollbar space-y-4"
         onClick={(e) => e.stopPropagation()}
       >
         <div>
@@ -93,7 +93,7 @@ export function DayDetailModal({ day, formatDate, formatZonedTime, onClose, type
 
         <div className="space-y-2">
           {(day.activities || []).map((act) => (
-            <div key={act.id} className="flex items-center gap-2.5 p-3 rounded-2xl bg-white/5 border border-white/10 text-sm sm:text-base">
+            <div key={act.id} className="flex items-center gap-2.5 p-3 rounded-2xl bg-slate-50 border border-slate-200 text-slate-800 text-sm sm:text-base">
               <span className="w-1.5 h-1.5 rounded-full bg-accent/70 shrink-0" />
               <span className="font-medium truncate flex-1">{act.locationName}</span>
               {typeLabel && <span className="text-xs opacity-60 shrink-0">{typeLabel(act.activityType)}</span>}
