@@ -49,7 +49,13 @@
 ## Phase 3 — Monetization (3–4 สัปดาห์)
 
 - [ ] ตาราง `subscriptions` + `quotas` (โควต้า AI/ทริป/สมาชิกต่อแพ็กเกจ) + middleware เช็กก่อนยิง Gemini
-- [ ] หน้าราคา + checkout (เลือก gateway ข้อ 3.1) + webhook ต่ออายุ/ยกเลิก
+- [ ] หน้าราคา + checkout + webhook ต่ออายุ/ยกเลิก
+- [ ] **จ่ายด้วย PromptPay QR (เฟสแรก, ไม่พึ่ง gateway):**
+  - Backend `POST /api/billing/promptpay` {plan} → สร้าง payload ด้วย lib `promptpay-qr` (ฝังยอด, ออก `payments` สถานะ pending + reference) — ห้าม hardcode เบอร์ร้านในโค้ด ใช้ env `PROMPTPAY_ID`
+  - Frontend หน้า Billing โชว์ QR (`qrcode.react`) + นับถอยหลัง 15 นาที → user อัปโหลดสลิป (`POST /api/billing/slip`, เก็บรูปใน Supabase Storage)
+  - ตรวจสลิปอัตโนมัติผ่าน SlipOK/EasySlip API (~0.4–1 บาท/ครั้ง, เช็กยอดตรง + บัญชีผู้รับ + สลิปซ้ำ) → ผ่านเปิดสิทธิ์ทันที
+  - กันยอดชน: ออกยอดเศษสตางค์ unique ต่อรายการ (เช่น 790.13) + ผูก time window; ชนกันตกคิว manual review
+  - ข้อจำกัด: ทำ recurring ไม่ได้ → ใช้กับรายปี/ครั้งเดียว/B2B; รายเดือน auto-renew ต้องบัตรผ่าน Stripe (ทำทีหลัง)
 - [ ] ใบเสร็จ/ใบกำกับภาษี (e-Tax) — ลูกค้าองค์กรต้องการ
 - [ ] โหมด B2B: แพ็กเกจบริษัททัวร์ (white-label share link + โลโก้ตัวเอง) — รายได้ก้อนใหญ่สุดของสายนี้
 - [ ] Affiliate: ลิงก์จองโรงแรม/ตั๋ว (Agoda/Booking/Airalo) ใส่ใน activity อัตโนมัติ
