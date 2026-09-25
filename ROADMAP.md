@@ -36,6 +36,8 @@
 - [ ] PWA (install ได้, icon, offline หน้าอ่านทริป) — นักเดินทางใช้บนมือถือกลางทาง
 - [ ] แจ้งเตือนก่อนเดินทาง (email/LINE OA): เช็กลิสต์ + อากาศล่วงหน้า 3 วัน
 - [ ] Import/Export: ส่งออก PDF/พิมพ์แผนทริป, แชร์เป็นรูป
+- [ ] **รูปภาพประกอบทริป**: อัปโหลดรูปต่อ activity/day (Supabase Storage มีอยู่แล้ว) → โชว์ใน timeline + หน้า share — ตาราง `trip_photos` (id, activityId?, dayId?, storagePath, caption)
+- [ ] **Export PDF แผนเที่ยว**: ปุ่ม "ดาวน์โหลด PDF" ใน `/trips/:id` — ทำฝั่ง server (`GET /api/trips/:id/pdf`, ใช้ puppeteer/chromium บน server หรือ pdf-lib ประกอบเอง) ได้ไฟล์สวยพร้อมโลโก้/วันที่/งบรวม ไม่เสียค่า AI เพราะข้อมูลมีครบแล้ว; แคชไฟล์ 24 ชม.
 
 ## Phase 2 — Growth & Retention (4–6 สัปดาห์)
 
@@ -45,17 +47,36 @@
 - [ ] ทริปกลุ่ม (multi-user collaborate — วันนี้ 1 user = 1 ทริป)
 - [ ] แอป native (Capacitor ห่อเว็บเดิม) ถ้า retention มือถือดี
 - [ ] คอมมูนิตี้/บล็อก نکتهท่องเที่ยวขับ SEO ภาษาไทย (คำค้น "แพลนเที่ยว X" คู่แข่งน้อย)
+- [ ] **Document Vault (ตู้เอกสารเดินทาง) — ของใหม่, เป็น Pro differentiator:**
+  - เก็บขั้นต่ำก่อน: ประเภทเอกสาร (passport/visa/บัตร ปชช./ใบขับขี่สากล) + เลขที่ (mask โชว์ 4 ตัวท้าย) + **วันหมดอายุ** → แจ้งเตือนล่วงหน้า 90/30/7 วัน (cron + email/LINE)
+  - อัปโหลดสแกน (optional): ไฟล์เข้า Supabase Storage bucket private + **เข้ารหัสก่อนเก็บ (AES-256-GCM, คีย์แยกต่อ user)** — ห้ามเก็บเลขเต็ม plaintext เด็ดขาด
+  - กฎเหล็ก: RLS + access log ทุกครั้งที่เปิดดู + ปุ่มลบถาวร (PDPA) + แบนการส่งออกไฟล์เป็น bulk
+  - ความเห็น: ควรทำ แต่ **เริ่มจากแค่ "วันหมดอายุ + แจ้งเตือน"** (เสี่ยงต่ำ) ก่อน แล้วค่อยเพิ่มห้องนิรภัยไฟล์ตอนมี security review — ข้อมูล passport หลุด = ความเสียหายสูงสุดของโปรดักต์
+
+## Phase 2.5 — Future Backlog (ไอเดียเสริม ไว้หยิบตามเสียง user)
+
+- [ ] **หารค่าใช้จ่าย + แชร์บิล** (split bill ต่อทริป/ต่อคน — ทริปเพื่อนขาดไม่ได่)
+- [ ] **Packing checklist อัตโนมัติ** (ดึงจาก activities + อากาศ เช่น มี Blue Lagoon → ชุดว่ายน้ำ)
+- [ ] **เช็กวีซ่าอัตโนมัติ** (passport TH → ประเทศนี้ต้องขอวีซ่าไหม + ลิงก์สถานทูต) — ต่อยอด Document Vault
+- [ ] **ข้อมูลฉุกเฉินรายประเทศ** (เบอร์ฉุกเฉิน, สถานทูตไทย, ประกัน) แปะใน overview ทริป
+- [ ] **ตัวแปลงค่าเงิน + บันทึกค่าใช้จ่ายเป็นบาทอัตโนมัติ**
+- [ ] **Sync ปฏิทิน** (Export Google Calendar/ICS ราย activity)
+- [ ] **Photo timeline**: รูปที่อัปโหลดผูกกับวันอัตโนมัติ → ทำ photobook/วิดีโอสรุปทริป (ขายเพิ่มเป็น one-time)
+- [ ] **เตือนราคาตั๋ว/โรงแรม + affiliate** (Agoda/Booking/Airalo) — รายได้เสริมไม่ต้องสต๊อก
+- [ ] **ประกันเดินทาง cross-sell** (partner กับโบรกเกอร์ กินค่าแนะนำ)
+- [ ] **Live location + แชทกลุ่มต่อทริป** (ทริปเพื่อน/ทัวร์ — ระวัง scope บาน)
+- [ ] Multi-currency + ภาษาที่ 5–6 (เวียดนาม/ญี่ปุ่น) เมื่อ traffic มา
 
 ## Phase 3 — Monetization (3–4 สัปดาห์)
 
 - [ ] ตาราง `subscriptions` + `quotas` (โควต้า AI/ทริป/สมาชิกต่อแพ็กเกจ) + middleware เช็กก่อนยิง Gemini
 - [ ] หน้าราคา + checkout + webhook ต่ออายุ/ยกเลิก
-- [ ] **จ่ายด้วย PromptPay QR (เฟสแรก, ไม่พึ่ง gateway):**
-  - Backend `POST /api/billing/promptpay` {plan} → สร้าง payload ด้วย lib `promptpay-qr` (ฝังยอด, ออก `payments` สถานะ pending + reference) — ห้าม hardcode เบอร์ร้านในโค้ด ใช้ env `PROMPTPAY_ID`
-  - Frontend หน้า Billing โชว์ QR (`qrcode.react`) + นับถอยหลัง 15 นาที → user อัปโหลดสลิป (`POST /api/billing/slip`, เก็บรูปใน Supabase Storage)
-  - ตรวจสลิปอัตโนมัติผ่าน SlipOK/EasySlip API (~0.4–1 บาท/ครั้ง, เช็กยอดตรง + บัญชีผู้รับ + สลิปซ้ำ) → ผ่านเปิดสิทธิ์ทันที
-  - กันยอดชน: ออกยอดเศษสตางค์ unique ต่อรายการ (เช่น 790.13) + ผูก time window; ชนกันตกคิว manual review
-  - ข้อจำกัด: ทำ recurring ไม่ได้ → ใช้กับรายปี/ครั้งเดียว/B2B; รายเดือน auto-renew ต้องบัตรผ่าน Stripe (ทำทีหลัง)
+- [ ] **จ่ายด้วย PromptPay QR + เปิดสิทธิ์อัตโนมัติ (ไม่ตรวจสลิป):**
+  - ตัดสินใจ: ใช้ **gateway (Stripe/Omise PromptPay 1.65%)** แทนทำ QR เอง — เพราะมี webhook แจ้งจ่ายสำเร็จ → เปิดสิทธิ์ทันที ไม่ต้องอัปโหลดสลิป
+  - Flow: `POST /api/billing/checkout` {plan} → ได้ QR gateway → หน้าบ้านโชว์ QR + poll สถานะทุก 5 วิ → webhook `payment.success` → `subscriptions` active ทันที (ดีเลย์หลักวินาที–2 นาที)
+  - เหตุผลที่ไม่ทำ QR เอง: QR เองไม่มีทางรู้ว่าใครโอน (ต้องอัปโหลดสลิปมาตรวจ = friction) — gateway เท่านั้นที่ยืนยันการจ่ายแบบเรียลไทม์ได้
+  - ข้อจำกัดเดิม: PromptPay ทำ recurring ไม่ได้ → รายปี/ครั้งเดียว/B2B ด้วย PromptPay; รายเดือน auto-renew ด้วยบัตร (Stripe, ทำทีหลัง)
+  - Env: `STRIPE_SECRET_KEY` / `OMISE_SECRET_KEY` + webhook secret — ห้ามอยู่ฝั่ง front เด็ดขาด
 - [ ] ใบเสร็จ/ใบกำกับภาษี (e-Tax) — ลูกค้าองค์กรต้องการ
 - [ ] โหมด B2B: แพ็กเกจบริษัททัวร์ (white-label share link + โลโก้ตัวเอง) — รายได้ก้อนใหญ่สุดของสายนี้
 - [ ] Affiliate: ลิงก์จองโรงแรม/ตั๋ว (Agoda/Booking/Airalo) ใส่ใน activity อัตโนมัติ
