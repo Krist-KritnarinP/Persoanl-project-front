@@ -36,8 +36,12 @@
 - [ ] PWA (install ได้, icon, offline หน้าอ่านทริป) — นักเดินทางใช้บนมือถือกลางทาง
 - [ ] แจ้งเตือนก่อนเดินทาง (email/LINE OA): เช็กลิสต์ + อากาศล่วงหน้า 3 วัน
 - [ ] Import/Export: ส่งออก PDF/พิมพ์แผนทริป, แชร์เป็นรูป
-- [ ] **รูปภาพประกอบทริป**: อัปโหลดรูปต่อ activity/day (Supabase Storage มีอยู่แล้ว) → โชว์ใน timeline + หน้า share — ตาราง `trip_photos` (id, activityId?, dayId?, storagePath, caption)
+- [ ] **รูปภาพประกอบทริป**: อัปโหลดรูปต่อ activity/day → โชว์ใน timeline + หน้า share — ตาราง `trip_photos` (id, activityId?, dayId?, storagePath, caption)
+  - **เก็บที่ Supabase Storage** (bucket `trip-photos` แบบ private + signed URL) — ไม่แยก vendor ตอนนี้: auth/RLS พร้อม, ฟรี 1 GB, อยู่ในโปรเจกต์เดียวกับ DB
+  - บังคับย่อ/บีบอัดฝั่ง client ก่อนอัปโหลด (~200 KB/รูป → 1 GB เก็บได้ ~5,000 รูป)
+  - **ย้ายไป Cloudflare R2 ก็ต่อเมื่อ**: storage เกิน 100 GB หรือ gallery คนดูเยอะ (R2 ชนะตรง egress ฟรี, S3-compatible ย้ายง่าย) — S3 AWS ยังไม่ต้อง (egress แพง)
 - [ ] **Export PDF แผนเที่ยว**: ปุ่ม "ดาวน์โหลด PDF" ใน `/trips/:id` — ทำฝั่ง server (`GET /api/trips/:id/pdf`, ใช้ puppeteer/chromium บน server หรือ pdf-lib ประกอบเอง) ได้ไฟล์สวยพร้อมโลโก้/วันที่/งบรวม ไม่เสียค่า AI เพราะข้อมูลมีครบแล้ว; แคชไฟล์ 24 ชม.
+  - **เก็บไฟล์ PDF ใน Supabase Storage** bucket `exports` (ไฟล์ละ ~100–500 KB, โหลดนาน ๆ ครั้ง) + ตาราง `trip_exports` (tripId, storagePath, generatedAt) ไว้เช็กแคช — ไม่ต้องแยกที่เก็บ
 
 ## Phase 2 — Growth & Retention (4–6 สัปดาห์)
 
