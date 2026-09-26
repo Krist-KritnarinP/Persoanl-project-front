@@ -32,7 +32,7 @@ import TripInfoCard from "@/components/TripInfoCard";
 import ActivityItem from "@/components/ActivityItem";
 import TripMap from "@/components/TripMap";
 import TripNavCard from "@/components/TripNavCard";
-import { resolveActivityCoords, persistCoords } from "@/utils/geocode";
+import { useTripCoordinates } from "@/hooks/useTripCoordinates";
 
 export default function TripActivity() {
   const { tripId } = useParams();
@@ -145,41 +145,13 @@ export default function TripActivity() {
   });
 
   // ---- MAP: แปลงชื่อสถานที่/โรงแรม/ร้านอาหาร -> พิกัด (DB ก่อน, ไม่เจอค่อย geocode ฟรี) ----
-  const [geoPoints, setGeoPoints] = useState([]);
-  const [geoLoading, setGeoLoading] = useState(false);
+  const { geoPoints, geoLoading } = useTripCoordinates(trip?.id === Number(tripId) ? trip : null);
 
-  useEffect(() => {
-    let cancelled = false;
-    (async () => {
-      const flat = (trip?.days || []).flatMap((d) =>
-        (d.activities || []).map((a) => ({ ...a, dayId: d.id, dayCount: d.dayCount }))
-      );
-      if (flat.length === 0) {
-        setGeoPoints([]);
-        return;
-      }
-      setGeoLoading(true);
-      try {
-        // วาดหมุดทีละจุดตามที่ resolve ได้ (ไม่ต้องรอครบ) + เซฟพิกัดกลับ DB ให้ครั้งต่อไปเร็ว
-        const resolved = await resolveActivityCoords(flat, trip?.destination || "", (snap) => {
-          if (!cancelled) setGeoPoints(snap);
-        });
-        if (!cancelled) {
-          setGeoPoints(resolved);
-          persistCoords(resolved);
-        }
-      } finally {
-        if (!cancelled) setGeoLoading(false);
-      }
-    })();
-    return () => {
-      cancelled = true;
-    };
-  }, [trip?.id, trip?.destination, JSON.stringify((trip?.days || []).map((d) => [d.id, (d.activities || []).map((a) => [a.id, a.locationName, a.latitude, a.longitude])]))]);
+
 
   useEffect(() => {
     if (tripId) fetchTripDetails(tripId);
-  }, [tripId]);
+  }, [tripId, fetchTripDetails]);
 
   // ไม่ auto-select วันแรก — เริ่มที่แท็บภาพรวม (selectedDayId === null)
   const activeDay = trip?.days?.find((d) => d.id === selectedDayId) || null;
@@ -331,6 +303,7 @@ export default function TripActivity() {
       };
 
       if (editingActivity) {
+        delete payload.dayId;
         await updateActivity(tripId, editingActivity.id, payload);
       } else {
         await createActivity(tripId, payload);

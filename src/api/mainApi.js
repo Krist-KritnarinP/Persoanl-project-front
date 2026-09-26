@@ -11,8 +11,6 @@ export const mainApi = axios.create({
 });
 
 const getStoredToken = () => {
-  const direct = localStorage.getItem("token");
-  if (direct) return direct;
   try {
     const raw = localStorage.getItem("authState");
     if (!raw) return null;

@@ -1,7 +1,9 @@
 # HANDOVER — AI LHOUNG Travel Planner
 
 เอกสารส่งมอบงานสำหรับ dev คนต่อไป / คน deploy / คนสอบ
-อัปเดตล่าสุด: 2026-09-25 (รอบ 9: แผนที่ + optimize geocode เร็ว)
+อัปเดตล่าสุด: 2026-09-26 (รอบ 10: map/performance, security hardening และ monorepo)
+
+> **สถานะล่าสุด:** แก้ security หลักและ performance แล้ว ดูหัวข้อ 5.8 และ [SECURITY_REVIEW.md](SECURITY_REVIEW.md) ก่อน deploy ยังต้องตรวจ hosting/HTTPS/backup/monitoring จริง ส่วนหัวข้อเก่าเป็นประวัติงาน ไม่ใช่ config ปัจจุบัน
 
 ## 1. Repo Structure (2 repos แยกกัน)
 
@@ -192,14 +194,96 @@ Auth: `Authorization: Bearer <token>` (จาก `localStorage.authState.state.t
 3. **Photon (komoot) เป็นตัวหลัก ยิงขนาน 5 ตัว** (~1 วิ/จุด → 15 ชื่อจบใน ~3-4 วิ) + Nominatim เหลือเป็น fallback เฉพาะจุดที่ Photon หาไม่เจอ
 4. **progressive render**: `onProgress(snapshot)` วาดหมุดทีละจุดที่ได้ ไม่รอครบ + การ์ดแผนที่โชว์หมุดทันทีที่มี (เหลือ spinner เล็ก "กำลังค้นหา (n)")
 
+## 5.7 ผลตรวจ Security (2026-09-25)
+
+ตรวจโค้ดจริงทั้ง frontend/backend แล้ว พบว่ามี ownership check, bcrypt, JWT จำกัด algorithm, Helmet, CORS และ rate limit บางเส้นทาง รวมถึง token แชร์สุ่มและยกเลิกได้ อย่างไรก็ตาม ยังต้องแก้ก่อนเปิด public ดังนี้:
+
+- [ ] ยืนยันรหัสเดิมก่อนเปลี่ยนรหัสผ่าน และเพิกถอน session/token เก่าหลังเปลี่ยนรหัสผ่าน
+- [ ] เพิ่มความแข็งแรงของรหัสผ่าน (ปัจจุบันขั้นต่ำ 4 ตัว) และใช้ JWT secret production แบบสุ่มอย่างน้อย 32 bytes
+- [ ] ซ่อน error ภายในจาก response และกรองข้อมูลอ่อนไหวใน log
+- [ ] เพิ่ม validation ครบทุก Trip/Day/Activity รวม ID, วันที่, ราคา, ความยาวข้อความ และพิกัด
+- [ ] ตรวจสิทธิ์ทริปก่อนเรียก AI เพิ่มโควต้ารายบัญชี/เพดานทั้งระบบ และจำกัดการสร้าง/อ่านข้อมูล
+- [ ] แยก role ฐานข้อมูลสำหรับ runtime ออกจาก role สำหรับ migration (config เครื่องที่ตรวจใช้บัญชี postgres)
+- [ ] ประเมิน JWT ใน localStorage และตั้ง frontend security headers/CSP
+- [ ] แก้ API `.gitignore` ให้กัน `.env.local`/`.env.production` ด้วย โดยยกเว้น `.env.example`
+
+**หลักฐาน:** frontend build ผ่าน; ทดสอบด้วย mock ยืนยันว่าเปลี่ยนรหัสผ่านได้โดยไม่ถามรหัสเดิม, JWT เก่ายังตรวจลายเซ็นผ่าน, schema รับรหัสผ่าน 4 ตัว และ error handler ส่งรายละเอียด error กลับจริง การทดสอบนี้ไม่แตะฐานข้อมูลจริงและยังไม่ได้เพิ่ม regression test ลง repo
+
+**ขอบเขต:** ยังไม่ได้ทำ penetration test, dependency vulnerability audit หรือยืนยัน HTTPS/backup/สิทธิ์ DB บน hosting จริง ต้องทดสอบสิทธิ์ข้ามบัญชีและเกณฑ์ใน [SECURITY_REVIEW.md](SECURITY_REVIEW.md) ก่อนเปิดใช้งานสาธารณะ
+
+## 5.8 รอบ 10 — Performance และ Security (2026-09-26)
+
+### สาเหตุแผนที่ช้าและการแก้ไข
+
+- เดิม `mapPool` รอ Photon ทุกจุดก่อน emit; เปลี่ยนเป็นส่งผลจาก worker ทันที และรวม state update ทุก 80 ms
+- หน้าเต็มเดิมซ่อนแผนที่เมื่อ `geoLoading`; ตอนนี้แสดง DB/cache/หมุดที่พบก่อนทันที ไม่รอจุดช้า
+- มี request timeout 6 วินาทีและงบเวลาต่อรอบ 15 วินาที, abort ตอนออกหน้า, แชร์ request ชื่อเดียวกัน และจำกัด worker 2 ตัว
+- cache ใน memory/localStorage สูงสุด 500 รายการ; ผลสำเร็จ 30 วันและไม่พบ 5 นาที; ไม่อ่าน/เขียน localStorage ต่อหมุด
+- ใช้ `useTripCoordinates` ร่วมสามหน้า ข้อมูล popup ใช้ activity ปัจจุบัน ไม่ค้างจากการแก้ชื่อ/คำอธิบาย
+- ยกเลิก Nominatim fallback อัตโนมัติ: บริการ public จำกัดรวมทั้งแอป 1 req/s ไม่ใช่ต่อ browser และเดิม fallback ทำให้คิวยาว
+- ใช้ Photon-compatible URL ผ่าน `VITE_GEOCODE_URL`; public demo ไม่มี SLA ควรเปลี่ยน provider เมื่อมีผู้ใช้มาก
+- ยกเลิก automatic fire-and-forget PUT พิกัดทุกจุด เพื่อไม่เขียนทับการแก้ไขระหว่างค้นหา/ยิง write ซ้ำ พิกัดที่ค้นหาอัตโนมัติอยู่ใน cache; การค้นหา/กรอกแล้วบันทึกผ่าน ActivityModal ยังเก็บลง DB
+- แผนที่ไม่ animate fit ทุกหมุด และหยุด auto-fit หลังผู้ใช้ลาก/zoom; ลด tile buffer และ cache marker icons
+- ถ้าค้นหาไม่ครบภายในกำหนด แสดงจุดที่มีและข้อความให้แก้พิกัดในกิจกรรม ไม่ค้าง spinner
+
+### หน้าเว็บ
+
+- แยก route เป็น lazy chunks; entry JS จาก 764.72 KB เหลือประมาณ 227.84 KB ก่อน gzip (ไม่ใช่ขนาดรวมทุก chunk)
+- หน้า login/dashboard ไม่โหลด Leaflet; ลด blur ซ้อนในการ์ด/ปุ่ม/input ทุกขนาดจอ และตัด shine/floating animation
+- แก้ชื่อ import `Userprofile` ให้ตรงตัวพิมพ์สำหรับ Linux และใช้ `import.meta.dirname` ใน Vite config
+- รายการทริปแบ่งหน้า 100 รายการและดึงเฉพาะวันที่/ลำดับวัน; frontend โหลดต่อเมื่อมี nextPage
+
+### Security ที่แก้แล้ว
+
+- JWT อายุ 1 ชั่วโมงพร้อม `tokenVersion`; เปลี่ยนรหัสผ่านต้องยืนยันรหัสเดิม และเพิ่ม version แบบมีเงื่อนไขป้องกัน race
+- `POST /api/users/logout` เพิกถอน token ทุกเครื่องของบัญชี; frontend ล้าง state หลัง server ยืนยัน
+- รหัสผ่านใหม่ขั้นต่ำ 15 ตัวและไม่เกิน 72 UTF-8 bytes; bcrypt cost 12; บัญชีเดิมยัง login ได้
+- validation Trip/Day/Activity/ID, วันที่ ราคา และพิกัด; body schema ไม่รับ field แปลกปลอม
+- error 5xx เป็นข้อความกลางและ log เฉพาะ request ID/status/code ไม่ log request หรือ Prisma error ทั้งก้อน
+- AI ตรวจเจ้าของก่อนเรียก และใช้ข้อมูลทริปจาก DB; cache คำตอบ 6 ชั่วโมงเมื่อ itinerary ตรงกัน; timeout 25s, output สูงสุด 1500 tokens, ไม่มี automatic retry
+- quota AI เก็บใน `ai_usage` และ transaction/advisory lock: 10 ครั้ง/บัญชี/วัน, 100 ครั้งทั้งระบบ/วัน (ตั้ง env ได้), 2 ครั้ง/บัญชี/นาที; นับ attempts แม้ provider ล้มเหลว ลบประวัติไม่คืนโควต้า
+- จำกัดสร้าง 100 trips/บัญชี, 60 days/trip, 100 activities/day ใน transaction; rate limit API รวมและ share; ตัด auth ซ้ำที่ DaysRoute
+- `TRUST_PROXY_HOPS` default 0 ต้องตั้งตาม reverse proxy จริง; production ปฏิเสธ secret สั้น/placeholder และ FRONTEND_URL ที่ไม่ใช่ HTTPS
+- migration เพิ่ม `users.token_version`, ตาราง `ai_usage` พร้อม RLS และ index วันที่ AI; **apply กับ DB ที่เครื่องนี้ใช้อยู่แล้ว**
+- สร้าง role `ailhoung_runtime` ที่ไม่มี DDL/จัดการ role และเปลี่ยน local DATABASE_URL แล้ว; policy อนุญาตเฉพาะ trusted backend role ส่วนการแยกผู้ใช้ยังอยู่ที่ API ไม่ได้เปิดให้ Supabase anon/authenticated
+- สุ่ม local JWT secret ใหม่แล้ว **ผู้ใช้เดิมต้อง login ใหม่**; เก็บ owner DIRECT_URL สำหรับ migration แยก ห้ามใช้ใน runtime production
+- `.gitignore` กัน `.env*` ยกเว้น example; frontend มี Vercel headers และ `_headers`/`_redirects` สำหรับ host ที่รองรับ ต้องตรวจว่า host จริงนำไปใช้
+- อัปเดต Prisma/client/adapter เป็น 7.10.0 ตรงกัน; overrides `deepmerge-ts` 8.0.0 และ `mysql2` 3.24.4 เพื่อปิด advisory ใน Prisma tooling; validate/generate ผ่าน
+
+### วิธีอัปเดต environment อื่น
+
+1. Backup DB แล้วใช้ owner `DIRECT_URL` รัน `npm run migrate:security` (additive/idempotent สำหรับ schema ที่มีอยู่ ไม่ใช่สร้าง DB ใหม่)
+2. `npm ci` และ `npx prisma generate`; schema มี generated client commit ตามเดิม
+3. ตั้ง runtime role แยกจาก owner; `npm run security:runtime-role` ใช้ครั้งเดียวเพื่อสร้าง role และเขียน local .env หยุดหาก role มีอยู่แล้ว อย่ารันซ้ำเพื่อ rotate โดยไม่ตรวจ
+4. ตั้ง `DATABASE_URL`, `JWT_SECRET` ใหม่ที่สุ่มอย่างน้อย 32 bytes, `FRONTEND_URL`, `GEMINI_API_KEY`, `GEMINI_MODEL`, `NODE_ENV=production`, `TRUST_PROXY_HOPS` ตาม host และ AI limits
+5. Runtime ใช้ `npm start`; frontend ตั้ง `VITE_API_URL=https://<api-domain>/api` แล้ว build ใหม่
+
+### การตรวจยืนยัน
+
+- Backend `npm test`: 7 tests ผ่าน; frontend `npm test`: 4 tests ผ่าน
+- API integration สองบัญชีจริงผ่าน: CRUD, validation, ownership, share/revoke, password change และ logout revocation; สร้างข้อมูลชั่วคราวแล้วลบเฉพาะที่สร้าง ไม่มีการเรียก Gemini
+- `prisma validate`, `prisma generate` และ frontend production build ผ่าน
+- หลังปรับ dependencies: npm install audit ฝั่ง API รายงาน 0 vulnerabilities; frontend production dependency audit 0
+- Browser/performance smoke และสถานะ repo ดูบันทึกส่งมอบล่าสุดที่ท้ายไฟล์
+
+### ข้อจำกัดที่ยังต้องดูแล
+
+- JWT ยังอยู่ localStorage; CSP ลดความเสี่ยงแต่ไม่ทำให้ token ปลอดภัยหากเกิด XSS ยังไม่ได้ย้ายเป็น HttpOnly cookie
+- rate limit ต่อ IP ใช้ memory ต่อ process; quota AI ใช้ DB ร่วมแล้ว หากเพิ่มหลาย instance ควรใช้ shared store สำหรับ auth/global IP limit
+- ไม่มี password breach/blocklist, email verification หรือ recovery flow ใหม่ในรอบนี้
+- ไม่มีการ deploy hosting หรือทดสอบ restore/monitoring จริง และไม่ได้ยืนยันความแม่นยำ/ความเร็ว public geocoder บนเครือข่ายผู้ใช้
+
 ## 6. TODO ที่เหลือ (ยังไม่ทำ)
-- [ ] ไม่มี test อัตโนมัติ / ไม่มี docker — มีแค่เทส manual (รอบ 2: predict→history→delete ผ่าน 2026-09-25)
-- [ ] JS bundle 518KB (เตือน code-split) — ยังไม่แตก chunk
+- [x] มี automated regression tests และ integration smoke แล้ว (ดูหัวข้อ 5.8)
+- [x] แยก route chunks แล้ว entry JS ประมาณ 227.84 KB ก่อน gzip
 - [ ] ฟีเจอร์ `AI สร้างทริป` ยังเป็นปุ่ม disabled (รอ backend)
 
 ## 7. Deploy Checklist
+- [ ] ตรวจข้อจำกัดที่เหลือในหัวข้อ 5.8 และผ่านเกณฑ์ก่อนเปิด public ใน [SECURITY_REVIEW.md](SECURITY_REVIEW.md)
+- [ ] ตรวจ HTTPS, proxy/rate limit, CORS, frontend headers, secret และ dependency บนสภาพแวดล้อมที่จะ deploy
+- [ ] ทดสอบสิทธิ์ด้วยสองบัญชี, token revocation, public share และ backup restore บน staging
 - [ ] ตั้ง env หลังบ้าน: `DATABASE_URL, DIRECT_URL, JWT_SECRET, GEMINI_API_KEY, GEMINI_MODEL, FRONTEND_URL, PORT`
-- [ ] `npx prisma db push` (ไม่มี migration dir — ใช้ push)
+- [ ] DB เดิม: `npm run migrate:security` ด้วย owner DIRECT_URL; อย่าใช้ db push ด้วย runtime role
 - [ ] ตั้ง `VITE_API_URL` หน้าบ้านเป็น domain API จริง แล้ว `npm run build`
 - [ ] ห้าม commit `.env` / `.env*.bak` (ignore แล้ว) — `src/generated/prisma` ตั้งใจ commit ไว้
 - [ ] อย่าเอา Supabase anon/service key มาใช้ฝั่ง front (ไม่จำเป็น)
@@ -209,3 +293,19 @@ Auth: `Authorization: Bearer <token>` (จาก `localStorage.authState.state.t
 2. สร้างทริป → เข้า `/trips/:id` → เพิ่ม Day + Activity
 3. กด `ทำนาย` อากาศ AI → ประวัติถูกเก็บ (`GET /history/:tripId`)
 4. แก้โปรไฟล์ `/userprofile` → Logout
+
+
+## Final verification — 2026-09-26
+
+- Frontend tests: 4 passed; backend tests: 7 passed.
+- Real database integration: two-account isolation, CRUD, validation, share/revoke, password and logout session revocation passed using the limited runtime role. Temporary test records removed. No paid AI requests made.
+- Production build passed. Entry JS is 227.87 kB (70.76 kB gzip), compared with the earlier 764.72 kB entry. Other route/shared chunks load separately; this is not the total page download size.
+- Chromium desktop/mobile smoke: progressive pins, lazy map bundle, password confirmation field, no horizontal overflow or page errors. Synthetic geocoder test showed first two pins in approximately 0.5 seconds while a third lookup was delayed 8 seconds; this is not a real provider latency benchmark. Map tiles were mocked/blocked, so live tile delivery was not measured.
+- Fixed CSS prefix ordering after browser testing revealed production CSS still enabled blur. Added map resize observation and reset viewport when switching day.
+- Dependency audits at time of work: backend full audit and frontend production audit reported zero known vulnerabilities. This is not a penetration-test guarantee.
+- Combined publication folder: `../AIlhongdeploy`, with `frontend/` and `backend/`. Original repositories and their histories remain intact. The new repo is a snapshot, not merged Git histories.
+- Deployment has NOT been performed. Follow the combined root README for environment variables, database initialization and hosting settings. Existing local users must log in again following the JWT secret rotation.
+
+## Commit — 2026-09-26 (รอบ 10+11)
+
+- งานค้างรอบ security hardening + แผนที่ (tokenVersion, AiUsage, runtime role scripts, lazy routes, geocode, SECURITY_REVIEW.md) ถูก commit ครบทั้ง 2 repos แล้ว ยังไม่ push

@@ -1,243 +1,123 @@
-// Geocoding ฟรี ไม่ต้องใช้ API key — เร็วด้วย 3 ชั้น:
-// 1. พิกัดใน DB (เร็วสุด — เปิดครั้งต่อไปแทบจะทันที)
-// 2. cache ใน localStorage
-// 3. Photon (komoot, ขนานได้) -> Nominatim (OSM, 1 req/s) เป็น fallback
-// Attribution: © OpenStreetMap contributors
-
-import { mainApi } from "@/api/mainApi";
-
-const CACHE_KEY = "geocode-cache-v1";
-const NOMINATIM_DELAY = 1100;
-const PHOTON_CONCURRENCY = 5;
-
-function loadCache() {
-  try {
-    return JSON.parse(localStorage.getItem(CACHE_KEY) || "{}");
-  } catch {
-    return {};
+// DB/cache first. Requests are shared across views, bounded and cancellable.
+// Public Nominatim is intentionally not used for automatic bulk lookup.
+const CACHE_KEY = "geocode-cache-v2";
+const inflight = new Map();
+let cache;
+let saveTimer;
+const MAX_CACHE = 500;
+const POSITIVE_TTL = 30 * 86400000;
+const NEGATIVE_TTL = 5 * 60000;
+export const validCoords = (lat, lng) => lat !== null && lat !== undefined && lat !== "" &&
+  lng !== null && lng !== undefined && lng !== "" &&
+  Number.isFinite(Number(lat)) && Number.isFinite(Number(lng)) &&
+  Math.abs(Number(lat)) <= 90 && Math.abs(Number(lng)) <= 180;
+const keyOf = (name, hint) => JSON.stringify([String(name || "").trim().toLowerCase(), String(hint || "").trim().toLowerCase()]);
+function getCache() {
+  if (!cache) {
+    try { cache = JSON.parse(localStorage.getItem(CACHE_KEY) || "{}"); } catch { cache = {}; }
+    if (!cache || typeof cache !== "object" || Array.isArray(cache)) cache = {};
   }
+  return cache;
 }
-
-function saveCache(cache) {
-  try {
-    const keys = Object.keys(cache).slice(-500); // กันบวม เก็บ 500 ล่าสุด
-    const trimmed = {};
-    keys.forEach((k) => (trimmed[k] = cache[k]));
-    localStorage.setItem(CACHE_KEY, JSON.stringify(trimmed));
-  } catch {
-    // ignore quota errors
-  }
+function cached(key) {
+  const entry = getCache()[key];
+  if (!entry || entry.expires <= Date.now()) return undefined;
+  return entry.hit === null || validCoords(entry.hit?.lat, entry.hit?.lng) ? entry.hit : undefined;
 }
-
-const normKey = (name, hint) => `${String(name || "").trim()}||${String(hint || "").trim()}`.toLowerCase();
-
-// --- Photon: เร็ว + ยิงขนานได้ (CORS เปิด, ไม่ต้องใช้ key) ---
-async function photonLookup(text) {
-  const url = `https://photon.komoot.io/api/?q=${encodeURIComponent(text)}&limit=1&lang=en`;
-  const r = await fetch(url, { headers: { Accept: "application/json" } });
-  if (!r.ok) throw new Error(`Photon failed: ${r.status}`);
-  const j = await r.json();
-  const f = j?.features?.[0];
-  if (!f?.geometry?.coordinates) return null;
-  const [lng, lat] = f.geometry.coordinates;
-  const p = f.properties || {};
-  return {
-    lat: Number(lat),
-    lng: Number(lng),
-    label: [p.name, p.city, p.state, p.country].filter(Boolean).join(", "),
-  };
+function remember(key, hit) {
+  getCache()[key] = { hit, expires: Date.now() + (hit ? POSITIVE_TTL : NEGATIVE_TTL) };
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(() => {
+    const entries = Object.entries(getCache()).filter(([, v]) => v.expires > Date.now()).slice(-MAX_CACHE);
+    cache = Object.fromEntries(entries);
+    try { localStorage.setItem(CACHE_KEY, JSON.stringify(cache)); } catch { /* storage unavailable */ }
+  }, 200);
 }
-
-// --- Nominatim: แม่น แต่ต้องต่อคิว 1 req/s (fallback อย่างเดียว) ---
-let queue = Promise.resolve();
-function nominatimFetch(url) {
-  const run = queue.then(
-    () =>
-      new Promise((resolve) => setTimeout(resolve, NOMINATIM_DELAY)).then(() =>
-        fetch(url, { headers: { Accept: "application/json" } }).then((r) => {
-          if (!r.ok) throw new Error(`Nominatim failed: ${r.status}`);
-          return r.json();
-        })
-      )
-  );
-  queue = run.catch(() => {});
-  return run;
+async function lookup(text, signal) {
+  const endpoint = import.meta.env?.VITE_GEOCODE_URL || "https://photon.komoot.io/api/";
+  const url = new URL(endpoint);
+  url.search = new URLSearchParams({ q: text, limit: "1", lang: "en" });
+  const response = await fetch(url, { signal, headers: { Accept: "application/json" } });
+  if (!response.ok) throw new Error("Geocoder unavailable");
+  const feature = (await response.json())?.features?.[0];
+  const [lng, lat] = feature?.geometry?.coordinates || [];
+  if (!validCoords(lat, lng)) return null;
+  const props = feature.properties || {};
+  return { lat: Number(lat), lng: Number(lng), label: [props.name, props.city, props.country].filter(Boolean).join(", ") };
 }
-
-async function nominatimLookup(text) {
-  const url =
-    `https://nominatim.openstreetmap.org/search?format=jsonv2&limit=1&accept-language=th,en` +
-    `&q=${encodeURIComponent(text)}`;
-  const res = await nominatimFetch(url);
-  if (!res?.length) return null;
-  return { lat: Number(res[0].lat), lng: Number(res[0].lon), label: res[0].display_name };
-}
-
-// ค้นหาที่เดียว (ใช้ใน ActivityModal): cache -> Photon -> Nominatim
-export async function geocodePlace(name, hint = "") {
+// A shared request survives while another mounted view still needs it.
+export function geocodePlace(name, hint = "", { signal } = {}) {
+  if (signal?.aborted) return Promise.reject(signal.reason);
   const q = String(name || "").trim();
-  if (!q) return null;
-  const cache = loadCache();
-  const key = normKey(q, hint);
-  if (cache[key]) return cache[key];
-
-  const queries = hint ? [`${q}, ${hint}`, q] : [q];
-  for (const text of queries) {
-    try {
-      const hit = await photonLookup(text);
-      if (hit) {
-        cache[key] = hit;
-        saveCache(cache);
-        return hit;
-      }
-    } catch {
-      // ตกไปลองตัวถัดไป
-    }
-  }
-  // Photon หาไม่เจอ -> Nominatim (ยิงตรง ไม่ต้องรอคิว เพราะเป็นการกด manual ครั้งเดียว)
-  for (const text of queries) {
-    try {
-      const url =
-        `https://nominatim.openstreetmap.org/search?format=jsonv2&limit=1&accept-language=th,en` +
-        `&q=${encodeURIComponent(text)}`;
-      const r = await fetch(url, { headers: { Accept: "application/json" } });
-      if (!r.ok) continue;
-      const res = await r.json();
-      if (res?.length) {
-        const hit = { lat: Number(res[0].lat), lng: Number(res[0].lon), label: res[0].display_name };
-        cache[key] = hit;
-        saveCache(cache);
-        return hit;
-      }
-    } catch {
-      // ignore
-    }
-  }
-  return null;
-}
-
-// รันงานแบบขนานจำกัดจำนวน (worker pool)
-async function mapPool(items, concurrency, fn) {
-  const results = new Array(items.length);
-  let i = 0;
-  const workers = Array.from({ length: Math.min(concurrency, items.length) }, async () => {
-    while (i < items.length) {
-      const idx = i++;
+  if (!q) return Promise.resolve(null);
+  const key = keyOf(q, hint);
+  const hit = cached(key);
+  if (hit !== undefined) return Promise.resolve(hit);
+  let job = inflight.get(key);
+  if (!job || job.controller.signal.aborted) {
+    const controller = new AbortController();
+    job = { controller, users: 0 };
+    const timeout = setTimeout(() => controller.abort(), 6000);
+    job.promise = (async () => {
       try {
-        results[idx] = await fn(items[idx], idx);
+        let result = await lookup(hint ? `${q}, ${hint}` : q, controller.signal);
+        if (!result && hint) result = await lookup(q, controller.signal);
+        remember(key, result);
+        return result;
       } catch {
-        results[idx] = null;
+        if (!controller.signal.aborted) remember(key, null);
+        return null;
+      } finally {
+        clearTimeout(timeout);
+        if (inflight.get(key) === job) inflight.delete(key);
       }
-    }
+    })();
+    inflight.set(key, job);
+  }
+  job.users++;
+  return new Promise((resolve, reject) => {
+    let finished = false;
+    const finish = (fn, value) => {
+      if (finished) return;
+      finished = true;
+      signal?.removeEventListener("abort", abort);
+      if (--job.users === 0) job.controller.abort();
+      fn(value);
+    };
+    const abort = () => finish(reject, signal.reason || new DOMException("Aborted", "AbortError"));
+    signal?.addEventListener("abort", abort, { once: true });
+    job.promise.then(value => finish(resolve, value), error => finish(reject, error));
   });
-  await Promise.all(workers);
-  return results;
 }
-
-const hasDbCoords = (act) =>
-  act.latitude != null && act.longitude != null && !isNaN(Number(act.latitude)) && !isNaN(Number(act.longitude));
-
-// Resolve activities -> [{...activity, lat, lng, geoLabel}]
-// - onProgress(snapshot) ถูกเรียกทุกครั้งที่มีจุด resolve เพิ่ม (เอาไป setState ได้เลย หมุดค่อยๆ ขึ้น)
-// - dedupe ชื่อซ้ำ (เช่น โรงแรมเดิมนอน 2 คืน) ให้เหลือ 1 request
-export async function resolveActivityCoords(activities, destination = "", onProgress) {
-  const list = activities || [];
-  const cache = loadCache();
-  const out = list.map((act) => {
-    if (hasDbCoords(act)) {
-      return { ...act, lat: Number(act.latitude), lng: Number(act.longitude), geoLabel: null };
-    }
-    return { ...act, lat: null, lng: null, geoLabel: null };
+export async function resolveActivityCoords(activities, destination = "", onProgress, { signal } = {}) {
+  signal = AbortSignal.any([...(signal ? [signal] : []), AbortSignal.timeout(15000)]);
+  const out = (activities || []).map(a => {
+    const hit = validCoords(a.latitude, a.longitude)
+      ? { lat: Number(a.latitude), lng: Number(a.longitude) } : cached(keyOf(a.locationName, destination));
+    return { ...a, lat: hit?.lat ?? null, lng: hit?.lng ?? null, geoLabel: hit?.label ?? null };
   });
-
-  const emit = () => {
-    if (onProgress) onProgress(out.map((o) => ({ ...o })));
-  };
-
-  // รวมคิวงานที่ไม่ซ้ำ (key เดียวกันยิงครั้งเดียว)
-  const jobByKey = new Map();
-  out.forEach((item, idx) => {
-    if (item.lat != null || !item.locationName) return;
-    const key = normKey(item.locationName, destination);
-    const cached = cache[key];
-    if (cached) {
-      item.lat = cached.lat;
-      item.lng = cached.lng;
-      item.geoLabel = cached.label;
-      return;
-    }
-    if (!jobByKey.has(key)) jobByKey.set(key, { key, name: item.locationName.trim(), idxs: [] });
-    jobByKey.get(key).idxs.push(idx);
+  const emit = () => { if (!signal?.aborted) onProgress?.(out.slice()); };
+  emit();
+  const jobs = new Map();
+  out.forEach((a, i) => {
+    if (a.lat !== null || !a.locationName) return;
+    const key = keyOf(a.locationName, destination);
+    if (!jobs.has(key)) jobs.set(key, []);
+    jobs.get(key).push(i);
   });
-  emit(); // วาดจุดที่ได้จาก DB/cache ก่อนทันที ไม่ต้องรอ network
-
-  const jobs = [...jobByKey.values()];
-  if (jobs.length === 0) return out;
-
-  const applyHit = (job, hit) => {
-    if (!hit) return false;
-    cache[job.key] = hit;
-    job.idxs.forEach((idx) => {
-      out[idx].lat = hit.lat;
-      out[idx].lng = hit.lng;
-      out[idx].geoLabel = hit.label;
-    });
-    return true;
-  };
-
-  // ด่าน 1: Photon ขนาน 5 ตัว (เร็ว — ปกติจบใน 1-3 วิ)
-  const photonHits = await mapPool(jobs, PHOTON_CONCURRENCY, async (job) => {
-    const queries = destination ? [`${job.name}, ${destination}`, job.name] : [job.name];
-    for (const text of queries) {
+  const pending = [...jobs.values()];
+  let next = 0;
+  await Promise.all(Array.from({ length: Math.min(2, pending.length) }, async () => {
+    while (!signal?.aborted && next < pending.length) {
+      const indices = pending[next++];
       try {
-        const hit = await photonLookup(text);
-        if (hit) return hit;
-      } catch {
-        // ลอง query ถัดไป
-      }
-    }
-    return null;
-  });
-  let needSave = false;
-  photonHits.forEach((hit, i) => {
-    if (applyHit(jobs[i], hit)) {
-      needSave = true;
-      emit();
-    }
-  });
-  if (needSave) saveCache(cache);
-
-  // ด่าน 2: ตัวที่ Photon หาไม่เจอ -> Nominatim ต่อคิว 1 req/s (มักเหลือ 0-2 จุด)
-  const leftovers = jobs.filter((job, i) => !photonHits[i]);
-  for (const job of leftovers) {
-    const queries = destination ? [`${job.name}, ${destination}`, job.name] : [job.name];
-    for (const text of queries) {
-      try {
-        const hit = await nominatimLookup(text);
-        if (hit && applyHit(job, hit)) {
-          saveCache(cache);
-          emit();
-          break;
+        const hit = await geocodePlace(out[indices[0]].locationName, destination, { signal });
+        if (hit && !signal?.aborted) {
+          indices.forEach(i => { out[i] = { ...out[i], lat: hit.lat, lng: hit.lng, geoLabel: hit.label }; });
+          emit(); // Emit inside the worker, never wait for the slowest place.
         }
-      } catch {
-        // ลอง query ถัดไป
-      }
+      } catch { /* cancellation */ }
     }
-  }
+  }));
   return out;
-}
-
-// เซฟพิกัดที่หาได้กลับลง DB (fire-and-forget) — เปิดครั้งต่อไปใช้พิกัด DB ทันที ไม่ต้อง geocode ใหม่
-// เรียกเฉพาะหน้าของเจ้าของทริป (ห้ามเรียกในหน้า share)
-export function persistCoords(resolved) {
-  try {
-    const targets = (resolved || []).filter(
-      (p) => p.lat != null && p.lng != null && !hasDbCoords(p) && p.id != null
-    );
-    targets.forEach((p) => {
-      mainApi.put(`/activities/${p.id}`, { latitude: p.lat, longitude: p.lng }).catch(() => {});
-    });
-  } catch {
-    // ignore
-  }
 }

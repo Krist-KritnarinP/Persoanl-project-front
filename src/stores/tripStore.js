@@ -10,8 +10,13 @@ export const useTripStore = create((set, get) => ({
   fetchTrips: async () => {
     set({ loading: true, error: null });
     try {
-      const response = await mainApi.get("/trips");
-      const tripsData = response.data?.data || response.data;
+      const tripsData = [];
+      let page = 1;
+      while (page) {
+        const response = await mainApi.get("/trips", { params: { page } });
+        tripsData.push(...(response.data?.data || []));
+        page = response.data?.nextPage;
+      }
       set({
         trips: Array.isArray(tripsData) ? tripsData : [],
         loading: false

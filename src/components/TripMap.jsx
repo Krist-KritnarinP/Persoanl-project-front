@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { MapContainer, TileLayer, Marker, Popup, Polyline, LayersControl, useMap } from "react-leaflet";
 import L from "leaflet";
@@ -14,30 +14,50 @@ export const TYPE_COLORS = {
   TRANSPORT: "#0ea5e9",
 };
 
+const iconCache = new Map();
 function numberedIcon(n, type, dimmed = false) {
+  const key = `${n}/${type}/${dimmed}`;
+  if (iconCache.has(key)) return iconCache.get(key);
   const color = TYPE_COLORS[type] || "#10b981";
-  return L.divIcon({
+  const icon = L.divIcon({
     className: "trip-pin",
     html: `<div style="background:${color};color:#fff;width:28px;height:28px;border-radius:9999px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:13px;border:2px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,.35);${dimmed ? "opacity:.35;filter:grayscale(1);" : ""}">${n}</div>`,
     iconSize: [28, 28],
     iconAnchor: [14, 14],
     popupAnchor: [0, -14],
   });
+  if (iconCache.size > 1000) iconCache.clear();
+  iconCache.set(key, icon);
+  return icon;
 }
 
 function FitBounds({ points }) {
   const map = useMap();
+  const interacted = useRef(false);
+  useEffect(() => {
+    const stop = () => { interacted.current = true; };
+    const container = map.getContainer();
+    container.addEventListener("pointerdown", stop);
+    container.addEventListener("wheel", stop, { passive: true });
+    return () => { container.removeEventListener("pointerdown", stop); container.removeEventListener("wheel", stop); };
+  }, [map]);
   const key = JSON.stringify((points || []).map((p) => [p.lat, p.lng]));
   useEffect(() => {
-    if (!points || points.length === 0) return;
-    if (points.length === 1) {
-      map.setView([points[0].lat, points[0].lng], 13);
-      return;
-    }
-    map.fitBounds(
-      points.map((p) => [p.lat, p.lng]),
-      { padding: [32, 32] }
-    );
+    const fit = () => {
+      map.invalidateSize({ animate: false, pan: false });
+      if (!points?.length || interacted.current) return;
+      if (points.length === 1) {
+        map.setView([points[0].lat, points[0].lng], 13, { animate: false });
+      } else {
+        map.fitBounds(points.map((p) => [p.lat, p.lng]), { padding: [32, 32], animate: false });
+      }
+    };
+    fit();
+    const observer = new ResizeObserver(fit);
+    observer.observe(map.getContainer());
+    return () => observer.disconnect();
+  // Coordinate key intentionally ignores unrelated activity metadata.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [map, key]);
   return null;
 }
@@ -49,17 +69,20 @@ export function MapBody({ points, typeLabel, height, dimmedIds, route }) {
       center={points.length > 0 ? [points[0].lat, points[0].lng] : [13.7563, 100.5018]}
       zoom={points.length > 0 ? 11 : 5}
       style={{ height, width: "100%", borderRadius: "1rem", zIndex: 0 }}
+      zoomAnimation={false}
+      fadeAnimation={false}
+      markerZoomAnimation={false}
       scrollWheelZoom
     >
       <LayersControl position="topright">
         <LayersControl.BaseLayer checked name="2D · OpenStreetMap">
-          <TileLayer
+          <TileLayer updateWhenIdle updateWhenZooming={false} keepBuffer={1}
             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
           />
         </LayersControl.BaseLayer>
         <LayersControl.BaseLayer name="Satellite · Esri">
-          <TileLayer
+          <TileLayer updateWhenIdle updateWhenZooming={false} keepBuffer={1}
             attribution="Imagery &copy; Esri, Maxar, Earthstar Geographics"
             url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
           />
@@ -186,6 +209,8 @@ export default function TripMap({
           </p>
         </>
       )}
+
+      {!loading && points.length > pinned.length && <p role="status" className="text-sm text-base-content/70">{t("map.unresolved")}</p>}
 
       {full && !expandHref && pinned.length > 0 && (
         <div className="fixed inset-0 z-[1000] bg-black/60 backdrop-blur-sm p-3 md:p-6" onClick={() => setFull(false)}>

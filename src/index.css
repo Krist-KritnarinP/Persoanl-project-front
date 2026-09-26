@@ -798,3 +798,14 @@ body {
   background: transparent;
   border: none;
 }
+/* Performance: avoid a composited blur layer for every nested card/control. */
+.glass, .btn, .input, .textarea, .select {
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+  transform: none;
+  transition: background-color 120ms ease, border-color 120ms ease, opacity 120ms ease;
+}
+.glass { background: rgba(246, 250, 247, .94); box-shadow: 0 3px 12px rgba(23,32,27,.06); }
+.glass::before, .btn::after { display: none; }
+.glass-floating { animation: none; }
+.input:focus, .textarea:focus, .select:focus { transform: none; }

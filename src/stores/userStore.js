@@ -1,4 +1,7 @@
 import { mainApi, apiRegister } from '@/api/mainApi'
+import { toast } from 'react-toastify';
+import { useTripActivityStore } from './tripActivityStore';
+import { useTripStore } from './tripStore';
 import {create} from 'zustand'
 import { createJSONStorage, persist } from 'zustand/middleware'
 
@@ -15,7 +18,22 @@ const useUserStore = create( persist((set,get) => ({
    const resp = await apiRegister(data)
    return resp
  },
- logout: () => set({token : '', user: null})
+ clearSession: () => {
+   localStorage.removeItem('token');
+   useTripActivityStore.setState({ trip: null, weatherHistory: [], weatherPrediction: null });
+   useTripStore.setState({ trips: [] });
+   set({ token: '', user: null });
+ },
+ logout: async () => {
+   try { await mainApi.post('/users/logout'); }
+   catch (error) {
+     if (error.response?.status !== 401) {
+       toast.error('Could not revoke server sessions. Please reconnect and sign out again.');
+       return;
+     }
+   }
+   get().clearSession();
+ }
 }), {
  name: 'authState',
  storage: createJSONStorage( ()=> localStorage ),

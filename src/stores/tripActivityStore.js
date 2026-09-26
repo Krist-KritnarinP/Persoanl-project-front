@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import { mainApi } from "@/api/mainApi";
 
+let fetchSequence = 0;
 export const useTripActivityStore = create((set, get) => ({
   // State หลักสำหรับ Trip, Days และ Activities
   trip: null,
@@ -16,14 +17,17 @@ export const useTripActivityStore = create((set, get) => ({
 
   // 1. Fetch รายละเอียด Trip พร้อม Days และ Activities
   fetchTripDetails: async (tripId) => {
-    set({ loading: true, error: null });
+    const sequence = ++fetchSequence;
+    set({ loading: true, error: null, ...(get().trip?.id !== Number(tripId) ? { trip: null, weatherHistory: [], weatherPrediction: null } : {}) });
     try {
       const response = await mainApi.get(`/trips/${tripId}`);
+      if (sequence !== fetchSequence) return;
       set({ 
         trip: response.data.data || response.data, 
         loading: false 
       });
     } catch (error) {
+      if (sequence !== fetchSequence) return;
       console.error("Fetch trip details error:", error);
       set({ 
         error: error.response?.data?.message || "ไม่สามารถดึงข้อมูลทริปได้", 

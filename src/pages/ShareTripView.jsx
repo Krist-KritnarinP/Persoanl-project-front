@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import {
   FiArrowLeft,
-  FiCalendar,
   FiClock,
   FiEye,
   FiHome,
@@ -17,7 +16,7 @@ import LanguageSwitcher from "@/components/LanguageSwitcher";
 import TripInfoCard from "@/components/TripInfoCard";
 import TripMap from "@/components/TripMap";
 import TripNavCard from "@/components/TripNavCard";
-import { resolveActivityCoords } from "@/utils/geocode";
+import { useTripCoordinates } from "@/hooks/useTripCoordinates";
 
 const baseURL = import.meta.env.VITE_API_URL || "http://localhost:8899/api";
 
@@ -29,8 +28,7 @@ export default function ShareTripView() {
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
   const [selectedDayId, setSelectedDayId] = useState(null);
-  const [geoPoints, setGeoPoints] = useState([]);
-  const [geoLoading, setGeoLoading] = useState(false);
+  const { geoPoints, geoLoading } = useTripCoordinates(trip);
 
   const TYPE_META = {
     ACCOMMODATION: { label: t("act.accom"), icon: FiHome, color: "badge-primary" },
@@ -69,30 +67,7 @@ export default function ShareTripView() {
 
   const activeDay = trip?.days?.find((d) => d.id === selectedDayId) || null;
 
-  useEffect(() => {
-    let cancelled = false;
-    (async () => {
-      const flat = (trip?.days || []).flatMap((d) =>
-        (d.activities || []).map((a) => ({ ...a, dayId: d.id, dayCount: d.dayCount }))
-      );
-      if (flat.length === 0) {
-        setGeoPoints([]);
-        return;
-      }
-      setGeoLoading(true);
-      try {
-        const resolved = await resolveActivityCoords(flat, trip?.destination || "", (snap) => {
-          if (!cancelled) setGeoPoints(snap);
-        });
-        if (!cancelled) setGeoPoints(resolved);
-      } finally {
-        if (!cancelled) setGeoLoading(false);
-      }
-    })();
-    return () => {
-      cancelled = true;
-    };
-  }, [trip?.destination, JSON.stringify((trip?.days || []).map((d) => [d.id, (d.activities || []).map((a) => [a.id, a.locationName, a.latitude, a.longitude])]))]);
+
 
   const mapPoints = activeDay ? geoPoints.filter((p) => p.dayId === activeDay.id) : geoPoints;
   const mapSubtitle = activeDay

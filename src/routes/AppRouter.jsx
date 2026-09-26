@@ -1,4 +1,4 @@
-import React from "react";
+import React, { lazy, Suspense } from "react";
 import {
   createBrowserRouter,
   Navigate,
@@ -6,12 +6,12 @@ import {
   Outlet,
 } from "react-router-dom";
 
-import Dashboard from "@/pages/Dashboard";
-import Login from "@/pages/Login";
-import Trips from "@/pages/TripsActivity";
-import TripMapPage from "@/pages/TripMapPage";
-import ShareTripView from "@/pages/ShareTripView";
-import Userprofile from "@/pages/userprofile";
+const Dashboard = lazy(() => import("@/pages/Dashboard"));
+const Login = lazy(() => import("@/pages/Login"));
+const Trips = lazy(() => import("@/pages/TripsActivity"));
+const TripMapPage = lazy(() => import("@/pages/TripMapPage"));
+const ShareTripView = lazy(() => import("@/pages/ShareTripView"));
+const Userprofile = lazy(() => import("@/pages/Userprofile"));
 import useUserStore from "@/stores/userStore";
 
 // เช็กสิทธิ์คนที่ Login แล้ว
@@ -49,7 +49,7 @@ const router = createBrowserRouter([
 ]);
 
 function AppRouter() {
-  return <RouterProvider router={router} />;
+  return <Suspense fallback={<div className="min-h-screen grid place-items-center" role="status"><span className="loading loading-spinner" /></div>}><RouterProvider router={router} /></Suspense>;
 }
 
 export default AppRouter;

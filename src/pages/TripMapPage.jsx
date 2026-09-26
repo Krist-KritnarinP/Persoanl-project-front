@@ -14,7 +14,7 @@ import { useTripActivityStore } from "@/stores/tripActivityStore";
 import { useLang } from "@/i18n";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
 import { MapBody, TYPE_COLORS } from "@/components/TripMap";
-import { resolveActivityCoords, persistCoords } from "@/utils/geocode";
+import { useTripCoordinates } from "@/hooks/useTripCoordinates";
 import { gmapsDirUrl, gmapsSearchUrl, pointOf } from "@/utils/gmaps";
 
 // หน้าแผนที่เต็ม: เลือกจุดด้วย + ได้ (ไม่เลือก = default เส้นทางทั้งวัน) + QR/ปุ่มนำทางตามจุดที่เลือก
@@ -28,54 +28,12 @@ export default function TripMapPage() {
   const fetchTripDetails = useTripActivityStore((s) => s.fetchTripDetails);
 
   const [selectedDayId, setSelectedDayId] = useState(null);
-  const [geoPoints, setGeoPoints] = useState([]);
-  const [geoLoading, setGeoLoading] = useState(false);
+  const { geoPoints, geoLoading } = useTripCoordinates(trip?.id === Number(tripId) ? trip : null);
   const [picked, setPicked] = useState({}); // {activityId: true} — ติ๊กออก = ไม่รวมในเส้นทาง
 
   useEffect(() => {
     if (tripId) fetchTripDetails(tripId);
-  }, [tripId]);
-
-  const daysKey = JSON.stringify(
-    (trip?.days || []).map((d) => [d.id, (d.activities || []).map((a) => [a.id, a.locationName, a.latitude, a.longitude])])
-  );
-
-  useEffect(() => {
-    let cancelled = false;
-    (async () => {
-      const flat = (trip?.days || []).flatMap((d) =>
-        (d.activities || []).map((a) => ({ ...a, dayId: d.id, dayCount: d.dayCount }))
-      );
-      if (flat.length === 0) {
-        setGeoPoints([]);
-        return;
-      }
-      setGeoLoading(true);
-      try {
-        const resolved = await resolveActivityCoords(flat, trip?.destination || "", (snap) => {
-          if (!cancelled) setGeoPoints(snap);
-        });
-        if (!cancelled) {
-          setGeoPoints(resolved);
-          persistCoords(resolved);
-          // default: รวมทุกจุด (เส้นทางทั้งวัน)
-          setPicked((prev) => {
-            const next = { ...prev };
-            resolved.forEach((p) => {
-              if (next[p.id] === undefined) next[p.id] = true;
-            });
-            return next;
-          });
-        }
-      } finally {
-        if (!cancelled) setGeoLoading(false);
-      }
-    })();
-    return () => {
-      cancelled = true;
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [trip?.id, trip?.destination, daysKey]);
+  }, [tripId, fetchTripDetails]);
 
   const activeDay = trip?.days?.find((d) => d.id === selectedDayId) || null;
   const dayPoints = useMemo(
@@ -173,7 +131,7 @@ export default function TripMapPage() {
               <FiMapPin className="inline text-primary mr-1" />
               {subtitle} · {routed.length}/{pinned.length} {t("map.stops")}
             </p>
-            {geoLoading ? (
+            {geoLoading && pinned.length === 0 ? (
               <div className="flex items-center justify-center gap-2 py-16 text-sm text-base-content/60">
                 <span className="loading loading-spinner text-primary"></span>
                 {t("map.locating")}
@@ -183,6 +141,7 @@ export default function TripMapPage() {
             ) : (
               <MapBody points={pinned} route={routed} dimmedIds={dimmedIds} typeLabel={typeLabel} height="62vh" />
             )}
+            {!geoLoading && dayPoints.length > pinned.length && <p role="status" className="text-sm text-base-content/70">{t("map.unresolved")}</p>}
             <p className="text-[11px] text-base-content/40 px-1">
               © OpenStreetMap contributors · Esri World Imagery
             </p>
