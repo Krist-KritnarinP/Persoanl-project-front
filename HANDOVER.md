@@ -338,3 +338,7 @@ Auth: `Authorization: Bearer <token>` (จาก `localStorage.authState.state.t
 ## 5.9 งานรอบ 15 (2026-09-26)
 
 **Back chain ตายตัวทีละสเตป:** `/trips/:id/map` → `/trips/:id` → `/dashboard` (ไม่พึ่ง browser history — เปิดลิงก์ตรงมาก็ย้อนถูก): ปุ่มย้อนกลับหน้าแผนที่ไปหน้าทริป, ปุ่มย้อนกลับหน้าทริปไป dashboard (เลิกใช้ `navigate(-1)` ที่เข้าผิดที่ถ้าเปิดลิงก์ตรง)
+
+## 5.10 งานรอบ 16 (2026-09-26)
+
+**ทางออกจาก overlay แผนที่ (หน้า share):** overlay เดิมมีแค่ X เล็กๆ + ปุ่ม dashboard ที่ส่งคนไม่ได้ login ไปติดหน้า login — เพิ่มปุ่มย้อนกลับชัดๆ (ปิด overlay กลับภาพรวมทริปทันที) + ปุ่ม Esc + โชว์ปุ่ม dashboard เฉพาะคน login แล้ว (ไม่ได้แตะโค้ด AI weather ตามที่ขอไว้)

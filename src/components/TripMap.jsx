@@ -3,8 +3,9 @@ import { Link } from "react-router-dom";
 import { MapContainer, TileLayer, Marker, Popup, Polyline, LayersControl, useMap } from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
-import { FiMaximize2, FiX, FiNavigation, FiMapPin, FiHome } from "react-icons/fi";
+import { FiMaximize2, FiX, FiNavigation, FiMapPin, FiHome, FiArrowLeft } from "react-icons/fi";
 import { useLang } from "@/i18n";
+import useUserStore from "@/stores/userStore";
 import { gmapsSearchUrl } from "@/utils/gmaps";
 
 export const TYPE_COLORS = {
@@ -138,6 +139,15 @@ export default function TripMap({
 }) {
   const { t } = useLang();
   const [full, setFull] = useState(false);
+  const loggedIn = !!useUserStore((s) => s.user);
+
+  // ปุ่ม Esc ปิด overlay (มือถือ/คีย์บอร์ด)
+  useEffect(() => {
+    if (!full) return;
+    const onKey = (e) => { if (e.key === "Escape") setFull(false); };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [full ]);
 
   const typeLabel = (type) =>
     ({ ATTRACTION: t("act.attr"), RESTAURANT: t("act.rest"), ACCOMMODATION: t("act.accom"), TRANSPORT: t("act.transp") }[type] ||
@@ -221,9 +231,14 @@ export default function TripMap({
             <div className="flex items-center justify-between gap-2 px-1">
               <b className="truncate">{title || t("map.title")}</b>
               <div className="flex items-center gap-1.5 shrink-0">
-                <Link to="/dashboard" className="btn btn-sm btn-ghost rounded-full gap-1.5">
-                  <FiHome /> {t("nav.dashboard")}
-                </Link>
+                <button onClick={() => setFull(false)} className="btn btn-sm btn-primary rounded-full gap-1.5">
+                  <FiArrowLeft /> {t("common.back")}
+                </button>
+                {loggedIn && (
+                  <Link to="/dashboard" className="btn btn-sm btn-ghost rounded-full gap-1.5">
+                    <FiHome /> {t("nav.dashboard")}
+                  </Link>
+                )}
                 <button onClick={() => setFull(false)} className="btn btn-sm btn-circle btn-ghost" aria-label={t("common.close")}>
                   <FiX />
                 </button>
