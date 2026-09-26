@@ -9,6 +9,7 @@ import {
   FiSmartphone,
   FiExternalLink,
   FiMapPin,
+  FiHome,
 } from "react-icons/fi";
 import { useTripActivityStore } from "@/stores/tripActivityStore";
 import { useLang } from "@/i18n";
@@ -96,9 +97,14 @@ export default function TripMapPage() {
       </header>
 
       <div className="flex items-center justify-between gap-2">
-        <button onClick={() => navigate(`/trips/${tripId}`)} className="btn btn-ghost glass gap-2">
-          <FiArrowLeft /> {t("common.back")}
-        </button>
+        <div className="flex items-center gap-2 min-w-0">
+          <button onClick={() => navigate(`/trips/${tripId}`)} className="btn btn-ghost glass gap-2 shrink-0">
+            <FiArrowLeft /> {t("common.back")}
+          </button>
+          <button onClick={() => navigate("/dashboard")} className="btn btn-primary rounded-full gap-1.5 shrink-0">
+            <FiHome /> {t("nav.dashboard")}
+          </button>
+        </div>
         <span className="text-sm font-semibold truncate">
           {trip?.tripName} · {t("map.title")}
         </span>

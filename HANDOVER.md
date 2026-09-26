@@ -325,3 +325,8 @@ Auth: `Authorization: Bearer <token>` (จาก `localStorage.authState.state.t
 ## 5.6 งานรอบ 12 (2026-09-26)
 
 **ทางกลับ dashboard จาก overlay แผนที่เต็มจอ:** overlay (`TripMap` modal `z-[1000]`) เดิมมีแค่ปุ่ม X ปิด — เพิ่มปุ่ม dashboard (ไอคอนบ้าน + `nav.dashboard` 4 ภาษา) ไป `/dashboard` ได้จากทุกที่ที่เปิด overlay
+
+## 5.7 งานรอบ 13 (2026-09-26)
+
+**ปุ่ม dashboard ชัดๆ ในหน้าแผนที่เต็ม:** โลโก้กดได้อาจสังเกตยาก → เพิ่มปุ่ม dashboard (ไอคอนบ้าน + ข้อความ) ข้างปุ่มย้อนกลับใน `/trips/:id/map` โดยตรง
+**หมายเหตุ:** ถ้ากดแล้วเด้งไปหน้า login แสดงว่า token หมดอายุ/ถูกเพิกถอนหลัง rotate JWT secret — ให้ login ใหม่ ไม่ใช่บั๊กปุ่ม; ถ้าเทสตัว deploy เก่าให้ rebuild/refresh ก่อน
