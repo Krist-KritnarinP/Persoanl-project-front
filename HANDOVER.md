@@ -1,7 +1,7 @@
 # HANDOVER — AI LHOUNG Travel Planner
 
 เอกสารส่งมอบงานสำหรับ dev คนต่อไป / คน deploy / คนสอบ
-อัปเดตล่าสุด: 2026-09-26 (รอบ 10: map/performance, security hardening และ monorepo)
+อัปเดตล่าสุด: 2026-09-26 (รอบ 11: โลโก้กลับ dashboard, log AI, prompt สรุปทั้งทริป, modal รายละเอียดอากาศ)
 
 > **สถานะล่าสุด:** แก้ security หลักและ performance แล้ว ดูหัวข้อ 5.8 และ [SECURITY_REVIEW.md](SECURITY_REVIEW.md) ก่อน deploy ยังต้องตรวจ hosting/HTTPS/backup/monitoring จริง ส่วนหัวข้อเก่าเป็นประวัติงาน ไม่ใช่ config ปัจจุบัน
 
@@ -309,3 +309,15 @@ Auth: `Authorization: Bearer <token>` (จาก `localStorage.authState.state.t
 ## Commit — 2026-09-26 (รอบ 10+11)
 
 - งานค้างรอบ security hardening + แผนที่ (tokenVersion, AiUsage, runtime role scripts, lazy routes, geocode, SECURITY_REVIEW.md) ถูก commit ครบทั้ง 2 repos แล้ว ยังไม่ push
+
+## 5.5 งานรอบ 11 (2026-09-26)
+
+**กลับ dashboard จากแผนที่:** โลโก้ AI LHOUNG ใน header ของ `/trips/:id/map` และ `/trips/:id` กดแล้วไป `/dashboard` (เดิมกดไม่ได้ กลับได้แค่หน้าทริป)
+
+**AI log ข้อมูลที่ส่งออก:** backend log `[AI weather] outgoing: {model, tripId, location, start, end, days, activities, promptChars}` ที่ terminal ทุกครั้งที่ยิง Gemini (ไม่มี API key) + หน้าบ้าน log request payload ที่ browser console
+
+**Prompt สรุปทั้งทริป:** เลิกสั่ง "ไม่เกิน 20 คำ" → สั่ง AI ตอบ 2 ส่วนคั่นด้วย `---DETAILS---`: (1) ไฮไลต์ภาพรวม ≤6 บรรทัด (2) รายวัน `Day N (วันที่)` + แต่ละที่สรุปเช้า/กลางวัน/เย็น ที่ย่อยเอาแค่ไฮไลต์ — ส่งรายวันแบบ `Day N (date): ที่1, ที่2` ให้โมเดลแทน JSON ดิบ
+
+**การ์ดอากาศแบบกล่อง scroll + modal:** กล่องสรุปล็อก `max-h-44` + scroll (ไม่ยืดตามตัวอักษร) ปุ่มดูรายละเอียดทั้งหมดเปิด modal พื้นทึบ — ใช้กับทั้งผลล่าสุดและประวัติ (ถ้า AI ไม่คืน marker จะโชว์ข้อความเต็มเหมือนเดิม)
+
+**⚠️ หมายเหตุเทส:** predict จริงติด rate-limit รวมต่อ IP (30 ครั้ง/10 นาที, แชร์กันทั้ง localhost) และโควต้า Gemini free tier — กดปุ่มรัวๆ จะโดน 429 เอง ไม่ใช่บั๊ก

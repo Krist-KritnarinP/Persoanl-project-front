@@ -163,6 +163,14 @@ export const useTripActivityStore = create((set, get) => ({
       };
 
       // AI ใช้เวลาตอบ ~20 วินาที: ขยาย timeout เฉพาะเส้นนี้ (default 15s ไม่พอ)
+      // Log payload ที่ส่งออก (ดูใน console ของ browser)
+      console.log("[AI weather] request payload:", JSON.stringify({
+        tripId: payload.tripId,
+        location: payload.location,
+        startDate: payload.startDate,
+        endDate: payload.endDate,
+        activities: Array.isArray(payload.activities) ? payload.activities.length : 0,
+      }));
       const res = await mainApi.post("/weather/predict-weather", payload, { timeout: 120000 });
       set({
         weatherPrediction: res.data.prediction,

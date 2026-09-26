@@ -1,6 +1,15 @@
-import React, { useEffect } from "react";
-import { FiSun, FiRefreshCw, FiAlertCircle, FiTrash2, FiClock } from "react-icons/fi";
+import React, { useEffect, useState } from "react";
+import { FiSun, FiRefreshCw, FiAlertCircle, FiTrash2, FiClock, FiMaximize2, FiX } from "react-icons/fi";
 import { useLang } from "@/i18n";
+
+// แยก "สรุปไฮไลต์" กับ "รายละเอียดรายวัน" ออกจากกันด้วย marker ---DETAILS---
+function splitForecast(text) {
+  const parts = String(text || "").split(/\n---DETAILS---\n/);
+  if (parts.length >= 2) {
+    return { highlights: parts[0].trim(), details: parts.slice(1).join("\n---DETAILS---\n").trim() };
+  }
+  return { highlights: String(text || "").trim(), details: "" };
+}
 
 export default function GeminiWeatherCard({
   tripId,
@@ -13,6 +22,7 @@ export default function GeminiWeatherCard({
   onDeleteHistory,
 }) {
   const { t, locale } = useLang();
+  const [modalText, setModalText] = useState(null);
 
   useEffect(() => {
     if (tripId && onFetchHistory) onFetchHistory(tripId);
@@ -28,6 +38,26 @@ export default function GeminiWeatherCard({
       hour: "2-digit",
       minute: "2-digit",
     });
+  };
+
+  // กล่องสรุปขนาดคงที่ + scroll (ไม่ขยายตามตัวอักษร) + ปุ่มเปิด modal รายละเอียด
+  const ForecastBox = ({ text }) => {
+    const { highlights, details } = splitForecast(text);
+    return (
+      <div className="space-y-2">
+        <div className="rounded-2xl bg-white/10 border border-white/10 p-3 max-h-44 overflow-y-auto custom-scrollbar">
+          <p className="text-sm sm:text-base whitespace-pre-line leading-relaxed">{highlights}</p>
+        </div>
+        {details && (
+          <button
+            onClick={() => setModalText(details)}
+            className="btn btn-ghost btn-sm rounded-full gap-1.5 w-full glass"
+          >
+            <FiMaximize2 /> {t("weather.fullDetails")}
+          </button>
+        )}
+      </div>
+    );
   };
 
   return (
@@ -73,12 +103,10 @@ export default function GeminiWeatherCard({
         )}
 
         {weatherPrediction && !weatherLoading && (
-          <div className="prose prose-sm max-w-none text-base-content/90 space-y-2 whitespace-pre-line leading-relaxed text-sm sm:text-base">
-            {weatherPrediction}
-          </div>
+          <ForecastBox text={weatherPrediction} />
         )}
 
-        {!weatherPrediction && !weatherLoading && !weatherError && (
+        {!weatherPrediction && !weatherLoading && !weatherError && weatherHistory.length === 0 && (
           <div className="text-center py-8 opacity-60 space-y-2">
             <FiSun className="text-4xl mx-auto text-warning/50" />
             <p className="text-sm px-2">{t("weather.empty")}</p>
@@ -103,12 +131,41 @@ export default function GeminiWeatherCard({
                     <FiTrash2 className="text-sm" />
                   </button>
                 </div>
-                <p className="text-sm whitespace-pre-line leading-relaxed">{m.content}</p>
+                <ForecastBox text={m.content} />
               </div>
             ))}
           </div>
         )}
       </div>
+
+      {/* Details modal */}
+      {modalText && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm px-4"
+          onClick={() => setModalText(null)}
+        >
+          <div
+            className="rounded-3xl bg-white text-slate-800 border border-slate-200 shadow-2xl w-full max-w-lg max-h-[85vh] flex flex-col overflow-hidden"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between p-5 pb-3 shrink-0">
+              <h3 className="font-bold text-xl flex items-center gap-2">
+                <FiSun className="text-warning" /> {t("weather.title")}
+              </h3>
+              <button
+                onClick={() => setModalText(null)}
+                className="btn btn-ghost btn-sm btn-circle"
+                aria-label={t("common.close")}
+              >
+                <FiX />
+              </button>
+            </div>
+            <div className="px-5 pb-5 overflow-y-auto custom-scrollbar">
+              <p className="text-sm sm:text-base whitespace-pre-line leading-relaxed">{modalText}</p>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
