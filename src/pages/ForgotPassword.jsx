@@ -40,7 +40,7 @@ function ForgotPassword() {
               </button>
             </form>
           )}
-          <Link className="link link-primary mt-3 text-center" to="/">{t('auth.backLogin')}</Link>
+          <Link className="link link-primary mt-3 text-center" to="/login">{t('auth.backLogin')}</Link>
         </div>
       </section>
     </main>

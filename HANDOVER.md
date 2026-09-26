@@ -1,3 +1,18 @@
+# Handover — Landing page + SEO (2026-09-26)
+
+- ตามคำสั่งล่าสุดทำ Landing ก่อน; Export PDF พักไว้ ยังไม่มี implementation/dependency ของ PDF
+- ทำใน PersonalProject_Front เดิม: หน้าแรก `/` เป็น Landing; Login ย้าย `/login` พร้อมแก้ auth guard, recovery links และ 401 redirect
+- ดีไซน์ cream/forest green พร้อม SVG postcard, ฟีเจอร์ 5 ส่วน, demo ทริปสลับวันได้, FAQ, CTA และ 4 ภาษา
+- Landing ไม่ยิง API/AI/geocoding; ผู้มี session กด CTA ไป dashboard ส่วน guest ไป login
+- Build prerender เนื้อหา Landing ภาษาไทยลง HTML, meta/OG, optional real-domain canonical/robots/sitemap, noindex auth/private routes
+- ไม่มี VITE_SITE_URL จะ noindex ไว้ก่อน; checklist การเปิด SEO จริงและข้อจำกัดอยู่ [docs/LANDING_SEO.md](docs/LANDING_SEO.md)
+- ตรวจภาพ desktop/mobile; build ผ่าน, unit 6 ผ่าน, browser 8 ผ่านรวม auth regression; static SEO checks ผ่านทั้งมี/ไม่มีโดเมน; lint 0 errors/8 warnings เดิม
+- อัปเดต ROADMAP และ API auth setup ให้ชี้ `/login`; ไม่แก้ backend logic/DB/secrets และไม่ deploy/push
+- เริ่มดู: npm run dev → http://localhost:5173/ ; login เดิม http://localhost:5173/login
+
+---
+## บันทึกรอบก่อน
+
 # Handover — Phase 0 + Google/Forgot Password ใน Front เดิม (2026-09-26)
 
 ทำงานใน `PersonalProject_Front` ที่ใช้ npm run dev จริง คู่กับ `PersonalProject_API` ไม่ใช้ monorepo backup

@@ -60,7 +60,7 @@ function ResetPassword() {
               </button>
             </form>
           )}
-          <Link className="link link-primary mt-3 text-center" to="/">{done ? t('auth.backLogin') : t('common.cancel')}</Link>
+          <Link className="link link-primary mt-3 text-center" to="/login">{done ? t('auth.backLogin') : t('common.cancel')}</Link>
         </div>
       </section>
     </main>

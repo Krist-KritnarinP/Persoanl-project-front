@@ -12,7 +12,7 @@ test('Login always shows Google and Forgot; recovery works with a cached login',
     if (path.endsWith('/reset-password')) expect(route.request().postDataJSON().token).toBe('a'.repeat(43));
     await route.fulfill({ status: path.endsWith('/forgot-password') ? 202 : 200, headers, json: { message: 'OK' } });
   });
-  await page.goto('/');
+  await page.goto('/login');
   await expect(page.getByRole('button', { name: 'Login with Google' })).toBeVisible();
   await expect(page.getByRole('link', { name: 'Forgot password?' })).toBeVisible();
   await page.screenshot({ path: testInfo.outputPath('login.png'), fullPage: true });
@@ -44,7 +44,7 @@ test('Google collision asks for password before linking, then saves the session'
     expect(body.currentPassword).toBe('My original password');
     await route.fulfill({ status: 200, headers, json: { token: 'test-token', user: { id: 99, username: 'Google User', email: 'tester@gmail.com' } } });
   });
-  await page.goto('/');
+  await page.goto('/login');
   await page.getByRole('button', { name: 'Sign in with Google', exact: true }).click();
   const dialog = page.getByRole('dialog', { name: 'Confirm your existing account' });
   await expect(dialog).toBeVisible(); expect(requests).toBe(1);

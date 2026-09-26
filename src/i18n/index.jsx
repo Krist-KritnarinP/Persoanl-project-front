@@ -422,7 +422,7 @@ export function LanguageProvider({ children }) {
     } catch {
       // ignore
     }
-    document.documentElement.lang = lang;
+    document.documentElement.lang = lang === 'zh' ? 'zh-CN' : lang;
   }, [lang]);
 
   const value = useMemo(() => {

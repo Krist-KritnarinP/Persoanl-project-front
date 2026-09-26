@@ -71,7 +71,7 @@ mainApi.interceptors.response.use(res => res, async error => {
   }
   localStorage.removeItem('token');
   localStorage.removeItem('authState');
-  if (window.location.pathname !== '/') window.location.replace('/');
+  if (window.location.pathname !== '/login') window.location.replace('/login');
   throw error;
 });
 

@@ -60,6 +60,7 @@ function Login() {
   return (
     <>
       <div className="min-h-screen px-4 pt-10 md:pt-20 pb-20 md:pb-28 flex items-center justify-center">
+        <Link to="/" className="absolute top-4 left-4 text-sm font-semibold link">← AI LHOUNG</Link>
         <div className="absolute top-4 right-4">
           <LanguageSwitcher />
         </div>

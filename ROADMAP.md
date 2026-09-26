@@ -28,9 +28,10 @@
 
 > เหตุผล: ฟีเจอร์ที่ทำให้คน "ว้าวแล้วอยู่ต่อ" ยังไม่เสร็จ — ปุ่ม AI สร้างทริปยัง disabled
 - [ ] **AI สร้างทริปอัตโนมัติ** (input: จุดหมาย/วัน/งบ/สไตล์ → ได้ Trip+Days+Activities) — นี่คือ killer feature
-- [ ] คำนวณงบประมาณรวมจริง (มี `price` ทุก activity แล้ว แค่ sum + แสดง)
+- [x] คำนวณงบประมาณรวมจริง — ตรวจพบยอดรวมทริปและรายวันใน TripsActivity แล้ว
 - [ ] Onboarding: ทริปตัวอย่าง + ทัวร์ 3 ขั้นตอนตอนสมัครครั้งแรก
-- [ ] Landing page + SEO (แต่ละภาษา) — วันนี้เข้าเว็บเจอหน้า login เลย คนใหม่ไม่รู้ว่าคืออะไร
+- [x] Landing page + SEO พื้นฐาน — หน้า `/`, เนื้อหา 4 ภาษา, Thai HTML prerender, meta/OG และ canonical/sitemap เมื่อมีโดเมนจริง; Login ย้าย `/login`
+- [ ] เปิด SEO บนโดเมนจริง + Search Console และ URL/hreflang แยกภาษา — ดู docs/LANDING_SEO.md
 - [ ] PWA (install ได้, icon, offline หน้าอ่านทริป) — นักเดินทางใช้บนมือถือกลางทาง
 - [ ] แจ้งเตือนก่อนเดินทาง (email/LINE OA): เช็กลิสต์ + อากาศล่วงหน้า 3 วัน
 - [ ] Import/Export: ส่งออก PDF/พิมพ์แผนทริป, แชร์เป็นรูป
