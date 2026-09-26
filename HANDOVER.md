@@ -342,3 +342,7 @@ Auth: `Authorization: Bearer <token>` (จาก `localStorage.authState.state.t
 ## 5.10 งานรอบ 16 (2026-09-26)
 
 **ทางออกจาก overlay แผนที่ (หน้า share):** overlay เดิมมีแค่ X เล็กๆ + ปุ่ม dashboard ที่ส่งคนไม่ได้ login ไปติดหน้า login — เพิ่มปุ่มย้อนกลับชัดๆ (ปิด overlay กลับภาพรวมทริปทันที) + ปุ่ม Esc + โชว์ปุ่ม dashboard เฉพาะคน login แล้ว (ไม่ได้แตะโค้ด AI weather ตามที่ขอไว้)
+
+## 5.11 งานรอบ 17 (2026-09-26)
+
+**overlay กดปุ่มไม่ออกแต่ Esc ออกได้:** สาเหตุคือ overlay อยู่ใต้ `.glass` ที่มี transform/backdrop-filter ทำให้ `position: fixed` ถูกขัง relative กับกรอบการ์ด + event ปุ่มโดนรบกวน — แก้โดยย้าย overlay ไป `document.body` ด้วย React Portal (fixed เต็มจอจริง ไม่โดน ancestor บัง) + เหลือปุ่มเดียว (ย้อนกลับ) ตามที่ขอ

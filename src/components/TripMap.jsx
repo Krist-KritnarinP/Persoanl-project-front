@@ -1,11 +1,11 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { Link } from "react-router-dom";
 import { MapContainer, TileLayer, Marker, Popup, Polyline, LayersControl, useMap } from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
-import { FiMaximize2, FiX, FiNavigation, FiMapPin, FiHome, FiArrowLeft } from "react-icons/fi";
+import { FiMaximize2, FiNavigation, FiMapPin, FiArrowLeft } from "react-icons/fi";
 import { useLang } from "@/i18n";
-import useUserStore from "@/stores/userStore";
 import { gmapsSearchUrl } from "@/utils/gmaps";
 
 export const TYPE_COLORS = {
@@ -139,7 +139,6 @@ export default function TripMap({
 }) {
   const { t } = useLang();
   const [full, setFull] = useState(false);
-  const loggedIn = !!useUserStore((s) => s.user);
 
   // ปุ่ม Esc ปิด overlay (มือถือ/คีย์บอร์ด)
   useEffect(() => {
@@ -222,7 +221,7 @@ export default function TripMap({
 
       {!loading && points.length > pinned.length && <p role="status" className="text-sm text-base-content/70">{t("map.unresolved")}</p>}
 
-      {full && !expandHref && pinned.length > 0 && (
+      {full && !expandHref && pinned.length > 0 && createPortal(
         <div className="fixed inset-0 z-[1000] bg-black/60 backdrop-blur-sm p-3 md:p-6" onClick={() => setFull(false)}>
           <div
             className="bg-base-100 rounded-3xl p-3 md:p-4 h-full flex flex-col gap-2 max-w-6xl mx-auto"
@@ -230,25 +229,16 @@ export default function TripMap({
           >
             <div className="flex items-center justify-between gap-2 px-1">
               <b className="truncate">{title || t("map.title")}</b>
-              <div className="flex items-center gap-1.5 shrink-0">
-                <button onClick={() => setFull(false)} className="btn btn-sm btn-primary rounded-full gap-1.5">
-                  <FiArrowLeft /> {t("common.back")}
-                </button>
-                {loggedIn && (
-                  <Link to="/dashboard" className="btn btn-sm btn-ghost rounded-full gap-1.5">
-                    <FiHome /> {t("nav.dashboard")}
-                  </Link>
-                )}
-                <button onClick={() => setFull(false)} className="btn btn-sm btn-circle btn-ghost" aria-label={t("common.close")}>
-                  <FiX />
-                </button>
-              </div>
+              <button onClick={() => setFull(false)} className="btn btn-primary rounded-full gap-1.5 shrink-0">
+                <FiArrowLeft /> {t("common.back")}
+              </button>
             </div>
             <div className="flex-1 min-h-0">
               <MapBody points={pinned} typeLabel={typeLabel} height="100%" />
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </section>
   );
