@@ -1,3 +1,23 @@
+# Handover — Phase 0 + Google/Forgot Password ใน Front เดิม (2026-09-26)
+
+ทำงานใน `PersonalProject_Front` ที่ใช้ npm run dev จริง คู่กับ `PersonalProject_API` ไม่ใช้ monorepo backup
+
+- หน้า Login `/` มี Google DaisyUI fallback และ Forgot Password เสมอ; ตั้ง Client ID แล้วใช้ GIS button จริง
+- เพิ่ม `/forgot-password`, `/reset-password` เข้าถึงได้แม้มี login ค้าง; reset token รับจาก fragment แล้วล้าง URL
+- Google ชนบัญชีเดิมเปิด dialog ยืนยันรหัสผ่าน ก่อนเชื่อม; token Google เก็บใน memory ไม่บันทึก localStorage
+- Refresh interceptor/cookie, single-flight/Web Locks, account export/delete ใน profile และข้อความ 4 ภาษา
+- คงโค้ด map/TripMapPage/TripsActivity เดิม ไม่คัดลอก snapshot เก่าทับ
+- Unit 6 ผ่าน, build ผ่าน, lint 0 errors/8 warnings เดิม, Playwright desktop/mobile 4 ผ่าน พร้อมตรวจ screenshot เห็นปุ่มครบ
+- Browser tests mock API/Google; ยังไม่รับรอง OAuth/mail จริงจนตั้งค่าตาม checklist
+- API สำรองและเพิ่ม schema ใน DB เดิมแล้ว; ข้อมูล mockup เดิมอยู่ครบตาม row-count checks
+- Checklist ที่ต้องทำ: [AUTH_SETUP](../PersonalProject_API/docs/AUTH_SETUP.md)
+- Phase 0 งานภายนอกที่ค้าง: [OPERATIONS](../PersonalProject_API/docs/PHASE0_OPERATIONS.md) และ ROADMAP
+- Restart `npm run dev` ใน Front และ API หลังตั้ง env; เข้า `http://localhost:5173/` และ logout หาก login อยู่
+- Commit โค้ด/tests/docs ใน repo นี้; ไม่ push ไม่ deploy
+
+---
+## บันทึกรอบก่อน (ประวัติ ไม่ใช่สถานะล่าสุด)
+
 # HANDOVER — AI LHOUNG Travel Planner
 
 ## สถานะใช้งานล่าสุด: ย้อน setup deploy กลับมาใช้ 2 repos เดิม

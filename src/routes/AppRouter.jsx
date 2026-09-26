@@ -11,6 +11,8 @@ const Login = lazy(() => import("@/pages/Login"));
 const Trips = lazy(() => import("@/pages/TripsActivity"));
 const TripMapPage = lazy(() => import("@/pages/TripMapPage"));
 const ShareTripView = lazy(() => import("@/pages/ShareTripView"));
+const ForgotPassword = lazy(() => import("@/pages/ForgotPassword"));
+const ResetPassword = lazy(() => import("@/pages/ResetPassword"));
 const Userprofile = lazy(() => import("@/pages/Userprofile"));
 import useUserStore from "@/stores/userStore";
 
@@ -27,6 +29,8 @@ const GuestRoute = () => {
 };
 
 const router = createBrowserRouter([
+  { path: "/forgot-password", element: <ForgotPassword /> },
+  { path: "/reset-password", element: <ResetPassword /> },
   // Public: ลิงก์แชร์ดูได้อย่างเดียว (ไม่ต้อง login, เข้าได้ทั้งคนนอกและคนมีบัญชี)
   { path: "/share/:token", element: <ShareTripView /> },
   {

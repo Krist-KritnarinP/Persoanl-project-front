@@ -1,3 +1,4 @@
+import AccountDataControls from "@/components/AccountDataControls";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { FiArrowLeft, FiUser, FiSave } from "react-icons/fi";
@@ -107,6 +108,7 @@ function Userprofile() {
           </form>
         )}
       </div>
+      {!fetching && <AccountDataControls />}
     </div>
   );
 }

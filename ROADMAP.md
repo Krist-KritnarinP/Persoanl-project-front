@@ -1,30 +1,28 @@
 # ROADMAP — จาก MVP สู่โปรดักชันที่เก็บเงินได้จริง
 
 > สถานะปัจจุบัน (2026-09-25): MVP ใช้งานได้ (CRUD ทริป/วัน/กิจกรรม, AI พยากรณ์อากาศ, แชร์ลิงก์, 4 ภาษา)
-> แต่ **ยังไม่พร้อม** รับ user จริง/เก็บเงิน — ขาด: ระบบจ่ายเงิน, โควต้า, กฎหมาย PDPA, monitoring, AI สร้างทริป (ปุ่มยัง disabled)
+> แต่ **ยังไม่พร้อม** รับ user จริง/เก็บเงิน — ขาด: ระบบจ่ายเงิน, external setup/PDPA/monitoring จริง, AI สร้างทริป (ปุ่มยัง disabled)
 > ไฟล์นี้คือ task list แบ่ง phase + โมเดลสเกล + แพ็กเกจขาย
 
-## Phase 0 — Production Readiness (2–3 สัปดาห์) ⛔ ทำก่อนรับ user จริง
+## Phase 0 — Production Readiness (อัปเดต 2026-09-26)
 
-**Security & Reliability**
-- [ ] เปิด Supabase backups (Point-in-Time) + ทดสอบ restore 1 ครั้ง
-- [ ] แยก `DATABASE_URL` (pooler) / `DIRECT_URL` (direct) ให้ถูก role — วันนี้ใช้ user `postgres` เจ้าของ DB ตรง ๆ (**เสี่ยง**: คีย์หลุด = โดนยึด DB) → สร้าง role สิทธิ์จำกัดสำหรับแอป
-- [ ] หมุน `JWT_SECRET` ให้ยาว ≥32 ตัวอักษร + เพิ่ม refresh token (วันนี้ access token 1 วัน ไม่มี refresh)
-- [ ] ล็อกเวอร์ชัน `GEMINI_MODEL` + ทำ model fallback (เช่น 3.8-flash → 3.5-flash-lite) กันโมเดลถูกปลดอีก
-- [ ] แคชผลพยากรณ์อากาศรายทริป (เช่น 6 ชม.) — วันนี้กดทุกครั้ง = เสียโควต้า/เงินทุกครั้ง
-- [ ] Error tracking (Sentry self-host/GlitchTip) + uptime monitor (Uptime Kuma/Better Stack)
-- [ ] สำรอง rate-limit ราย user ที่เส้น AI (วันนี้ limit รวมต่อ IP — user คนนึงเผาโควต้าทั้งระบบได้)
+ส่วนโค้ด local ทำแล้ว แต่ยังมี external setup ค้างก่อน production ดู [Operations](../PersonalProject_API/docs/PHASE0_OPERATIONS.md)
 
-**Legal (ไทย)**
-- [ ] Privacy Policy + Terms of Service (ภาษาไทย) — บังคับตาม PDPA
-- [ ] Cookie consent banner
-- [ ] ช่องทางลบข้อมูล/ส่งออกข้อมูล (PDPA right to erasure/portability) — มี `DELETE user` cascade อยู่แล้ว ต่อ UI ให้ user กดเองได้
-- [ ] จดทะเบียนพาณิชย์อิเล็กทรอนิกส์ (ถ้ารับเงิน) + ออกใบกำกับภาษีได้
-
-**Ops**
-- [ ] CI: `npm run build` + `prisma validate` ทุก push (GitHub Actions)
-- [ ] แยก env `staging` / `production` (วันนี้มีชุดเดียว)
-- [ ] ตั้ง budget alert ฝั่ง Google AI (กันบิลพุ่ง)
+- [x] Limited runtime DB role เดิมตรวจสิทธิ์อ่านตารางใหม่แล้ว; owner ใช้สำหรับ migration
+- [x] JWT secret local ≥32 bytes, access 15 นาที + rotating HttpOnly refresh 7 วัน/revocation
+- [x] AI cache 6 ชั่วโมง, per-user/global quota, explicit model/fallback/kill switch
+- [x] Health/readiness + optional sanitized error tracking
+- [x] Export/delete ข้อมูลพร้อม password confirmation ใน profile
+- [x] CI แยกสอง repo และ unit/integration/browser tests
+- [x] Google login + Forgot Password logic และ UI ใน original repos
+- [x] สำรอง public schema/data ก่อน additive migration; mockup เดิมยังอยู่
+- [ ] ตั้ง Google Client ID/SMTP และทดสอบ login/รับเมลจริง — [Checklist](../PersonalProject_API/docs/AUTH_SETUP.md)
+- [ ] เปิด automatic backup และทดสอบ restore ข้อมูลจริงใน DB แยก
+- [ ] ตรวจ model ที่ใช้ได้จริง + budget alert ของ AI
+- [ ] เชื่อม error tracking/uptime monitor และทดสอบ alert จริง
+- [ ] Privacy/Terms, ผู้ให้บริการ/อีเมลติดต่อ, retention/consent (รอข้อมูลจากผู้ใช้)
+- [ ] แยก staging/production, domain/proxy/cookie และ credential rotation ตอนกลับมาทำ deploy
+- [ ] จดทะเบียน/ระบบเอกสารการเงินเมื่อเริ่มรับเงิน
 
 ## Phase 1 — Core Value & Activation (3–4 สัปดาห์)
 

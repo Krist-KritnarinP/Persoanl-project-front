@@ -14,6 +14,11 @@ const useUserStore = create( persist((set,get) => ({
    set({token : resp.data.token, user: resp.data.user})
    return resp
  },
+ loginWithGoogle: async (credential, currentPassword)=>{
+   const resp = await mainApi.post('/auth/google',{ credential, ...(currentPassword ? { currentPassword } : {}) })
+   set({token: resp.data.token, user: resp.data.user})
+   return resp
+ },
  register: async (data)=>{
    const resp = await apiRegister(data)
    return resp
@@ -39,5 +44,12 @@ const useUserStore = create( persist((set,get) => ({
  storage: createJSONStorage( ()=> localStorage ),
  partialize: (state) => ({ user: state.user, token: state.token }),
 }))
+
+window.addEventListener('auth:renewed', event => {
+  useUserStore.setState({ token: event.detail.token, user: event.detail.user });
+});
+window.addEventListener('storage', event => {
+  if (event.key === 'authState') useUserStore.persist.rehydrate();
+});
 
 export default useUserStore
