@@ -44,3 +44,6 @@ Browser coverage: desktop/mobile, CTA, sample day toggle, FAQ, 4 languages, no h
 ไฟล์ภาพตรวจงานอยู่ใน test-results (ไม่ commit)
 
 ผลรอบนี้: unit 6 ผ่าน, browser 8 ผ่าน, build และ SEO checks ทั้ง configured/unconfigured domain ผ่าน; lint 0 errors/8 warnings เดิม
+
+## ปรับ readability ตาม feedback
+ข้อความ charcoal/เทาเข้ม หัวข้อเน้นน้ำตาลอุ่น เนื้อหาประมาณ 16–18px และมือถือใช้ feature cards คอลัมน์เดียว สีเขียวเหลือเป็นสีประกอบ/ปุ่ม; ตรวจ browser 4 กรณีและภาพ desktop/mobile ผ่าน
