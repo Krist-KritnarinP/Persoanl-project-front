@@ -1,5 +1,15 @@
 # HANDOVER — AI LHOUNG Travel Planner
 
+## สถานะใช้งานล่าสุด: ย้อน setup deploy กลับมาใช้ 2 repos เดิม
+
+- ผู้ใช้ขอพักและย้อน setup deploy: ใช้ `PersonalProject_Front` คู่กับ `PersonalProject_API` เท่านั้น
+- Frontend application code คงที่ commit `5f2e488`; การกลับชุดเดิมไม่ต้อง reset เพราะงาน monorepo/deploy/auth ใหม่ไม่ได้แก้ source ใน repo นี้
+- ย้าย `AIlhongdeploy` และ worktree `AIlhongdeploy-phase0` ไป `/Users/kritnarinp/Desktop/Codecamp_23/_AI_LHOUNG_BACKUP_2026-09-26/` พร้อม Git history และ repair worktree links แล้ว
+- Google Login/Forgot Password และ Phase 0 ของ monorepo พักไว้ใน backup ไม่ใช่ฟีเจอร์ใน repo ที่ใช้งานนี้
+- รัน `npm run dev` ภายใน repo นี้สำหรับ frontend และภายใน `PersonalProject_API` สำหรับ API ดูคำสั่ง/checklist ใน `../START_HERE.md`
+- ไม่เปลี่ยน `.env`, ฐานข้อมูล, ข้อมูลทริป หรือ remote services; GitHub/Render/Vercel เดิมยังไม่ได้ลบ/ปิด ไม่ push รอบนี้เพื่อหลีกเลี่ยง deployment
+- ตรวจสถานะ Git, scripts, source ของสอง repos และ git diff --check; เปลี่ยนเฉพาะเอกสาร ไม่รัน tests ที่เชื่อม DB
+
 เอกสารส่งมอบงานสำหรับ dev คนต่อไป / คน deploy / คนสอบ
 อัปเดตล่าสุด: 2026-09-26 (รอบ 12: ปุ่ม dashboard ใน overlay แผนที่เต็มจอ)
 
