@@ -362,10 +362,10 @@ export default function TripActivity() {
         <LanguageSwitcher />
       </header>
 
-      {/* HEADER / NAVIGATION */}
+      {/* HEADER / NAVIGATION — ย้อนกลับทีละสเตป: map → trip → dashboard */}
       <div className="flex items-center justify-between w-full gap-2">
         <button
-          onClick={() => navigate(-1)}
+          onClick={() => navigate("/dashboard")}
           className="btn btn-ghost glass gap-2 text-base-content hover:bg-white/20"
         >
           <FiArrowLeft /> {t("common.back")}

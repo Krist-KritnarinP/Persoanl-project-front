@@ -97,8 +97,8 @@ export default function TripMapPage() {
 
       <div className="flex items-center justify-between gap-2">
         <div className="flex items-center gap-2 min-w-0">
-          <button onClick={() => navigate("/dashboard")} className="btn btn-ghost glass gap-2 shrink-0">
-            <FiArrowLeft /> {t("nav.dashboard")}
+          <button onClick={() => navigate(`/trips/${tripId}`)} className="btn btn-ghost glass gap-2 shrink-0">
+            <FiArrowLeft /> {t("common.back")}
           </button>
         </div>
         <span className="text-sm font-semibold truncate">
