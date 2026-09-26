@@ -1,7 +1,7 @@
 # HANDOVER — AI LHOUNG Travel Planner
 
 เอกสารส่งมอบงานสำหรับ dev คนต่อไป / คน deploy / คนสอบ
-อัปเดตล่าสุด: 2026-09-26 (รอบ 11: โลโก้กลับ dashboard, log AI, prompt สรุปทั้งทริป, modal รายละเอียดอากาศ)
+อัปเดตล่าสุด: 2026-09-26 (รอบ 12: ปุ่ม dashboard ใน overlay แผนที่เต็มจอ)
 
 > **สถานะล่าสุด:** แก้ security หลักและ performance แล้ว ดูหัวข้อ 5.8 และ [SECURITY_REVIEW.md](SECURITY_REVIEW.md) ก่อน deploy ยังต้องตรวจ hosting/HTTPS/backup/monitoring จริง ส่วนหัวข้อเก่าเป็นประวัติงาน ไม่ใช่ config ปัจจุบัน
 
@@ -321,3 +321,7 @@ Auth: `Authorization: Bearer <token>` (จาก `localStorage.authState.state.t
 **การ์ดอากาศแบบกล่อง scroll + modal:** กล่องสรุปล็อก `max-h-44` + scroll (ไม่ยืดตามตัวอักษร) ปุ่มดูรายละเอียดทั้งหมดเปิด modal พื้นทึบ — ใช้กับทั้งผลล่าสุดและประวัติ (ถ้า AI ไม่คืน marker จะโชว์ข้อความเต็มเหมือนเดิม)
 
 **⚠️ หมายเหตุเทส:** predict จริงติด rate-limit รวมต่อ IP (30 ครั้ง/10 นาที, แชร์กันทั้ง localhost) และโควต้า Gemini free tier — กดปุ่มรัวๆ จะโดน 429 เอง ไม่ใช่บั๊ก
+
+## 5.6 งานรอบ 12 (2026-09-26)
+
+**ทางกลับ dashboard จาก overlay แผนที่เต็มจอ:** overlay (`TripMap` modal `z-[1000]`) เดิมมีแค่ปุ่ม X ปิด — เพิ่มปุ่ม dashboard (ไอคอนบ้าน + `nav.dashboard` 4 ภาษา) ไป `/dashboard` ได้จากทุกที่ที่เปิด overlay

@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { MapContainer, TileLayer, Marker, Popup, Polyline, LayersControl, useMap } from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
-import { FiMaximize2, FiX, FiNavigation, FiMapPin } from "react-icons/fi";
+import { FiMaximize2, FiX, FiNavigation, FiMapPin, FiHome } from "react-icons/fi";
 import { useLang } from "@/i18n";
 import { gmapsSearchUrl } from "@/utils/gmaps";
 
@@ -220,9 +220,14 @@ export default function TripMap({
           >
             <div className="flex items-center justify-between gap-2 px-1">
               <b className="truncate">{title || t("map.title")}</b>
-              <button onClick={() => setFull(false)} className="btn btn-sm btn-circle btn-ghost">
-                <FiX />
-              </button>
+              <div className="flex items-center gap-1.5 shrink-0">
+                <Link to="/dashboard" className="btn btn-sm btn-ghost rounded-full gap-1.5">
+                  <FiHome /> {t("nav.dashboard")}
+                </Link>
+                <button onClick={() => setFull(false)} className="btn btn-sm btn-circle btn-ghost" aria-label={t("common.close")}>
+                  <FiX />
+                </button>
+              </div>
             </div>
             <div className="flex-1 min-h-0">
               <MapBody points={pinned} typeLabel={typeLabel} height="100%" />
