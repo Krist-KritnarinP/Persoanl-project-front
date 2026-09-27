@@ -45,6 +45,12 @@
   - อันดับ 3 — **แชร์ผ่าน LINE**: ส่งการ์ด Flex Message แผนทริปเข้ากลุ่มเพื่อน กดเปิด LIFF ดูทริปได้เลย (viral loop)
   - อันดับ 4 — **จ่ายเงินผ่าน LINE**: ส่ง QR PromptPay + แจ้งจ่ายสำเร็จในแชท (ต่อกับระบบ billing)
   - เทคนิค: lib `@line/bot-sdk` + `POST /api/line/webhook` (ตรวจ X-Line-Signature) + ผูก LINE userId ↔ บัญชีแอป (link ผ่าน LIFF login/OTP) + Rich menu ชี้ LIFF (เว็บเดิม ไม่ต้องทำ UI ใหม่) + scheduler (pg_cron/node-cron) ยิงแจ้งเตือน
+  - **ผูกบัญชี (account linking) — รายละเอียด:**
+    - DB: เพิ่ม `User.lineUserId String? @unique` (migration เดียว)
+    - ท่าหลัก LIFF Login: แตะ Rich menu → เปิด LIFF (ได้ LINE userId + ชื่อ + รูปฟรี) → ถ้า login แอปแล้ว ยิง `POST /api/line/link` {lineUserId} พร้อม JWT → ผูกเสร็จ; ยังไม่ login ให้ login หน้าเดิมก่อนแล้วผูกต่ออัตโนมัติ
+    - ท่าสำรอง OTP: แอปออกเลข 6 หลัก (หมดอายุ 10 นาที) → user พิมพ์ส่งเข้าห้องแชท → webhook จับคู่ผูกบัญชี (เผื่อ LIFF มีปัญหา)
+    - เลิกผูก: ปุ่มในโปรไฟล์ + พิมพ์ "เลิกเชื่อม" ในแชท (ลบ `lineUserId`, หยุด push ทันที)
+    - Security (ห้ามข้าม): อย่าเชื่อ userId จาก client ตรงๆ — เอา LIFF ID token ไป verify กับ LINE ฝั่ง server ก่อนผูกทุกครั้ง (กันปลอม); webhook ตรวจลายเซ็นทุก request (SDK มี middleware); ผูกบัญชี = ขอ consent รับ push ในจังหวะเดียวกัน (PDPA)
   - กฎ: push ต้อง opt-in ก่อน (PDPA) + ทุกข้อความมีปุ่มเลิกติดตาม
 - [ ] Import/Export: ส่งออก PDF/พิมพ์แผนทริป, แชร์เป็นรูป
 - [ ] **รูปภาพประกอบทริป**: อัปโหลดรูปต่อ activity/day → โชว์ใน timeline + หน้า share — ตาราง `trip_photos` (id, activityId?, dayId?, storagePath, caption)
