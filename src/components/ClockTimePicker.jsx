@@ -79,7 +79,7 @@ export default function ClockTimePicker({ value, onChange, disabled }) {
     };
     document.addEventListener("keydown", onKey);
     return () => document.removeEventListener("keydown", onKey);
-  }, [open ]);
+  }, [open]);
 
   const commit = (h, m) => {
     onChange?.(`${fmt(h)}:${fmt(m)}`);
@@ -192,7 +192,9 @@ export default function ClockTimePicker({ value, onChange, disabled }) {
               )}
             </span>
           ) : (
-            <span className="text-base-content/40 font-normal">{t("act.time")}</span>
+            <span className="text-base-content/40 font-normal">
+              {t("act.time")}
+            </span>
           )}
         </span>
         {parsed && (
@@ -275,13 +277,41 @@ export default function ClockTimePicker({ value, onChange, disabled }) {
             </div>
 
             {/* face */}
-            <div className="relative mx-auto" style={{ width: 240, height: 240 }}>
-              <svg viewBox="0 0 240 240" className="absolute inset-0 w-full h-full text-base-content/25">
-                <circle cx={C} cy={C} r={112} fill="none" stroke="currentColor" strokeWidth="1.5" />
+            <div
+              className="relative mx-auto"
+              style={{ width: 240, height: 240 }}
+            >
+              <svg
+                viewBox="0 0 240 240"
+                className="absolute inset-0 w-full h-full text-base-content/25"
+              >
+                <circle
+                  cx={C}
+                  cy={C}
+                  r={112}
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="1.5"
+                />
                 {use24 && mode === "hour" && (
-                  <circle cx={C} cy={C} r={34} fill="none" stroke="currentColor" strokeWidth="1" strokeDasharray="3 4" />
+                  <circle
+                    cx={C}
+                    cy={C}
+                    r={34}
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="1"
+                    strokeDasharray="3 4"
+                  />
                 )}
-                <circle cx={C} cy={C} r={4} fill="none" stroke="currentColor" strokeWidth="1.5" />
+                <circle
+                  cx={C}
+                  cy={C}
+                  r={4}
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="1.5"
+                />
                 <line
                   x1={C}
                   y1={C}
@@ -292,7 +322,15 @@ export default function ClockTimePicker({ value, onChange, disabled }) {
                   strokeLinecap="round"
                   className="text-primary"
                 />
-                <circle cx={hand.x} cy={hand.y} r={17} fill="none" stroke="currentColor" strokeWidth="1.5" className="text-primary" />
+                <circle
+                  cx={hand.x}
+                  cy={hand.y}
+                  r={17}
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="1.5"
+                  className="text-primary"
+                />
               </svg>
               {items.map((it) => {
                 const p = pos(it.index, it.ring);

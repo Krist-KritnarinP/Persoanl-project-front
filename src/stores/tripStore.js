@@ -19,14 +19,14 @@ export const useTripStore = create((set, get) => ({
       }
       set({
         trips: Array.isArray(tripsData) ? tripsData : [],
-        loading: false
+        loading: false,
       });
     } catch (error) {
       console.error("Fetch trips error:", error);
       set({
         error: error.response?.data?.message || "ไม่สามารถดึงข้อมูลทริปได้",
         loading: false,
-        trips: []
+        trips: [],
       });
     }
   },
@@ -44,7 +44,7 @@ export const useTripStore = create((set, get) => ({
       console.error("Create trip error:", error);
       set({
         error: error.response?.data?.message || "ไม่สามารถสร้างทริปได้",
-        loading: false
+        loading: false,
       });
       throw error;
     }
@@ -60,7 +60,7 @@ export const useTripStore = create((set, get) => ({
       console.error("Delete trip error:", error);
       set({
         error: error.response?.data?.message || "ไม่สามารถลบทริปได้",
-        loading: false
+        loading: false,
       });
       throw error;
     }

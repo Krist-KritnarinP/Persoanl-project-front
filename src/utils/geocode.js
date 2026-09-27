@@ -7,14 +7,33 @@ let saveTimer;
 const MAX_CACHE = 500;
 const POSITIVE_TTL = 30 * 86400000;
 const NEGATIVE_TTL = 5 * 60000;
-export const validCoords = (lat, lng) => lat !== null && lat !== undefined && lat !== "" &&
-  lng !== null && lng !== undefined && lng !== "" &&
-  Number.isFinite(Number(lat)) && Number.isFinite(Number(lng)) &&
-  Math.abs(Number(lat)) <= 90 && Math.abs(Number(lng)) <= 180;
-const keyOf = (name, hint) => JSON.stringify([String(name || "").trim().toLowerCase(), String(hint || "").trim().toLowerCase()]);
+export const validCoords = (lat, lng) =>
+  lat !== null &&
+  lat !== undefined &&
+  lat !== "" &&
+  lng !== null &&
+  lng !== undefined &&
+  lng !== "" &&
+  Number.isFinite(Number(lat)) &&
+  Number.isFinite(Number(lng)) &&
+  Math.abs(Number(lat)) <= 90 &&
+  Math.abs(Number(lng)) <= 180;
+const keyOf = (name, hint) =>
+  JSON.stringify([
+    String(name || "")
+      .trim()
+      .toLowerCase(),
+    String(hint || "")
+      .trim()
+      .toLowerCase(),
+  ]);
 function getCache() {
   if (!cache) {
-    try { cache = JSON.parse(localStorage.getItem(CACHE_KEY) || "{}"); } catch { cache = {}; }
+    try {
+      cache = JSON.parse(localStorage.getItem(CACHE_KEY) || "{}");
+    } catch {
+      cache = {};
+    }
     if (!cache || typeof cache !== "object" || Array.isArray(cache)) cache = {};
   }
   return cache;
@@ -22,28 +41,47 @@ function getCache() {
 function cached(key) {
   const entry = getCache()[key];
   if (!entry || entry.expires <= Date.now()) return undefined;
-  return entry.hit === null || validCoords(entry.hit?.lat, entry.hit?.lng) ? entry.hit : undefined;
+  return entry.hit === null || validCoords(entry.hit?.lat, entry.hit?.lng)
+    ? entry.hit
+    : undefined;
 }
 function remember(key, hit) {
-  getCache()[key] = { hit, expires: Date.now() + (hit ? POSITIVE_TTL : NEGATIVE_TTL) };
+  getCache()[key] = {
+    hit,
+    expires: Date.now() + (hit ? POSITIVE_TTL : NEGATIVE_TTL),
+  };
   clearTimeout(saveTimer);
   saveTimer = setTimeout(() => {
-    const entries = Object.entries(getCache()).filter(([, v]) => v.expires > Date.now()).slice(-MAX_CACHE);
+    const entries = Object.entries(getCache())
+      .filter(([, v]) => v.expires > Date.now())
+      .slice(-MAX_CACHE);
     cache = Object.fromEntries(entries);
-    try { localStorage.setItem(CACHE_KEY, JSON.stringify(cache)); } catch { /* storage unavailable */ }
+    try {
+      localStorage.setItem(CACHE_KEY, JSON.stringify(cache));
+    } catch {
+      /* storage unavailable */
+    }
   }, 200);
 }
 async function lookup(text, signal) {
-  const endpoint = import.meta.env?.VITE_GEOCODE_URL || "https://photon.komoot.io/api/";
+  const endpoint =
+    import.meta.env?.VITE_GEOCODE_URL || "https://photon.komoot.io/api/";
   const url = new URL(endpoint);
   url.search = new URLSearchParams({ q: text, limit: "1", lang: "en" });
-  const response = await fetch(url, { signal, headers: { Accept: "application/json" } });
+  const response = await fetch(url, {
+    signal,
+    headers: { Accept: "application/json" },
+  });
   if (!response.ok) throw new Error("Geocoder unavailable");
   const feature = (await response.json())?.features?.[0];
   const [lng, lat] = feature?.geometry?.coordinates || [];
   if (!validCoords(lat, lng)) return null;
   const props = feature.properties || {};
-  return { lat: Number(lat), lng: Number(lng), label: [props.name, props.city, props.country].filter(Boolean).join(", ") };
+  return {
+    lat: Number(lat),
+    lng: Number(lng),
+    label: [props.name, props.city, props.country].filter(Boolean).join(", "),
+  };
 }
 // A shared request survives while another mounted view still needs it.
 export function geocodePlace(name, hint = "", { signal } = {}) {
@@ -60,7 +98,10 @@ export function geocodePlace(name, hint = "", { signal } = {}) {
     const timeout = setTimeout(() => controller.abort(), 6000);
     job.promise = (async () => {
       try {
-        let result = await lookup(hint ? `${q}, ${hint}` : q, controller.signal);
+        let result = await lookup(
+          hint ? `${q}, ${hint}` : q,
+          controller.signal,
+        );
         if (!result && hint) result = await lookup(q, controller.signal);
         remember(key, result);
         return result;
@@ -84,19 +125,42 @@ export function geocodePlace(name, hint = "", { signal } = {}) {
       if (--job.users === 0) job.controller.abort();
       fn(value);
     };
-    const abort = () => finish(reject, signal.reason || new DOMException("Aborted", "AbortError"));
+    const abort = () =>
+      finish(
+        reject,
+        signal.reason || new DOMException("Aborted", "AbortError"),
+      );
     signal?.addEventListener("abort", abort, { once: true });
-    job.promise.then(value => finish(resolve, value), error => finish(reject, error));
+    job.promise.then(
+      (value) => finish(resolve, value),
+      (error) => finish(reject, error),
+    );
   });
 }
-export async function resolveActivityCoords(activities, destination = "", onProgress, { signal } = {}) {
-  signal = AbortSignal.any([...(signal ? [signal] : []), AbortSignal.timeout(15000)]);
-  const out = (activities || []).map(a => {
+export async function resolveActivityCoords(
+  activities,
+  destination = "",
+  onProgress,
+  { signal } = {},
+) {
+  signal = AbortSignal.any([
+    ...(signal ? [signal] : []),
+    AbortSignal.timeout(15000),
+  ]);
+  const out = (activities || []).map((a) => {
     const hit = validCoords(a.latitude, a.longitude)
-      ? { lat: Number(a.latitude), lng: Number(a.longitude) } : cached(keyOf(a.locationName, destination));
-    return { ...a, lat: hit?.lat ?? null, lng: hit?.lng ?? null, geoLabel: hit?.label ?? null };
+      ? { lat: Number(a.latitude), lng: Number(a.longitude) }
+      : cached(keyOf(a.locationName, destination));
+    return {
+      ...a,
+      lat: hit?.lat ?? null,
+      lng: hit?.lng ?? null,
+      geoLabel: hit?.label ?? null,
+    };
   });
-  const emit = () => { if (!signal?.aborted) onProgress?.(out.slice()); };
+  const emit = () => {
+    if (!signal?.aborted) onProgress?.(out.slice());
+  };
   emit();
   const jobs = new Map();
   out.forEach((a, i) => {
@@ -107,17 +171,32 @@ export async function resolveActivityCoords(activities, destination = "", onProg
   });
   const pending = [...jobs.values()];
   let next = 0;
-  await Promise.all(Array.from({ length: Math.min(2, pending.length) }, async () => {
-    while (!signal?.aborted && next < pending.length) {
-      const indices = pending[next++];
-      try {
-        const hit = await geocodePlace(out[indices[0]].locationName, destination, { signal });
-        if (hit && !signal?.aborted) {
-          indices.forEach(i => { out[i] = { ...out[i], lat: hit.lat, lng: hit.lng, geoLabel: hit.label }; });
-          emit(); // Emit inside the worker, never wait for the slowest place.
+  await Promise.all(
+    Array.from({ length: Math.min(2, pending.length) }, async () => {
+      while (!signal?.aborted && next < pending.length) {
+        const indices = pending[next++];
+        try {
+          const hit = await geocodePlace(
+            out[indices[0]].locationName,
+            destination,
+            { signal },
+          );
+          if (hit && !signal?.aborted) {
+            indices.forEach((i) => {
+              out[i] = {
+                ...out[i],
+                lat: hit.lat,
+                lng: hit.lng,
+                geoLabel: hit.label,
+              };
+            });
+            emit(); // Emit inside the worker, never wait for the slowest place.
+          }
+        } catch {
+          /* cancellation */
         }
-      } catch { /* cancellation */ }
-    }
-  }));
+      }
+    }),
+  );
   return out;
 }

@@ -17,13 +17,17 @@ export default function DayModal({
     <div className="modal modal-open px-4">
       <div className="modal-box glass rounded-3xl border border-white/30 w-full max-w-lg max-h-[85vh] overflow-y-auto custom-scrollbar">
         <h3 className="font-bold text-xl mb-4">
-          {editingDay ? `${t("day.editDay")} ${editingDay.dayCount}` : t("day.newDay")}
+          {editingDay
+            ? `${t("day.editDay")} ${editingDay.dayCount}`
+            : t("day.newDay")}
         </h3>
         <form onSubmit={onSubmit} className="space-y-4">
           {/* แสดงช่องใส่วันเฉพาะเมื่อยังไม่มีวันเลย หรือเป็นการแก้ไขวัน */}
           {(!hasDays || editingDay) && (
             <div className="form-control">
-              <label className="label text-sm font-semibold">{t("day.date")}</label>
+              <label className="label text-sm font-semibold">
+                {t("day.date")}
+              </label>
               <input
                 type="date"
                 className="input input-bordered glass w-full text-base"
@@ -37,7 +41,9 @@ export default function DayModal({
           )}
 
           <div className="form-control">
-            <label className="label text-sm font-semibold">{t("day.dayDesc")}</label>
+            <label className="label text-sm font-semibold">
+              {t("day.dayDesc")}
+            </label>
             <textarea
               className="textarea textarea-bordered glass w-full text-base"
               placeholder={t("day.dayDescPh")}

@@ -1,3 +1,17 @@
+# Handover — รับช่วง refactor จาก agent เดิม (2026-09-27)
+
+- รับช่วงงานค้างโดยเก็บทุกส่วนของ agent เดิมไว้ รวมบันทึก geocode priority
+- จัดรูปแบบ source และแยกเฉพาะ presentation/helper ที่เหมือนกันจริง; คง route, UI, CSS, auth, เวลา, ธีม, map/AI logic เดิม
+- เอกสารให้อีก agent: [docs/AGENT_HANDOFF.md](docs/AGENT_HANDOFF.md)
+- คู่มือสำหรับผู้เริ่มต้น: [docs/CODE_GUIDE.md](docs/CODE_GUIDE.md)
+- ผลตรวจ: Front unit 6+1, API unit 20+2, browser ทริป/share/map 4 กรณีผ่าน; build/SEO ผ่าน, lint 9 warnings เดิมไม่มี error
+- Source ที่จัดรูปแบบอย่างเดียวผ่าน normalized AST comparison; ส่วนย้าย helper/components ตรวจตาม flow ที่เกี่ยวข้อง
+- ไม่แก้ DB/schema/secrets/dependencies ไม่ push/deploy; ไม่ขยายงานตรวจซ้ำเกินความจำเป็นตามคำสั่งผู้ใช้
+- รอบนี้ commit ใน repo นี้; ดู git log ล่าสุดเพื่ออ้างอิง revision
+
+---
+## บันทึกรอบก่อน
+
 # Handover — ปรับความชัดเจนของตัวหนังสือ Landing (2026-09-26)
 
 - เปลี่ยนข้อความหลักเป็น charcoal #272b2a และข้อความรอง #505650; หัวข้อเน้นเป็นน้ำตาลอุ่น #89502f
@@ -414,3 +428,14 @@ Auth: `Authorization: Bearer <token>` (จาก `localStorage.authState.state.t
 ## 5.13 งานรอบ 19 (2026-09-26)
 
 **Prompt ตามสเปก user + ดึงเวลาลงจอด:** ฟอร์แมต `D2 10-18: TG954(00:05-07:25)` (เวลาลงจอดดึงจากคำอธิบายด้วย regex) — ปิดท้ายสรุปด้วย `⚠️ วันที่เสี่ยงสุด` แทน ★ (พายุ/ถนนปิด แล้วแต่ทริป) + ตัวอย่างคำตอบ 1 ชุดบังคับฟอร์แมต — dry-run ทริป 2 ผ่าน (ข้อมูล ~984 ตัวอักษร)
+
+## 5.14 งานรอบ 20 (2026-09-27) — ยืนยัน priority geocode ตามคำสั่ง user
+
+**คำสั่ง user:** priority แรกคือพิมพ์สถานที่/กิจกรรมแล้วเจอสถานที่เลย ถ้าไม่ตรงค่อยเป็น second priority ให้ user แก้เอง ห้ามเปลี่ยนโค้ดมั่ว
+
+**ผลตรวจ:** คอนเซปตรงกับโค้ดปัจจุบันแล้ว จึงไม่แตะโค้ด geocode:
+- Priority 1 (auto): `src/utils/geocode.js:92 resolveActivityCoords` + `src/hooks/useTripCoordinates.js:26` — อ่าน DB (`latitude/longitude`) ก่อนเสมอ แล้วค่อย cache แล้วค่อยยิง Photon อัตโนมัติแบบขนาน 2 worker + progressive render
+- Priority 2 (manual): `src/components/ActivityModal.jsx:28 handleFindCoords` — ปุ่มค้นหาพิกัดครั้งเดียว + ช่องกรอก lat/lng มือ แล้ว `PUT /activities/:id` เก็บลง DB
+- ถ้า auto หาไม่เจอ แผนที่โชว์เฉพาะจุดที่มี + ข้อความให้แก้พิกัดในกิจกรรม ไม่ค้าง spinner
+
+**การตัดสินใจ:** คง `geocode.js` ทั้ง 123 บรรทัดไว้ตามเดิม ไม่ตัด `resolveActivityCoords` ตามข้อเสนอรอบก่อน เพราะขัดกับสเปก user รอบนี้

@@ -13,7 +13,11 @@ function Userprofile() {
   const navigate = useNavigate();
   const { t } = useLang();
   const user = useUserStore((s) => s.user);
-  const [form, setForm] = useState({ username: "", password: "", currentPassword: "" });
+  const [form, setForm] = useState({
+    username: "",
+    password: "",
+    currentPassword: "",
+  });
   const [loading, setLoading] = useState(false);
   const [fetching, setFetching] = useState(true);
 
@@ -21,7 +25,11 @@ function Userprofile() {
     (async () => {
       try {
         const resp = await mainApi.get("/users/me");
-        setForm({ username: resp.data?.username || "", password: "", currentPassword: "" });
+        setForm({
+          username: resp.data?.username || "",
+          password: "",
+          currentPassword: "",
+        });
       } catch {
         toast.error(t("profile.fetchFail"));
       } finally {
@@ -37,21 +45,26 @@ function Userprofile() {
       return;
     }
     if (form.password && !passwordSchema.safeParse(form.password).success) {
-      toast.error(passwordSchema.safeParse(form.password).error.issues[0].message);
+      toast.error(
+        passwordSchema.safeParse(form.password).error.issues[0].message,
+      );
       return;
     }
     setLoading(true);
     try {
       const payload = { username: form.username.trim() };
-      if (form.password) { payload.password = form.password; payload.currentPassword = form.currentPassword; }
+      if (form.password) {
+        payload.password = form.password;
+        payload.currentPassword = form.currentPassword;
+      }
       const resp = await mainApi.put("/users/me", payload);
       toast.success(resp.data?.message || t("profile.ok"));
       if (resp.data.reauthenticate) {
         useUserStore.getState().clearSession();
-        navigate('/', { replace: true });
+        navigate("/", { replace: true });
       } else {
         useUserStore.setState({ user: resp.data.user });
-        setForm(f => ({ ...f, password: "", currentPassword: "" }));
+        setForm((f) => ({ ...f, password: "", currentPassword: "" }));
       }
     } catch (err) {
       toast.error(err?.response?.data?.message || t("profile.fail"));
@@ -73,40 +86,70 @@ function Userprofile() {
         <h1 className="text-2xl font-extrabold flex items-center gap-2">
           <FiUser className="text-primary" /> {t("profile.title")}
         </h1>
-        <p className="text-sm sm:text-base text-base-content/60 break-all">{user?.email || ""}</p>
+        <p className="text-sm sm:text-base text-base-content/60 break-all">
+          {user?.email || ""}
+        </p>
 
         {fetching ? (
           <span className="loading loading-spinner text-primary" />
         ) : (
           <form onSubmit={onSubmit} className="space-y-4">
             <div className="form-control">
-              <label className="label"><span className="label-text text-sm font-semibold">{t("profile.username")}</span></label>
+              <label className="label">
+                <span className="label-text text-sm font-semibold">
+                  {t("profile.username")}
+                </span>
+              </label>
               <input
                 className="input input-bordered w-full text-base"
                 value={form.username}
-                onChange={(e) => setForm((f) => ({ ...f, username: e.target.value }))}
+                onChange={(e) =>
+                  setForm((f) => ({ ...f, username: e.target.value }))
+                }
                 minLength={4}
                 required
               />
             </div>
             <div className="form-control">
-              <label className="label"><span className="label-text text-sm font-semibold">{t("profile.newPass")}</span></label>
+              <label className="label">
+                <span className="label-text text-sm font-semibold">
+                  {t("profile.newPass")}
+                </span>
+              </label>
               <input
                 type="password"
                 className="input input-bordered w-full text-base"
                 autoComplete="new-password"
                 value={form.password}
-                onChange={(e) => setForm((f) => ({ ...f, password: e.target.value }))}
+                onChange={(e) =>
+                  setForm((f) => ({ ...f, password: e.target.value }))
+                }
                 placeholder="••••••"
               />
             </div>
-            {form.password && <div className="form-control">
-              <label className="label" htmlFor="current-password">{t("profile.currentPass")}</label>
-              <input id="current-password" type="password" autoComplete="current-password" required
-                className="input input-bordered w-full" value={form.currentPassword}
-                onChange={e => setForm(f => ({ ...f, currentPassword: e.target.value }))} />
-            </div>}
-            <button type="submit" disabled={loading} className="btn btn-primary rounded-full gap-2">
+            {form.password && (
+              <div className="form-control">
+                <label className="label" htmlFor="current-password">
+                  {t("profile.currentPass")}
+                </label>
+                <input
+                  id="current-password"
+                  type="password"
+                  autoComplete="current-password"
+                  required
+                  className="input input-bordered w-full"
+                  value={form.currentPassword}
+                  onChange={(e) =>
+                    setForm((f) => ({ ...f, currentPassword: e.target.value }))
+                  }
+                />
+              </div>
+            )}
+            <button
+              type="submit"
+              disabled={loading}
+              className="btn btn-primary rounded-full gap-2"
+            >
               <FiSave /> {loading ? t("profile.saving") : t("profile.saveBtn")}
             </button>
           </form>

@@ -6,25 +6,24 @@ import {
   FiCalendar,
   FiEdit2,
   FiTrash2,
-  FiHome,
-  FiTruck,
-  FiCoffee,
-  FiNavigation,
   FiCheckCircle,
   FiDollarSign,
   FiList,
   FiFlag,
   FiShare2,
-  FiCopy,
-  FiLink,
   FiChevronRight,
   FiEye,
 } from "react-icons/fi";
 import { useTripActivityStore } from "@/stores/tripActivityStore";
 import { toast } from "react-toastify";
 import { useLang } from "@/i18n";
+import { formatTripDate } from "@/utils/datetime";
+import { getActivityTypeMeta } from "@/constants/activityTypes";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
 import ThemeToggle from "@/components/ThemeToggle";
+import TripOverviewStats from "@/components/trips/TripOverviewStats";
+import TripShareModal from "@/components/trips/TripShareModal";
+import LoadingScreen from "@/components/LoadingScreen";
 import DayModal from "@/components/DayModal";
 import ActivityModal from "@/components/ActivityModal";
 import ActivityDetailModal, { DayDetailModal } from "@/components/DetailModals";
@@ -35,22 +34,21 @@ import TripMap from "@/components/TripMap";
 import TripNavCard from "@/components/TripNavCard";
 import { useTripCoordinates } from "@/hooks/useTripCoordinates";
 
+/** Own-trip workspace: state and event handlers here; reusable display blocks live in components/trips. */
 export default function TripActivity() {
   const { tripId } = useParams();
   const navigate = useNavigate();
   const { t, locale } = useLang();
 
-  const ACTIVITY_TYPES = {
-    ACCOMMODATION: { label: t("act.accom"), icon: FiHome, color: "badge-primary" },
-    TRANSPORT: { label: t("act.transp"), icon: FiTruck, color: "badge-info" },
-    RESTAURANT: { label: t("act.rest"), icon: FiCoffee, color: "badge-warning" },
-    ATTRACTION: { label: t("act.attr"), icon: FiNavigation, color: "badge-accent" },
-  };
+  // Activity-type icons/colors/labels live in @/constants/activityTypes
+  // so every page renders the 4 types identically.
+  const ACTIVITY_TYPES = getActivityTypeMeta(t);
 
   const trip = useTripActivityStore((state) => state.trip);
   const loading = useTripActivityStore((state) => state.loading);
-  const error = useTripActivityStore((state) => state.error);
-  const fetchTripDetails = useTripActivityStore((state) => state.fetchTripDetails);
+  const fetchTripDetails = useTripActivityStore(
+    (state) => state.fetchTripDetails,
+  );
 
   const createDay = useTripActivityStore((state) => state.createDay);
   const updateDay = useTripActivityStore((state) => state.updateDay);
@@ -60,15 +58,27 @@ export default function TripActivity() {
   const updateActivity = useTripActivityStore((state) => state.updateActivity);
   const deleteActivity = useTripActivityStore((state) => state.deleteActivity);
 
-  const weatherPrediction = useTripActivityStore((state) => state.weatherPrediction);
+  const weatherPrediction = useTripActivityStore(
+    (state) => state.weatherPrediction,
+  );
   const weatherLoading = useTripActivityStore((state) => state.weatherLoading);
   const weatherError = useTripActivityStore((state) => state.weatherError);
-  const getWeatherForecast = useTripActivityStore((state) => state.getWeatherForecast);
+  const getWeatherForecast = useTripActivityStore(
+    (state) => state.getWeatherForecast,
+  );
   const weatherHistory = useTripActivityStore((state) => state.weatherHistory);
-  const fetchWeatherHistory = useTripActivityStore((state) => state.fetchWeatherHistory);
-  const deleteWeatherHistory = useTripActivityStore((state) => state.deleteWeatherHistory);
-  const createShareLink = useTripActivityStore((state) => state.createShareLink);
-  const revokeShareLink = useTripActivityStore((state) => state.revokeShareLink);
+  const fetchWeatherHistory = useTripActivityStore(
+    (state) => state.fetchWeatherHistory,
+  );
+  const deleteWeatherHistory = useTripActivityStore(
+    (state) => state.deleteWeatherHistory,
+  );
+  const createShareLink = useTripActivityStore(
+    (state) => state.createShareLink,
+  );
+  const revokeShareLink = useTripActivityStore(
+    (state) => state.revokeShareLink,
+  );
 
   const [shareOpen, setShareOpen] = useState(false);
   const [shareToken, setShareToken] = useState(null);
@@ -127,7 +137,10 @@ export default function TripActivity() {
 
   const [selectedDayId, setSelectedDayId] = useState(null);
   const [isDayModalOpen, setIsDayModalOpen] = useState(false);
-  const [dayFormData, setDayFormData] = useState({ dayDate: "", description: "" });
+  const [dayFormData, setDayFormData] = useState({
+    dayDate: "",
+    description: "",
+  });
   const [editingDay, setEditingDay] = useState(null);
 
   const [isActivityModalOpen, setIsActivityModalOpen] = useState(false);
@@ -146,9 +159,9 @@ export default function TripActivity() {
   });
 
   // ---- MAP: แปลงชื่อสถานที่/โรงแรม/ร้านอาหาร -> พิกัด (DB ก่อน, ไม่เจอค่อย geocode ฟรี) ----
-  const { geoPoints, geoLoading } = useTripCoordinates(trip?.id === Number(tripId) ? trip : null);
-
-
+  const { geoPoints, geoLoading } = useTripCoordinates(
+    trip?.id === Number(tripId) ? trip : null,
+  );
 
   useEffect(() => {
     if (tripId) fetchTripDetails(tripId);
@@ -157,32 +170,39 @@ export default function TripActivity() {
   // ไม่ auto-select วันแรก — เริ่มที่แท็บภาพรวม (selectedDayId === null)
   const activeDay = trip?.days?.find((d) => d.id === selectedDayId) || null;
 
-  const formatDate = (dateString) => {
-    if (!dateString) return "-";
-    return new Date(dateString).toLocaleDateString(locale, {
-      year: "numeric",
-      month: "short",
-      day: "numeric",
-    });
-  };
+  // Shared formatter (see @/utils/datetime) — same output, one implementation.
+  const formatDate = (dateString) => formatTripDate(dateString, locale);
 
   // สถิติภาพรวมทริป
   const totalDays = trip?.days?.length || 0;
-  const totalActs = trip?.days?.reduce((s, d) => s + (d.activities?.length || 0), 0) || 0;
-  const totalBudget = trip?.days?.reduce(
-    (s, d) => s + (d.activities?.reduce((a, x) => a + (Number(x.price) || 0), 0) || 0), 0
-  ) || 0;
+  const totalActs =
+    trip?.days?.reduce((s, d) => s + (d.activities?.length || 0), 0) || 0;
+  const totalBudget =
+    trip?.days?.reduce(
+      (s, d) =>
+        s +
+        (d.activities?.reduce((a, x) => a + (Number(x.price) || 0), 0) || 0),
+      0,
+    ) || 0;
 
   // ---- MAP: จุดที่แสดงเปลี่ยนตามแท็บ "แผนการเดินทางรายวัน" ----
-  const mapPoints = activeDay ? geoPoints.filter((p) => p.dayId === activeDay.id) : geoPoints;
+  const mapPoints = activeDay
+    ? geoPoints.filter((p) => p.dayId === activeDay.id)
+    : geoPoints;
   const mapSubtitle = activeDay
     ? `Day ${activeDay.dayCount}${activeDay.dayDate ? ` · ${formatDate(activeDay.dayDate)}` : ""}`
     : t("day.overview");
 
   // Helper ดึงข้อความเวลามาแสดงผลโดยตรง (เก็บ wall-time แบบ UTC เพื่อกันเพี้ยน +7)
+  // NOTE: looks like ShareTripView's formatTime but is NOT identical —
+  // this one uses an anchored regex, fixed "th-TH" locale and echoes invalid
+  // input back. Keep separate on purpose.
   const formatZonedTime = (timeString) => {
     if (!timeString) return "";
-    if (typeof timeString === "string" && /^\d{2}:\d{2}(:\d{2})?$/.test(timeString)) {
+    if (
+      typeof timeString === "string" &&
+      /^\d{2}:\d{2}(:\d{2})?$/.test(timeString)
+    ) {
       return timeString.slice(0, 5);
     }
     if (timeString.includes("T")) {
@@ -208,7 +228,9 @@ export default function TripActivity() {
   const handleOpenEditDayModal = (day) => {
     setEditingDay(day);
     setDayFormData({
-      dayDate: day.dayDate ? new Date(day.dayDate).toISOString().split("T")[0] : "",
+      dayDate: day.dayDate
+        ? new Date(day.dayDate).toISOString().split("T")[0]
+        : "",
       description: day.description || "",
     });
     setIsDayModalOpen(true);
@@ -272,9 +294,7 @@ export default function TripActivity() {
       activityDate: act.activityDate
         ? new Date(act.activityDate).toISOString().split("T")[0]
         : "",
-      activityTime: act.activityTime
-        ? formatZonedTime(act.activityTime)
-        : "",
+      activityTime: act.activityTime ? formatZonedTime(act.activityTime) : "",
       price: act.price || 0,
       description: act.description || "",
       status: act.status || "planned",
@@ -291,7 +311,9 @@ export default function TripActivity() {
       let formattedTime = null;
 
       if (activityFormData.activityTime) {
-        const m = String(activityFormData.activityTime).match(/^(\d{2}):(\d{2})/);
+        const m = String(activityFormData.activityTime).match(
+          /^(\d{2}):(\d{2})/,
+        );
         formattedTime = m ? `1970-01-01T${m[1]}:${m[2]}:00Z` : null;
       }
 
@@ -299,8 +321,15 @@ export default function TripActivity() {
         ...activityFormData,
         price: Number(activityFormData.price) || 0,
         activityTime: formattedTime,
-        latitude: activityFormData.latitude === "" || activityFormData.latitude == null ? null : Number(activityFormData.latitude),
-        longitude: activityFormData.longitude === "" || activityFormData.longitude == null ? null : Number(activityFormData.longitude),
+        latitude:
+          activityFormData.latitude === "" || activityFormData.latitude == null
+            ? null
+            : Number(activityFormData.latitude),
+        longitude:
+          activityFormData.longitude === "" ||
+          activityFormData.longitude == null
+            ? null
+            : Number(activityFormData.longitude),
       };
 
       if (editingActivity) {
@@ -332,11 +361,7 @@ export default function TripActivity() {
   };
 
   if (loading && !trip) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <span className="loading loading-spinner loading-lg text-primary"></span>
-      </div>
-    );
+    return <LoadingScreen />;
   }
 
   return (
@@ -349,7 +374,11 @@ export default function TripActivity() {
           className="flex items-center gap-2 md:gap-3 min-w-0 cursor-pointer rounded-2xl"
         >
           <div className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-primary/20 border border-primary/30 flex items-center justify-center text-primary font-bold overflow-hidden shrink-0">
-            <img src="/image/MiniDog.PNG" alt="Minidog" className="w-full h-full object-cover" />
+            <img
+              src="/image/MiniDog.PNG"
+              alt="Minidog"
+              className="w-full h-full object-cover"
+            />
           </div>
           <div className="min-w-0 text-left">
             <span className="font-display text-2xl md:text-3xl tracking-wider bg-linear-to-r from-primary to-accent bg-clip-text text-transparent whitespace-nowrap">
@@ -381,7 +410,9 @@ export default function TripActivity() {
           >
             <FiShare2 /> {t("share.btn")}
           </button>
-          <span className="hidden sm:inline-flex items-center rounded-full border border-base-content/20 bg-white/20 px-3 py-1.5 text-sm font-semibold leading-none whitespace-nowrap">Trip #{tripId}</span>
+          <span className="hidden sm:inline-flex items-center rounded-full border border-base-content/20 bg-white/20 px-3 py-1.5 text-sm font-semibold leading-none whitespace-nowrap">
+            Trip #{tripId}
+          </span>
         </div>
       </div>
 
@@ -389,48 +420,15 @@ export default function TripActivity() {
       <TripInfoCard trip={trip} formatDate={formatDate} />
 
       {/* TRIP OVERVIEW STATS — horizontal scroll strip on all screens */}
-      <section className="flex gap-3 md:gap-4 overflow-x-auto pb-2 snap-x snap-mandatory custom-scrollbar">
-        <div className="glass glass-card p-4 md:p-5 flex items-center gap-3 min-w-[220px] sm:min-w-[240px] xl:min-w-0 xl:flex-1 snap-start">
-          <div className="w-11 h-11 rounded-2xl bg-primary/15 text-primary flex items-center justify-center text-xl shrink-0">
-            <FiCalendar />
-          </div>
-          <div className="min-w-0">
-            <div className="text-sm sm:text-base text-base-content/60">{t("day.ovDays")}</div>
-            <div className="text-xl md:text-2xl font-black">{totalDays}</div>
-          </div>
-        </div>
-        <div className="glass glass-card p-4 md:p-5 flex items-center gap-3 min-w-[220px] sm:min-w-[240px] xl:min-w-0 xl:flex-1 snap-start">
-          <div className="w-11 h-11 rounded-2xl bg-accent/15 text-accent flex items-center justify-center text-xl shrink-0">
-            <FiList />
-          </div>
-          <div className="min-w-0">
-            <div className="text-sm sm:text-base text-base-content/60">{t("day.ovActs")}</div>
-            <div className="text-xl md:text-2xl font-black">{totalActs}</div>
-          </div>
-        </div>
-        <div className="glass glass-card p-4 md:p-5 flex items-center gap-3 min-w-[220px] sm:min-w-[240px] xl:min-w-0 xl:flex-1 snap-start">
-          <div className="w-11 h-11 rounded-2xl bg-warning/15 text-warning flex items-center justify-center text-xl shrink-0">
-            <FiDollarSign />
-          </div>
-          <div className="min-w-0">
-            <div className="text-sm sm:text-base text-base-content/60">{t("day.ovBudget")}</div>
-            <div className="text-xl md:text-2xl font-black truncate">
-              {totalBudget.toLocaleString(locale)} <span className="text-sm font-normal text-base-content/50">{t("day.baht")}</span>
-            </div>
-          </div>
-        </div>
-        <div className="glass glass-card p-4 md:p-5 flex items-center gap-3 min-w-[220px] sm:min-w-[240px] xl:min-w-0 xl:flex-1 snap-start">
-          <div className="w-11 h-11 rounded-2xl bg-info/15 text-info flex items-center justify-center text-xl shrink-0">
-            <FiFlag />
-          </div>
-          <div className="min-w-0">
-            <div className="text-sm sm:text-base text-base-content/60">{t("day.ovDuration")}</div>
-            <div className="text-base md:text-lg font-black truncate">
-              {formatDate(trip?.startDate)} – {formatDate(trip?.endDate)}
-            </div>
-          </div>
-        </div>
-      </section>
+      <TripOverviewStats
+        trip={trip}
+        totalDays={totalDays}
+        totalActs={totalActs}
+        totalBudget={totalBudget}
+        formatDate={formatDate}
+        locale={locale}
+        t={t}
+      />
 
       {/* 3-COLUMN LAYOUT */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start w-full">
@@ -468,8 +466,12 @@ export default function TripActivity() {
                       }`}
                     >
                       <div className="flex items-center justify-between gap-2">
-                        <span className="font-bold text-sm sm:text-base text-primary">Day {d.dayCount}</span>
-                        <span className="text-xs opacity-70 whitespace-nowrap">{formatDate(d.dayDate)}</span>
+                        <span className="font-bold text-sm sm:text-base text-primary">
+                          Day {d.dayCount}
+                        </span>
+                        <span className="text-xs opacity-70 whitespace-nowrap">
+                          {formatDate(d.dayDate)}
+                        </span>
                       </div>
 
                       {d.activities && d.activities.length > 0 ? (
@@ -478,14 +480,18 @@ export default function TripActivity() {
                             <li key={act.id} className="space-y-1">
                               <div className="flex items-center gap-1.5 text-base-content/90 font-medium">
                                 <span className="w-1.5 h-1.5 rounded-full bg-accent/70 shrink-0" />
-                                <span className="truncate">{act.locationName}</span>
+                                <span className="truncate">
+                                  {act.locationName}
+                                </span>
                               </div>
 
                               {act.activityTime && (
                                 <div className="flex items-center gap-1.5 pl-3 text-xs">
                                   <span className="bg-base-200/60 px-1.5 py-0.5 rounded flex items-center gap-1">
                                     <span>⏰</span>
-                                    <span>{formatZonedTime(act.activityTime)}</span>
+                                    <span>
+                                      {formatZonedTime(act.activityTime)}
+                                    </span>
                                   </span>
                                 </div>
                               )}
@@ -493,7 +499,9 @@ export default function TripActivity() {
                           ))}
                         </ul>
                       ) : (
-                        <p className="text-xs opacity-50 mt-1 italic">{t("dash.noActivity")}</p>
+                        <p className="text-xs opacity-50 mt-1 italic">
+                          {t("dash.noActivity")}
+                        </p>
                       )}
                     </div>
                   </div>
@@ -501,7 +509,9 @@ export default function TripActivity() {
               })}
             </div>
           ) : (
-            <p className="text-sm text-base-content/60 text-center py-4">{t("day.noDays")}</p>
+            <p className="text-sm text-base-content/60 text-center py-4">
+              {t("day.noDays")}
+            </p>
           )}
         </div>
 
@@ -556,10 +566,16 @@ export default function TripActivity() {
               <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-white/20 pb-4 gap-2">
                 <div className="min-w-0">
                   <div className="flex items-center gap-3 flex-wrap">
-                    <h3 className="text-2xl font-bold">Day {activeDay.dayCount}</h3>
-                    <span className="text-sm opacity-70">{formatDate(activeDay.dayDate)}</span>
+                    <h3 className="text-2xl font-bold">
+                      Day {activeDay.dayCount}
+                    </h3>
+                    <span className="text-sm opacity-70">
+                      {formatDate(activeDay.dayDate)}
+                    </span>
                   </div>
-                  <p className="text-sm sm:text-base opacity-80 mt-1">{activeDay.description}</p>
+                  <p className="text-sm sm:text-base opacity-80 mt-1">
+                    {activeDay.description}
+                  </p>
                 </div>
                 <div className="flex items-center gap-2 shrink-0">
                   <button
@@ -567,7 +583,8 @@ export default function TripActivity() {
                     title={t("common.view")}
                     className="btn btn-ghost btn-sm text-base-content/70 hover:bg-white/20"
                   >
-                    <FiEye /> <span className="hidden sm:inline">{t("common.view")}</span>
+                    <FiEye />{" "}
+                    <span className="hidden sm:inline">{t("common.view")}</span>
                   </button>
                   <button
                     onClick={() => handleOpenEditDayModal(activeDay)}
@@ -588,17 +605,27 @@ export default function TripActivity() {
                 {/* Day overview: สรุปของวันนี้ */}
                 <div className="flex flex-wrap items-center gap-2 text-sm sm:text-base">
                   <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-primary/10 text-primary font-semibold">
-                    <FiList /> {activeDay.activities?.length || 0} {t("day.ovActs")}
+                    <FiList /> {activeDay.activities?.length || 0}{" "}
+                    {t("day.ovActs")}
                   </span>
                   <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-warning/10 text-warning font-semibold">
-                    <FiDollarSign /> {(activeDay.activities?.reduce((s, a) => s + (Number(a.price) || 0), 0) || 0).toLocaleString(locale)} {t("day.baht")}
+                    <FiDollarSign />{" "}
+                    {(
+                      activeDay.activities?.reduce(
+                        (s, a) => s + (Number(a.price) || 0),
+                        0,
+                      ) || 0
+                    ).toLocaleString(locale)}{" "}
+                    {t("day.baht")}
                   </span>
                   <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/20 font-medium text-base-content/70">
                     {formatDate(activeDay.dayDate)}
                   </span>
                 </div>
                 <div className="flex items-center justify-between gap-2">
-                  <h4 className="font-semibold text-lg sm:text-xl">{t("day.actList")}</h4>
+                  <h4 className="font-semibold text-lg sm:text-xl">
+                    {t("day.actList")}
+                  </h4>
                   <button
                     onClick={handleOpenAddActivityModal}
                     className="btn btn-primary btn-sm glass rounded-full gap-1 shrink-0"
@@ -614,7 +641,8 @@ export default function TripActivity() {
                         key={act.id}
                         activity={act}
                         typeConfig={
-                          ACTIVITY_TYPES[act.activityType] || ACTIVITY_TYPES.ATTRACTION
+                          ACTIVITY_TYPES[act.activityType] ||
+                          ACTIVITY_TYPES.ATTRACTION
                         }
                         formatZonedTime={formatZonedTime}
                         onEdit={handleOpenEditActivityModal}
@@ -640,7 +668,11 @@ export default function TripActivity() {
                 <div className="grid grid-cols-1 gap-3">
                   {trip.days.map((d) => {
                     const n = d.activities?.length || 0;
-                    const budget = d.activities?.reduce((s, a) => s + (Number(a.price) || 0), 0) || 0;
+                    const budget =
+                      d.activities?.reduce(
+                        (s, a) => s + (Number(a.price) || 0),
+                        0,
+                      ) || 0;
                     return (
                       <button
                         key={d.id}
@@ -650,13 +682,18 @@ export default function TripActivity() {
                         <div className="min-w-0">
                           <div className="font-bold text-base sm:text-lg">
                             Day {d.dayCount}
-                            <span className="ml-2 text-sm font-normal opacity-70">{formatDate(d.dayDate)}</span>
+                            <span className="ml-2 text-sm font-normal opacity-70">
+                              {formatDate(d.dayDate)}
+                            </span>
                           </div>
                           <div className="text-sm text-base-content/70 mt-0.5">
-                            {n} {t("day.ovActs")} • {budget.toLocaleString(locale)} {t("day.baht")}
+                            {n} {t("day.ovActs")} •{" "}
+                            {budget.toLocaleString(locale)} {t("day.baht")}
                           </div>
                           {d.description && (
-                            <div className="text-sm opacity-60 truncate mt-0.5">{d.description}</div>
+                            <div className="text-sm opacity-60 truncate mt-0.5">
+                              {d.description}
+                            </div>
                           )}
                         </div>
                         <FiChevronRight className="text-primary text-xl shrink-0" />
@@ -665,7 +702,9 @@ export default function TripActivity() {
                   })}
                 </div>
               ) : (
-                <p className="text-sm sm:text-base text-base-content/60 text-center py-6">{t("day.noDays")}</p>
+                <p className="text-sm sm:text-base text-base-content/60 text-center py-6">
+                  {t("day.noDays")}
+                </p>
               )}
             </div>
           )}
@@ -691,7 +730,11 @@ export default function TripActivity() {
             compact
             expandHref={`/trips/${tripId}/map`}
           />
-          <TripNavCard points={mapPoints} label={mapSubtitle} mapHref={`/trips/${tripId}/map`} />
+          <TripNavCard
+            points={mapPoints}
+            label={mapSubtitle}
+            mapHref={`/trips/${tripId}/map`}
+          />
         </div>
       </div>
 
@@ -706,39 +749,15 @@ export default function TripActivity() {
 
       {/* SHARE MODAL */}
       {shareOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm px-4" onClick={() => setShareOpen(false)}>
-          <div className="glass rounded-3xl border border-white/30 p-5 md:p-6 w-full max-w-md max-h-[85vh] overflow-y-auto custom-scrollbar space-y-4" onClick={(e) => e.stopPropagation()}>
-            <h3 className="font-bold text-xl flex items-center gap-2">
-              <FiShare2 className="text-primary" /> {t("share.title")}
-            </h3>
-            <p className="text-sm sm:text-base text-base-content/70 leading-relaxed">
-              {t("share.desc")}
-            </p>
-            {shareLoading ? (
-              <div className="flex justify-center py-4">
-                <span className="loading loading-spinner text-primary"></span>
-              </div>
-            ) : shareToken ? (
-              <div className="space-y-3">
-                <div className="flex items-center gap-2 rounded-2xl bg-base-100/60 border border-base-content/10 px-3 py-2.5 text-sm break-all">
-                  <FiLink className="shrink-0 text-primary" />
-                  <span className="truncate">{`${window.location.origin}/share/${shareToken}`}</span>
-                </div>
-                <div className="flex flex-col sm:flex-row gap-2">
-                  <button onClick={copyShareLink} className="btn btn-primary rounded-full gap-2 flex-1">
-                    <FiCopy /> {copied ? t("share.copied") : t("share.copy")}
-                  </button>
-                  <button onClick={handleRevokeShare} className="btn btn-ghost glass rounded-full text-error">
-                    <FiTrash2 /> {t("share.revoke")}
-                  </button>
-                </div>
-              </div>
-            ) : null}
-            <button onClick={() => setShareOpen(false)} className="btn btn-ghost w-full rounded-full">
-              {t("common.close")}
-            </button>
-          </div>
-        </div>
+        <TripShareModal
+          shareLoading={shareLoading}
+          shareToken={shareToken}
+          copied={copied}
+          copyShareLink={copyShareLink}
+          handleRevokeShare={handleRevokeShare}
+          onClose={() => setShareOpen(false)}
+          t={t}
+        />
       )}
 
       <ActivityModal
@@ -753,7 +772,12 @@ export default function TripActivity() {
       {/* VIEW MODALS (read-only) */}
       <ActivityDetailModal
         activity={viewingActivity}
-        typeConfig={viewingActivity ? (ACTIVITY_TYPES[viewingActivity.activityType] || ACTIVITY_TYPES.ATTRACTION) : null}
+        typeConfig={
+          viewingActivity
+            ? ACTIVITY_TYPES[viewingActivity.activityType] ||
+              ACTIVITY_TYPES.ATTRACTION
+            : null
+        }
         formatZonedTime={formatZonedTime}
         onClose={() => setViewingActivity(null)}
         onEdit={handleOpenEditActivityModal}
@@ -762,7 +786,9 @@ export default function TripActivity() {
         day={viewingDay}
         formatDate={formatDate}
         formatZonedTime={formatZonedTime}
-        typeLabel={(type) => (ACTIVITY_TYPES[type] || ACTIVITY_TYPES.ATTRACTION).label}
+        typeLabel={(type) =>
+          (ACTIVITY_TYPES[type] || ACTIVITY_TYPES.ATTRACTION).label
+        }
         onClose={() => setViewingDay(null)}
       />
     </div>

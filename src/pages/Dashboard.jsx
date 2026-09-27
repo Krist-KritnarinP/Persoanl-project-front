@@ -117,7 +117,10 @@ function Dashboard() {
     <div className="h-screen w-screen overflow-hidden flex flex-col p-4 md:p-6 font-sans box-border">
       {/* ================= NAVBAR / HEADER ================= */}
       <header className="navbar glass rounded-3xl md:rounded-full justify-between px-4 md:px-6 py-2 shadow-lg shrink-0 mb-4 gap-2">
-        <div className="flex items-center gap-2 md:gap-3 min-w-0 cursor-pointer" onClick={() => navigate("/dashboard")}>
+        <div
+          className="flex items-center gap-2 md:gap-3 min-w-0 cursor-pointer"
+          onClick={() => navigate("/dashboard")}
+        >
           <div className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-primary/20 border border-primary/30 flex items-center justify-center text-primary text-xl font-bold overflow-hidden shrink-0">
             <img
               src="/image/MiniDog.PNG"
@@ -161,7 +164,9 @@ function Dashboard() {
             <div className="avatar placeholder">
               <div className="bg-primary/20 text-primary ring-2 ring-primary/30 rounded-full w-9 flex items-center justify-center">
                 <span className="text-xs font-bold">
-                  {(user?.username || user?.email || "AL").slice(0, 2).toUpperCase()}
+                  {(user?.username || user?.email || "AL")
+                    .slice(0, 2)
+                    .toUpperCase()}
                 </span>
               </div>
             </div>
@@ -195,7 +200,8 @@ function Dashboard() {
               {t("dash.ready")}
             </div>
             <h1 className="font-display text-3xl md:text-4xl tracking-tight">
-              {t("dash.hello")} <span className="text-primary">{t("dash.welcomeBack")}</span>
+              {t("dash.hello")}{" "}
+              <span className="text-primary">{t("dash.welcomeBack")}</span>
             </h1>
             <p className="text-base md:text-lg text-base-content/70 leading-relaxed">
               {t("dash.sub")}
@@ -245,7 +251,7 @@ function Dashboard() {
               <div className="text-xl font-black">
                 {
                   safeTrips.filter(
-                    (t) => t.startDate && new Date(t.startDate) > new Date()
+                    (t) => t.startDate && new Date(t.startDate) > new Date(),
                   ).length
                 }
                 <span className="text-sm font-normal text-base-content/50">
@@ -267,7 +273,7 @@ function Dashboard() {
               <div className="text-xl font-black">
                 {
                   safeTrips.filter(
-                    (t) => t.endDate && new Date(t.endDate) < new Date()
+                    (t) => t.endDate && new Date(t.endDate) < new Date(),
                   ).length
                 }
                 <span className="text-sm font-normal text-base-content/50">
@@ -287,7 +293,10 @@ function Dashboard() {
                 {t("dash.totalDays")}
               </div>
               <div className="text-xl font-black">
-                {safeTrips.reduce((sum, t) => sum + (t.totalDays || t.days?.length || 0), 0)}{" "}
+                {safeTrips.reduce(
+                  (sum, t) => sum + (t.totalDays || t.days?.length || 0),
+                  0,
+                )}{" "}
                 <span className="text-sm font-normal text-base-content/50">
                   {t("dash.daysUnit")}
                 </span>
@@ -302,7 +311,9 @@ function Dashboard() {
           <section className="lg:col-span-2 space-y-4 min-w-0">
             <div className="flex justify-between items-center px-1 gap-2">
               <div className="min-w-0">
-                <h2 className="text-xl md:text-2xl font-extrabold">{t("dash.myPlans")}</h2>
+                <h2 className="text-xl md:text-2xl font-extrabold">
+                  {t("dash.myPlans")}
+                </h2>
                 <p className="text-sm text-base-content/60">
                   {t("dash.myPlansSub")}
                 </p>
@@ -368,7 +379,9 @@ function Dashboard() {
                           {trip.destination && (
                             <span className="text-sm font-bold text-primary hidden sm:flex items-center gap-1 truncate">
                               <FiMapPin className="text-base shrink-0" />{" "}
-                              <span className="truncate">{trip.destination}</span>
+                              <span className="truncate">
+                                {trip.destination}
+                              </span>
                             </span>
                           )}
                           <button
@@ -389,7 +402,8 @@ function Dashboard() {
                           <FiCalendar className="text-primary shrink-0" />
                           {formatDate(trip.startDate)} -{" "}
                           {formatDate(trip.endDate)}
-                          {trip.totalDays > 0 && ` (${trip.totalDays} ${t("dash.daysUnit")})`}
+                          {trip.totalDays > 0 &&
+                            ` (${trip.totalDays} ${t("dash.daysUnit")})`}
                         </p>
                         {(trip.tripDescription || trip.description) && (
                           <p className="text-sm text-base-content/50 mt-1 line-clamp-2 leading-relaxed">
@@ -402,11 +416,11 @@ function Dashboard() {
                         <span className="text-base-content/60 flex items-center gap-1 min-w-0">
                           <FiCompass className="shrink-0" />{" "}
                           <span className="truncate">
-                          {trip.totalDays !== undefined
-                            ? `${trip.totalDays} ${t("dash.daysActivity")}`
-                            : trip.days?.length
-                            ? `${trip.days.length} ${t("dash.daysActivity")}`
-                            : t("dash.noActivity")}
+                            {trip.totalDays !== undefined
+                              ? `${trip.totalDays} ${t("dash.daysActivity")}`
+                              : trip.days?.length
+                                ? `${trip.days.length} ${t("dash.daysActivity")}`
+                                : t("dash.noActivity")}
                           </span>
                         </span>
                         <button className="btn btn-sm btn-ghost text-primary hover:bg-primary/10 rounded-full gap-1 text-sm shrink-0">

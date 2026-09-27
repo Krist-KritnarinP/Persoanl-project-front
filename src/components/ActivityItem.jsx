@@ -18,15 +18,21 @@ export default function ActivityItem({
     >
       <div className="flex items-center gap-3 min-w-0">
         {/* Type Icon */}
-        <div className={`p-3 rounded-xl shrink-0 ${typeConfig?.color || "badge-primary"}`}>
+        <div
+          className={`p-3 rounded-xl shrink-0 ${typeConfig?.color || "badge-primary"}`}
+        >
           <Icon className="text-xl" />
         </div>
 
         {/* Content Details */}
         <div className="min-w-0 space-y-1">
           <div className="flex items-center gap-2 flex-wrap">
-            <span className="font-bold text-base sm:text-lg truncate">{activity.locationName}</span>
-            <span className={`badge badge-sm ${typeConfig?.color}`}>{typeConfig?.label}</span>
+            <span className="font-bold text-base sm:text-lg truncate">
+              {activity.locationName}
+            </span>
+            <span className={`badge badge-sm ${typeConfig?.color}`}>
+              {typeConfig?.label}
+            </span>
           </div>
 
           {/* Time Display */}
@@ -45,7 +51,9 @@ export default function ActivityItem({
           )}
 
           {activity.description && (
-            <p className="text-sm opacity-70 leading-relaxed line-clamp-2">{activity.description}</p>
+            <p className="text-sm opacity-70 leading-relaxed line-clamp-2">
+              {activity.description}
+            </p>
           )}
         </div>
       </div>
@@ -53,14 +61,20 @@ export default function ActivityItem({
       {/* Action Buttons */}
       <div className="flex sm:flex-col md:flex-row items-center gap-1 shrink-0">
         <button
-          onClick={(e) => { e.stopPropagation(); onEdit(activity); }}
+          onClick={(e) => {
+            e.stopPropagation();
+            onEdit(activity);
+          }}
           className="btn btn-ghost btn-sm text-info hover:bg-white/20"
           aria-label="edit"
         >
           <FiEdit2 />
         </button>
         <button
-          onClick={(e) => { e.stopPropagation(); onDelete(activity.id); }}
+          onClick={(e) => {
+            e.stopPropagation();
+            onDelete(activity.id);
+          }}
           className="btn btn-ghost btn-sm text-error hover:bg-white/20"
           aria-label="delete"
         >

@@ -18,20 +18,26 @@ export const useTripActivityStore = create((set, get) => ({
   // 1. Fetch รายละเอียด Trip พร้อม Days และ Activities
   fetchTripDetails: async (tripId) => {
     const sequence = ++fetchSequence;
-    set({ loading: true, error: null, ...(get().trip?.id !== Number(tripId) ? { trip: null, weatherHistory: [], weatherPrediction: null } : {}) });
+    set({
+      loading: true,
+      error: null,
+      ...(get().trip?.id !== Number(tripId)
+        ? { trip: null, weatherHistory: [], weatherPrediction: null }
+        : {}),
+    });
     try {
       const response = await mainApi.get(`/trips/${tripId}`);
       if (sequence !== fetchSequence) return;
-      set({ 
-        trip: response.data.data || response.data, 
-        loading: false 
+      set({
+        trip: response.data.data || response.data,
+        loading: false,
       });
     } catch (error) {
       if (sequence !== fetchSequence) return;
       console.error("Fetch trip details error:", error);
-      set({ 
-        error: error.response?.data?.message || "ไม่สามารถดึงข้อมูลทริปได้", 
-        loading: false 
+      set({
+        error: error.response?.data?.message || "ไม่สามารถดึงข้อมูลทริปได้",
+        loading: false,
       });
     }
   },
@@ -44,9 +50,9 @@ export const useTripActivityStore = create((set, get) => ({
       await get().fetchTripDetails(tripId);
     } catch (error) {
       console.error("Create day error:", error);
-      set({ 
-        error: error.response?.data?.message || "ไม่สามารถเพิ่มวันเดินทางได้", 
-        loading: false 
+      set({
+        error: error.response?.data?.message || "ไม่สามารถเพิ่มวันเดินทางได้",
+        loading: false,
       });
       throw error;
     }
@@ -59,9 +65,9 @@ export const useTripActivityStore = create((set, get) => ({
       await get().fetchTripDetails(tripId);
     } catch (error) {
       console.error("Update day error:", error);
-      set({ 
-        error: error.response?.data?.message || "ไม่สามารถแก้ไขวันได้", 
-        loading: false 
+      set({
+        error: error.response?.data?.message || "ไม่สามารถแก้ไขวันได้",
+        loading: false,
       });
       throw error;
     }
@@ -74,9 +80,9 @@ export const useTripActivityStore = create((set, get) => ({
       await get().fetchTripDetails(tripId);
     } catch (error) {
       console.error("Delete day error:", error);
-      set({ 
-        error: error.response?.data?.message || "ไม่สามารถลบวันได้", 
-        loading: false 
+      set({
+        error: error.response?.data?.message || "ไม่สามารถลบวันได้",
+        loading: false,
       });
       throw error;
     }
@@ -90,9 +96,9 @@ export const useTripActivityStore = create((set, get) => ({
       await get().fetchTripDetails(tripId);
     } catch (error) {
       console.error("Create activity error:", error);
-      set({ 
-        error: error.response?.data?.message || "ไม่สามารถเพิ่มกิจกรรมได้", 
-        loading: false 
+      set({
+        error: error.response?.data?.message || "ไม่สามารถเพิ่มกิจกรรมได้",
+        loading: false,
       });
       throw error;
     }
@@ -105,9 +111,9 @@ export const useTripActivityStore = create((set, get) => ({
       await get().fetchTripDetails(tripId);
     } catch (error) {
       console.error("Update activity error:", error);
-      set({ 
-        error: error.response?.data?.message || "ไม่สามารถแก้ไขกิจกรรมได้", 
-        loading: false 
+      set({
+        error: error.response?.data?.message || "ไม่สามารถแก้ไขกิจกรรมได้",
+        loading: false,
       });
       throw error;
     }
@@ -120,9 +126,9 @@ export const useTripActivityStore = create((set, get) => ({
       await get().fetchTripDetails(tripId);
     } catch (error) {
       console.error("Delete activity error:", error);
-      set({ 
-        error: error.response?.data?.message || "ไม่สามารถลบกิจกรรมได้", 
-        loading: false 
+      set({
+        error: error.response?.data?.message || "ไม่สามารถลบกิจกรรมได้",
+        loading: false,
       });
       throw error;
     }
@@ -133,7 +139,7 @@ export const useTripActivityStore = create((set, get) => ({
     set({ weatherLoading: true, weatherError: null });
     try {
       let trip = get().trip;
-      
+
       // ถ้าย้อนกลับมาใช้หรือไม่มี trip ใน state ให้ดึงข้อมูล trip ใหม่ก่อน
       if (!trip || trip.id !== Number(tripId)) {
         const response = await mainApi.get(`/trips/${tripId}`);
@@ -145,14 +151,16 @@ export const useTripActivityStore = create((set, get) => ({
       }
 
       // ดึงรายการสถานที่ เวลา และวันที่จาก days & activities
-      const activitiesData = trip?.days?.flatMap((day) =>
-        day.activities?.map((act) => ({
-          date: day.dayDate,
-          time: act.activityTime,
-          location: act.locationName,
-          type: act.activityType,
-        })) || []
-      ) || [];
+      const activitiesData =
+        trip?.days?.flatMap(
+          (day) =>
+            day.activities?.map((act) => ({
+              date: day.dayDate,
+              time: act.activityTime,
+              location: act.locationName,
+              type: act.activityType,
+            })) || [],
+        ) || [];
 
       const payload = {
         tripId: Number(tripId),
@@ -164,17 +172,24 @@ export const useTripActivityStore = create((set, get) => ({
 
       // AI ใช้เวลาตอบ ~20 วินาที: ขยาย timeout เฉพาะเส้นนี้ (default 15s ไม่พอ)
       // Log payload ที่ส่งออก (ดูใน console ของ browser)
-      console.log("[AI weather] request payload:", JSON.stringify({
-        tripId: payload.tripId,
-        location: payload.location,
-        startDate: payload.startDate,
-        endDate: payload.endDate,
-        activities: Array.isArray(payload.activities) ? payload.activities.length : 0,
-      }));
-      const res = await mainApi.post("/weather/predict-weather", payload, { timeout: 120000 });
+      console.log(
+        "[AI weather] request payload:",
+        JSON.stringify({
+          tripId: payload.tripId,
+          location: payload.location,
+          startDate: payload.startDate,
+          endDate: payload.endDate,
+          activities: Array.isArray(payload.activities)
+            ? payload.activities.length
+            : 0,
+        }),
+      );
+      const res = await mainApi.post("/weather/predict-weather", payload, {
+        timeout: 120000,
+      });
       set({
         weatherPrediction: res.data.prediction,
-        weatherLoading: false
+        weatherLoading: false,
       });
       // โหลดประวัติใหม่เพื่อโชว์วันเวลาที่กด
       get().fetchWeatherHistory(tripId);
@@ -187,7 +202,9 @@ export const useTripActivityStore = create((set, get) => ({
         ? "AI ตอบช้าเกินกำหนด กรุณากดใหม่อีกครั้ง"
         : status === 429
           ? "__QUOTA__"
-          : (error.response?.data?.message || error.message || "ไม่สามารถดึงข้อมูลสภาพอากาศได้");
+          : error.response?.data?.message ||
+            error.message ||
+            "ไม่สามารถดึงข้อมูลสภาพอากาศได้";
       set({ weatherError: msg, weatherLoading: false });
     }
   },
@@ -221,14 +238,18 @@ export const useTripActivityStore = create((set, get) => ({
   createShareLink: async (tripId) => {
     const res = await mainApi.post(`/trips/${tripId}/share`);
     const token = res.data?.data?.shareToken;
-    set((state) => (state.trip ? { trip: { ...state.trip, shareToken: token } } : state));
+    set((state) =>
+      state.trip ? { trip: { ...state.trip, shareToken: token } } : state,
+    );
     return token;
   },
 
   // ปิดแชร์ลิงก์
   revokeShareLink: async (tripId) => {
     await mainApi.delete(`/trips/${tripId}/share`);
-    set((state) => (state.trip ? { trip: { ...state.trip, shareToken: null } } : state));
+    set((state) =>
+      state.trip ? { trip: { ...state.trip, shareToken: null } } : state,
+    );
   },
 
   clearError: () => set({ error: null, weatherError: null }),

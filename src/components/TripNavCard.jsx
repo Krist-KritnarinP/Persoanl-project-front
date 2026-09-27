@@ -1,7 +1,12 @@
 import React, { useMemo } from "react";
 import { Link } from "react-router-dom";
 import { QRCodeSVG } from "qrcode.react";
-import { FiSmartphone, FiExternalLink, FiNavigation, FiMaximize2 } from "react-icons/fi";
+import {
+  FiSmartphone,
+  FiExternalLink,
+  FiNavigation,
+  FiMaximize2,
+} from "react-icons/fi";
 import { useLang } from "@/i18n";
 import { gmapsDirUrl, pointOf } from "@/utils/gmaps";
 
@@ -9,7 +14,10 @@ import { gmapsDirUrl, pointOf } from "@/utils/gmaps";
 export default function TripNavCard({ points = [], label, mapHref = null }) {
   const { t } = useLang();
 
-  const pinned = useMemo(() => (points || []).filter((p) => p.locationName), [points]);
+  const pinned = useMemo(
+    () => (points || []).filter((p) => p.locationName),
+    [points],
+  );
 
   const dirUrl = useMemo(() => {
     if (pinned.length === 0) return null;
@@ -24,7 +32,9 @@ export default function TripNavCard({ points = [], label, mapHref = null }) {
       <h3 className="font-bold flex items-center gap-2">
         <FiNavigation className="text-primary" /> {t("map.navTitle")}
       </h3>
-      {label && <p className="text-sm text-base-content/60 -mt-2 truncate">{label}</p>}
+      {label && (
+        <p className="text-sm text-base-content/60 -mt-2 truncate">{label}</p>
+      )}
 
       {dirUrl ? (
         <div className="flex items-center gap-3">
@@ -37,11 +47,19 @@ export default function TripNavCard({ points = [], label, mapHref = null }) {
               {t("map.qrHint")}
             </p>
             <div className="flex flex-wrap gap-1.5">
-              <a href={dirUrl} target="_blank" rel="noreferrer" className="btn btn-primary btn-xs rounded-full gap-1">
+              <a
+                href={dirUrl}
+                target="_blank"
+                rel="noreferrer"
+                className="btn btn-primary btn-xs rounded-full gap-1"
+              >
                 <FiExternalLink /> {t("map.openGmaps")}
               </a>
               {mapHref && (
-                <Link to={mapHref} className="btn btn-ghost glass btn-xs rounded-full gap-1">
+                <Link
+                  to={mapHref}
+                  className="btn btn-ghost glass btn-xs rounded-full gap-1"
+                >
                   <FiMaximize2 /> {t("map.customRoute")}
                 </Link>
               )}

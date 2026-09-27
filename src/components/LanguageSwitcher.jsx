@@ -14,7 +14,7 @@ export default function LanguageSwitcher() {
         className="bg-transparent font-semibold text-sm focus:outline-none cursor-pointer pr-1 max-w-24 [&>option]:text-slate-900"
         aria-label="Language"
       >
-        {(["th", "en", "zh", "ko"]).map((code) => (
+        {["th", "en", "zh", "ko"].map((code) => (
           <option key={code} value={code}>
             {FLAGS[code]} {NAMES[code]}
           </option>

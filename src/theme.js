@@ -36,8 +36,7 @@ function readDocumentTheme() {
 
 // index.html already sets data-theme pre-paint, so prefer it on first load
 // to avoid any flash or mismatch with what the user sees.
-let current =
-  readDocumentTheme() || readStoredTheme() || THEME_LIGHT;
+let current = readDocumentTheme() || readStoredTheme() || THEME_LIGHT;
 
 const listeners = new Set();
 
@@ -98,16 +97,11 @@ if (typeof window !== "undefined") {
 }
 
 export function useTheme() {
-  const theme = useSyncExternalStore(
-    subscribe,
-    getTheme,
-    () => THEME_LIGHT,
-  );
+  const theme = useSyncExternalStore(subscribe, getTheme, () => THEME_LIGHT);
   return {
     theme,
     isDark: theme === THEME_DARK,
     setTheme,
-    toggle: () =>
-      setTheme(theme === THEME_DARK ? THEME_LIGHT : THEME_DARK),
+    toggle: () => setTheme(theme === THEME_DARK ? THEME_LIGHT : THEME_DARK),
   };
 }

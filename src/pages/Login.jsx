@@ -15,7 +15,7 @@ import { Link } from "react-router-dom";
 function Login() {
   const { t, lang } = useLang();
   const [googleCredential, setGoogleCredential] = useState(null);
-  const [linkPassword, setLinkPassword] = useState('');
+  const [linkPassword, setLinkPassword] = useState("");
   const [googleBusy, setGoogleBusy] = useState(false);
   const login = useUserStore((state) => state.login);
   const loginWithGoogle = useUserStore((state) => state.loginWithGoogle);
@@ -45,13 +45,16 @@ function Login() {
     try {
       await loginWithGoogle(credential, currentPassword);
       setGoogleCredential(null);
-      setLinkPassword('');
+      setLinkPassword("");
       toast.success(t("auth.loginOk"));
       navigate("/dashboard");
     } catch (err) {
-      if (err?.response?.data?.code === "GOOGLE_LINK_PASSWORD_REQUIRED") setGoogleCredential(credential);
+      if (err?.response?.data?.code === "GOOGLE_LINK_PASSWORD_REQUIRED")
+        setGoogleCredential(credential);
       else toast.error(t("auth.googleLoginFail"));
-    } finally { setGoogleBusy(false); }
+    } finally {
+      setGoogleBusy(false);
+    }
   };
 
   const handleGoogleUnavailable = () => {
@@ -61,7 +64,12 @@ function Login() {
   return (
     <>
       <div className="min-h-screen px-4 pt-10 md:pt-20 pb-20 md:pb-28 flex items-center justify-center">
-        <Link to="/" className="absolute top-4 left-4 text-sm font-semibold link">← AI LHOUNG</Link>
+        <Link
+          to="/"
+          className="absolute top-4 left-4 text-sm font-semibold link"
+        >
+          ← AI LHOUNG
+        </Link>
         <div className="absolute top-4 right-4 flex items-center gap-1">
           <ThemeToggle />
           <LanguageSwitcher />
@@ -69,12 +77,13 @@ function Login() {
         <div className="p-2 sm:p-5 mx-auto max-w-5xl min-h-135 flex flex-col md:flex-row justify-between items-center w-full gap-8">
           {/* ฝั่งซ้าย: ข้อความต้อนรับ */}
           <div className="flex flex-col gap-4 md:basis-3/5 text-center md:text-left">
-            <div className="font-display text-6xl sm:text-7xl p-2 text-primary">AI LHOUNG</div>
+            <div className="font-display text-6xl sm:text-7xl p-2 text-primary">
+              AI LHOUNG
+            </div>
             <div>
               <h2 className="text-xl sm:text-2xl leading-9 mt-3 text-base-content/80">
                 {t("auth.heroSub")}
               </h2>
-
             </div>
           </div>
 
@@ -129,12 +138,21 @@ function Login() {
                       {t("auth.login")}
                     </button>
                     <div className="flex justify-end -mt-3">
-                      <Link className="btn btn-link btn-sm min-h-0 h-auto px-0 text-primary" to="/forgot-password">
+                      <Link
+                        className="btn btn-link btn-sm min-h-0 h-auto px-0 text-primary"
+                        to="/forgot-password"
+                      >
                         {t("auth.forgotPassword")}
                       </Link>
                     </div>
                     <div className="divider my-0"></div>
-                    <GoogleSignInButton disabled={googleBusy} onCredential={handleGoogleCredential} onUnavailable={handleGoogleUnavailable} locale={lang} label={t("auth.googleBtn")} />
+                    <GoogleSignInButton
+                      disabled={googleBusy}
+                      onCredential={handleGoogleCredential}
+                      onUnavailable={handleGoogleUnavailable}
+                      locale={lang}
+                      label={t("auth.googleBtn")}
+                    />
                     <div className="divider my-0">{t("auth.or")}</div>
 
                     <button
@@ -155,16 +173,62 @@ function Login() {
       </div>
 
       {googleCredential && (
-        <div className="modal modal-open" role="dialog" aria-modal="true" aria-labelledby="google-link-title">
-          <form className="modal-box flex flex-col gap-4" onSubmit={event => { event.preventDefault(); handleGoogleCredential(googleCredential, linkPassword); }}>
-            <h2 id="google-link-title" className="text-lg font-bold">{t("auth.googleLinkTitle")}</h2>
+        <div
+          className="modal modal-open"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="google-link-title"
+        >
+          <form
+            className="modal-box flex flex-col gap-4"
+            onSubmit={(event) => {
+              event.preventDefault();
+              handleGoogleCredential(googleCredential, linkPassword);
+            }}
+          >
+            <h2 id="google-link-title" className="text-lg font-bold">
+              {t("auth.googleLinkTitle")}
+            </h2>
             <p>{t("auth.googleLinkHelp")}</p>
-            <label className="flex flex-col gap-2">{t("auth.password")}
-              <input type="password" className="input input-bordered w-full" autoComplete="current-password" required value={linkPassword} onChange={event => setLinkPassword(event.target.value)} />
+            <label className="flex flex-col gap-2">
+              {t("auth.password")}
+              <input
+                type="password"
+                className="input input-bordered w-full"
+                autoComplete="current-password"
+                required
+                value={linkPassword}
+                onChange={(event) => setLinkPassword(event.target.value)}
+              />
             </label>
-            <Link to="/forgot-password" onClick={() => { setGoogleCredential(null); setLinkPassword(''); }} className="link link-primary">{t("auth.forgotPassword")}</Link>
-            <button type="submit" className="btn btn-primary" disabled={googleBusy}>{t("auth.googleLinkConfirm")}</button>
-            <button type="button" className="btn btn-ghost" disabled={googleBusy} onClick={() => { setGoogleCredential(null); setLinkPassword(''); }}>{t("common.cancel")}</button>
+            <Link
+              to="/forgot-password"
+              onClick={() => {
+                setGoogleCredential(null);
+                setLinkPassword("");
+              }}
+              className="link link-primary"
+            >
+              {t("auth.forgotPassword")}
+            </Link>
+            <button
+              type="submit"
+              className="btn btn-primary"
+              disabled={googleBusy}
+            >
+              {t("auth.googleLinkConfirm")}
+            </button>
+            <button
+              type="button"
+              className="btn btn-ghost"
+              disabled={googleBusy}
+              onClick={() => {
+                setGoogleCredential(null);
+                setLinkPassword("");
+              }}
+            >
+              {t("common.cancel")}
+            </button>
           </form>
         </div>
       )}

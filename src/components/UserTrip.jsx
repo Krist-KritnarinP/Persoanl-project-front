@@ -29,7 +29,11 @@ function UserTrip({ onClose }) {
       setErrorMessage(t("tripForm.needName"));
       return;
     }
-    if (formData.startDate && formData.endDate && formData.endDate < formData.startDate) {
+    if (
+      formData.startDate &&
+      formData.endDate &&
+      formData.endDate < formData.startDate
+    ) {
       setErrorMessage(t("tripForm.badDates"));
       return;
     }
@@ -75,10 +79,15 @@ function UserTrip({ onClose }) {
 
   return (
     <div className="w-full">
-      <h3 className="font-bold text-xl mb-4 text-primary">{t("tripForm.title")}</h3>
+      <h3 className="font-bold text-xl mb-4 text-primary">
+        {t("tripForm.title")}
+      </h3>
 
       {errorMessage && (
-        <div className="alert alert-error text-sm mb-4 p-3 rounded-lg" role="alert">
+        <div
+          className="alert alert-error text-sm mb-4 p-3 rounded-lg"
+          role="alert"
+        >
           <span>{errorMessage}</span>
         </div>
       )}
@@ -86,7 +95,9 @@ function UserTrip({ onClose }) {
       <form onSubmit={handleSubmit} className="space-y-4">
         <div className="form-control">
           <label className="label">
-            <span className="label-text text-sm font-semibold">{t("tripForm.name")}</span>
+            <span className="label-text text-sm font-semibold">
+              {t("tripForm.name")}
+            </span>
           </label>
           <input
             type="text"
@@ -101,7 +112,9 @@ function UserTrip({ onClose }) {
 
         <div className="form-control">
           <label className="label">
-            <span className="label-text text-sm font-semibold">{t("tripForm.dest")}</span>
+            <span className="label-text text-sm font-semibold">
+              {t("tripForm.dest")}
+            </span>
           </label>
           <input
             type="text"
@@ -116,7 +129,9 @@ function UserTrip({ onClose }) {
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div className="form-control">
             <label className="label">
-              <span className="label-text text-sm font-semibold">{t("tripForm.start")}</span>
+              <span className="label-text text-sm font-semibold">
+                {t("tripForm.start")}
+              </span>
             </label>
             <input
               type="date"
@@ -129,7 +144,9 @@ function UserTrip({ onClose }) {
 
           <div className="form-control">
             <label className="label">
-              <span className="label-text text-sm font-semibold">{t("tripForm.end")}</span>
+              <span className="label-text text-sm font-semibold">
+                {t("tripForm.end")}
+              </span>
             </label>
             <input
               type="date"
@@ -143,7 +160,9 @@ function UserTrip({ onClose }) {
 
         <div className="form-control">
           <label className="label">
-            <span className="label-text text-sm font-semibold">{t("tripForm.desc")}</span>
+            <span className="label-text text-sm font-semibold">
+              {t("tripForm.desc")}
+            </span>
           </label>
           <textarea
             name="tripDescription"

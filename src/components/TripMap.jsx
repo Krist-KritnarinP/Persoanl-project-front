@@ -1,10 +1,23 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { Link } from "react-router-dom";
-import { MapContainer, TileLayer, Marker, Popup, Polyline, LayersControl, useMap } from "react-leaflet";
+import {
+  MapContainer,
+  TileLayer,
+  Marker,
+  Popup,
+  Polyline,
+  LayersControl,
+  useMap,
+} from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
-import { FiMaximize2, FiNavigation, FiMapPin, FiArrowLeft } from "react-icons/fi";
+import {
+  FiMaximize2,
+  FiNavigation,
+  FiMapPin,
+  FiArrowLeft,
+} from "react-icons/fi";
 import { useLang } from "@/i18n";
 import { gmapsSearchUrl } from "@/utils/gmaps";
 
@@ -36,11 +49,16 @@ function FitBounds({ points }) {
   const map = useMap();
   const interacted = useRef(false);
   useEffect(() => {
-    const stop = () => { interacted.current = true; };
+    const stop = () => {
+      interacted.current = true;
+    };
     const container = map.getContainer();
     container.addEventListener("pointerdown", stop);
     container.addEventListener("wheel", stop, { passive: true });
-    return () => { container.removeEventListener("pointerdown", stop); container.removeEventListener("wheel", stop); };
+    return () => {
+      container.removeEventListener("pointerdown", stop);
+      container.removeEventListener("wheel", stop);
+    };
   }, [map]);
   const key = JSON.stringify((points || []).map((p) => [p.lat, p.lng]));
   useEffect(() => {
@@ -50,15 +68,18 @@ function FitBounds({ points }) {
       if (points.length === 1) {
         map.setView([points[0].lat, points[0].lng], 13, { animate: false });
       } else {
-        map.fitBounds(points.map((p) => [p.lat, p.lng]), { padding: [32, 32], animate: false });
+        map.fitBounds(
+          points.map((p) => [p.lat, p.lng]),
+          { padding: [32, 32], animate: false },
+        );
       }
     };
     fit();
     const observer = new ResizeObserver(fit);
     observer.observe(map.getContainer());
     return () => observer.disconnect();
-  // Coordinate key intentionally ignores unrelated activity metadata.
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // Coordinate key intentionally ignores unrelated activity metadata.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [map, key]);
   return null;
 }
@@ -67,7 +88,9 @@ export function MapBody({ points, typeLabel, height, dimmedIds, route }) {
   const line = (route || points).map((p) => [p.lat, p.lng]);
   return (
     <MapContainer
-      center={points.length > 0 ? [points[0].lat, points[0].lng] : [13.7563, 100.5018]}
+      center={
+        points.length > 0 ? [points[0].lat, points[0].lng] : [13.7563, 100.5018]
+      }
       zoom={points.length > 0 ? 11 : 5}
       style={{ height, width: "100%", borderRadius: "1rem", zIndex: 0 }}
       zoomAnimation={false}
@@ -77,20 +100,28 @@ export function MapBody({ points, typeLabel, height, dimmedIds, route }) {
     >
       <LayersControl position="topright">
         <LayersControl.BaseLayer checked name="2D · OpenStreetMap">
-          <TileLayer updateWhenIdle updateWhenZooming={false} keepBuffer={1}
+          <TileLayer
+            updateWhenIdle
+            updateWhenZooming={false}
+            keepBuffer={1}
             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
           />
         </LayersControl.BaseLayer>
         <LayersControl.BaseLayer name="Satellite · Esri">
-          <TileLayer updateWhenIdle updateWhenZooming={false} keepBuffer={1}
+          <TileLayer
+            updateWhenIdle
+            updateWhenZooming={false}
+            keepBuffer={1}
             attribution="Imagery &copy; Esri, Maxar, Earthstar Geographics"
             url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
           />
         </LayersControl.BaseLayer>
       </LayersControl>
       <FitBounds points={points} />
-      {line.length > 1 && <Polyline positions={line} pathOptions={{ weight: 3, opacity: 0.7 }} />}
+      {line.length > 1 && (
+        <Polyline positions={line} pathOptions={{ weight: 3, opacity: 0.7 }} />
+      )}
       {points.map((p, i) => (
         <Marker
           key={p.id ?? `${p.lat}-${p.lng}-${i}`}
@@ -107,7 +138,10 @@ export function MapBody({ points, typeLabel, height, dimmedIds, route }) {
                 {p.dayCount != null ? ` · Day ${p.dayCount}` : ""}
               </div>
               {p.description && (
-                <div style={{ fontSize: 12, marginTop: 4 }} className="line-clamp-3">
+                <div
+                  style={{ fontSize: 12, marginTop: 4 }}
+                  className="line-clamp-3"
+                >
                   {p.description}
                 </div>
               )}
@@ -115,7 +149,13 @@ export function MapBody({ points, typeLabel, height, dimmedIds, route }) {
                 href={gmapsSearchUrl(`${p.lat},${p.lng} (${p.locationName})`)}
                 target="_blank"
                 rel="noreferrer"
-                style={{ display: "inline-block", marginTop: 8, fontSize: 12, fontWeight: 700, color: "#2563eb" }}
+                style={{
+                  display: "inline-block",
+                  marginTop: 8,
+                  fontSize: 12,
+                  fontWeight: 700,
+                  color: "#2563eb",
+                }}
               >
                 Open in Google Maps →
               </a>
@@ -143,19 +183,30 @@ export default function TripMap({
   // ปุ่ม Esc ปิด overlay (มือถือ/คีย์บอร์ด)
   useEffect(() => {
     if (!full) return;
-    const onKey = (e) => { if (e.key === "Escape") setFull(false); };
+    const onKey = (e) => {
+      if (e.key === "Escape") setFull(false);
+    };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [full ]);
+  }, [full]);
 
   const typeLabel = (type) =>
-    ({ ATTRACTION: t("act.attr"), RESTAURANT: t("act.rest"), ACCOMMODATION: t("act.accom"), TRANSPORT: t("act.transp") }[type] ||
-      type ||
-      "-");
+    ({
+      ATTRACTION: t("act.attr"),
+      RESTAURANT: t("act.rest"),
+      ACCOMMODATION: t("act.accom"),
+      TRANSPORT: t("act.transp"),
+    })[type] ||
+    type ||
+    "-";
 
-  const pinned = useMemo(() => (points || []).filter((p) => p.lat != null && p.lng != null), [points]);
+  const pinned = useMemo(
+    () => (points || []).filter((p) => p.lat != null && p.lng != null),
+    [points],
+  );
 
-  const expandBtnClass = "btn btn-sm btn-ghost glass rounded-full gap-1 shrink-0";
+  const expandBtnClass =
+    "btn btn-sm btn-ghost glass rounded-full gap-1 shrink-0";
 
   return (
     <section className="glass glass-card p-4 md:p-5 rounded-3xl space-y-3">
@@ -165,7 +216,11 @@ export default function TripMap({
             <FiMapPin className="text-primary shrink-0" />
             <span className="truncate">{title || t("map.title")}</span>
           </h3>
-          {subtitle && <p className="text-sm text-base-content/60 mt-0.5 truncate">{subtitle}</p>}
+          {subtitle && (
+            <p className="text-sm text-base-content/60 mt-0.5 truncate">
+              {subtitle}
+            </p>
+          )}
         </div>
         {pinned.length > 0 &&
           (expandHref ? (
@@ -201,10 +256,15 @@ export default function TripMap({
           {!compact && (
             <ol className="grid sm:grid-cols-2 gap-1.5 text-sm max-h-36 overflow-y-auto custom-scrollbar pr-1">
               {pinned.map((p, i) => (
-                <li key={p.id ?? i} className="flex items-center gap-2 truncate bg-white/5 rounded-xl px-2.5 py-1.5">
+                <li
+                  key={p.id ?? i}
+                  className="flex items-center gap-2 truncate bg-white/5 rounded-xl px-2.5 py-1.5"
+                >
                   <span
                     className="w-5 h-5 rounded-full text-[11px] font-extrabold text-white flex items-center justify-center shrink-0"
-                    style={{ background: TYPE_COLORS[p.activityType] || "#10b981" }}
+                    style={{
+                      background: TYPE_COLORS[p.activityType] || "#10b981",
+                    }}
                   >
                     {i + 1}
                   </span>
@@ -219,27 +279,40 @@ export default function TripMap({
         </>
       )}
 
-      {!loading && points.length > pinned.length && <p role="status" className="text-sm text-base-content/70">{t("map.unresolved")}</p>}
-
-      {full && !expandHref && pinned.length > 0 && createPortal(
-        <div className="fixed inset-0 z-[1000] bg-black/60 backdrop-blur-sm p-3 md:p-6" onClick={() => setFull(false)}>
-          <div
-            className="bg-base-100 rounded-3xl p-3 md:p-4 h-full flex flex-col gap-2 max-w-6xl mx-auto"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className="flex items-center justify-between gap-2 px-1">
-              <b className="truncate">{title || t("map.title")}</b>
-              <button onClick={() => setFull(false)} className="btn btn-primary rounded-full gap-1.5 shrink-0">
-                <FiArrowLeft /> {t("common.back")}
-              </button>
-            </div>
-            <div className="flex-1 min-h-0">
-              <MapBody points={pinned} typeLabel={typeLabel} height="100%" />
-            </div>
-          </div>
-        </div>,
-        document.body
+      {!loading && points.length > pinned.length && (
+        <p role="status" className="text-sm text-base-content/70">
+          {t("map.unresolved")}
+        </p>
       )}
+
+      {full &&
+        !expandHref &&
+        pinned.length > 0 &&
+        createPortal(
+          <div
+            className="fixed inset-0 z-[1000] bg-black/60 backdrop-blur-sm p-3 md:p-6"
+            onClick={() => setFull(false)}
+          >
+            <div
+              className="bg-base-100 rounded-3xl p-3 md:p-4 h-full flex flex-col gap-2 max-w-6xl mx-auto"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="flex items-center justify-between gap-2 px-1">
+                <b className="truncate">{title || t("map.title")}</b>
+                <button
+                  onClick={() => setFull(false)}
+                  className="btn btn-primary rounded-full gap-1.5 shrink-0"
+                >
+                  <FiArrowLeft /> {t("common.back")}
+                </button>
+              </div>
+              <div className="flex-1 min-h-0">
+                <MapBody points={pinned} typeLabel={typeLabel} height="100%" />
+              </div>
+            </div>
+          </div>,
+          document.body,
+        )}
     </section>
   );
 }

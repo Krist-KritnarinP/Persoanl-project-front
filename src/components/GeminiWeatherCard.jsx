@@ -1,12 +1,23 @@
 import React, { useEffect, useState } from "react";
-import { FiSun, FiRefreshCw, FiAlertCircle, FiTrash2, FiClock, FiMaximize2, FiX } from "react-icons/fi";
+import {
+  FiSun,
+  FiRefreshCw,
+  FiAlertCircle,
+  FiTrash2,
+  FiClock,
+  FiMaximize2,
+  FiX,
+} from "react-icons/fi";
 import { useLang } from "@/i18n";
 
 // แยก "สรุปไฮไลต์" กับ "รายละเอียดรายวัน" ออกจากกันด้วย marker ---DETAILS---
 function splitForecast(text) {
   const parts = String(text || "").split(/\n---DETAILS---\n/);
   if (parts.length >= 2) {
-    return { highlights: parts[0].trim(), details: parts.slice(1).join("\n---DETAILS---\n").trim() };
+    return {
+      highlights: parts[0].trim(),
+      details: parts.slice(1).join("\n---DETAILS---\n").trim(),
+    };
   }
   return { highlights: String(text || "").trim(), details: "" };
 }
@@ -46,7 +57,9 @@ export default function GeminiWeatherCard({
     return (
       <div className="space-y-2">
         <div className="rounded-2xl bg-white/10 border border-white/10 p-3 max-h-44 overflow-y-auto custom-scrollbar">
-          <p className="text-sm sm:text-base whitespace-pre-line leading-relaxed">{highlights}</p>
+          <p className="text-sm sm:text-base whitespace-pre-line leading-relaxed">
+            {highlights}
+          </p>
         </div>
         {details && (
           <button
@@ -69,7 +82,9 @@ export default function GeminiWeatherCard({
             <FiSun className="text-xl animate-spin-slow" />
           </div>
           <div className="min-w-0">
-            <h3 className="font-bold text-base leading-tight truncate">{t("weather.title")}</h3>
+            <h3 className="font-bold text-base leading-tight truncate">
+              {t("weather.title")}
+            </h3>
             <span className="text-xs text-base-content/60">Gemini AI</span>
           </div>
         </div>
@@ -98,7 +113,9 @@ export default function GeminiWeatherCard({
         {weatherError && !weatherLoading && (
           <div className="alert alert-error/20 border border-error/30 text-error text-sm sm:text-base p-3 rounded-2xl flex items-start gap-2">
             <FiAlertCircle className="text-lg shrink-0 mt-0.5" />
-            <span>{weatherError === "__QUOTA__" ? t("weather.quota") : weatherError}</span>
+            <span>
+              {weatherError === "__QUOTA__" ? t("weather.quota") : weatherError}
+            </span>
           </div>
         )}
 
@@ -106,12 +123,15 @@ export default function GeminiWeatherCard({
           <ForecastBox text={weatherPrediction} />
         )}
 
-        {!weatherPrediction && !weatherLoading && !weatherError && weatherHistory.length === 0 && (
-          <div className="text-center py-8 opacity-60 space-y-2">
-            <FiSun className="text-4xl mx-auto text-warning/50" />
-            <p className="text-sm px-2">{t("weather.empty")}</p>
-          </div>
-        )}
+        {!weatherPrediction &&
+          !weatherLoading &&
+          !weatherError &&
+          weatherHistory.length === 0 && (
+            <div className="text-center py-8 opacity-60 space-y-2">
+              <FiSun className="text-4xl mx-auto text-warning/50" />
+              <p className="text-sm px-2">{t("weather.empty")}</p>
+            </div>
+          )}
 
         {/* History */}
         {weatherHistory.length > 0 && (
@@ -120,9 +140,14 @@ export default function GeminiWeatherCard({
               <FiClock className="text-warning" /> {t("weather.history")}
             </h4>
             {weatherHistory.map((m) => (
-              <div key={m.id} className="rounded-2xl bg-white/10 border border-white/10 p-3 space-y-1.5">
+              <div
+                key={m.id}
+                className="rounded-2xl bg-white/10 border border-white/10 p-3 space-y-1.5"
+              >
                 <div className="flex items-center justify-between gap-2">
-                  <span className="text-xs text-base-content/60">{fmtDateTime(m.createdAt)}</span>
+                  <span className="text-xs text-base-content/60">
+                    {fmtDateTime(m.createdAt)}
+                  </span>
                   <button
                     onClick={() => onDeleteHistory && onDeleteHistory(m.id)}
                     title={t("weather.delHist")}
@@ -161,7 +186,9 @@ export default function GeminiWeatherCard({
               </button>
             </div>
             <div className="px-5 pb-5 overflow-y-auto custom-scrollbar">
-              <p className="text-sm sm:text-base whitespace-pre-line leading-relaxed">{modalText}</p>
+              <p className="text-sm sm:text-base whitespace-pre-line leading-relaxed">
+                {modalText}
+              </p>
             </div>
           </div>
         </div>
