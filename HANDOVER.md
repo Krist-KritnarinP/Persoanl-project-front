@@ -1,3 +1,19 @@
+# Handover — AI Trip Planner MVP (2026-09-27)
+
+- ทำครบ flow ข้อความ + ปฏิทิน 1–7 วัน → Gemini draft → Zod validate → preview แก้/ลบกิจกรรม → ยืนยัน atomic save → เปิดหน้าทริปเดิม
+- เข้าได้จากปุ่ม “สร้างทริปด้วย AI” ด้านบน Dashboard หรือ sidebar → `/trips/ai`; UI ใหม่ภาษาไทย
+- ใช้ PLAN record เป็นร่างและ durable confirmation receipt; account lock + transaction กัน duplicate/partial saves; auth/owner/100-trip limit; weather history ไม่ปน PLAN
+- ค่าใช้จ่ายประมาณการ THB รวมทั้งกลุ่ม ไม่ใช่ราคายืนยัน; AI ไม่เขียนพิกัด ใช้ geocode เดิมหลังบันทึก
+- Gemini schema แบบเต็มเคยตอบ 400: แก้เป็น structural schema ฝั่ง provider และตรวจ bounds/วัน/เวลา/ราคา/unknown fields ด้วย Zod ฝั่ง server ตามเดิม
+- ทดสอบเรียก Gemini จริงโจทย์ 1 วันผ่าน พร้อม cache/no-trip-before-confirm; ยังไม่รับรองคุณภาพสถานที่หรือราคาและทริปยาวทุกกรณี
+- API unit 27 ผ่าน; Front unit 7 ผ่าน; browser desktop/mobile 2 ผ่าน; PostgreSQL ชั่วคราวผ่าน ownership/date/rollback/5 confirmations→1 trip/weather isolation; build/SEO ผ่าน; lint 9 warnings เดิม
+- ไม่แก้ schema, dependencies, secrets หรือข้อมูล demo จริง ไม่ deploy/push รอบนี้; commit แยกสอง repo
+- งานค้าง/คู่มือ/checklist: [docs/AI_PLANNER.md](docs/AI_PLANNER.md); ROADMAP อัปเดตแยก MVP จาก price references/confidence/translation/draft recovery ที่ยังไม่ทำ
+- การแก้ preview หายเมื่อ refresh; AI draft cache 6 ชม. ไม่ใช่ retention cleanup; ใช้ quota ร่วมกับ weather
+
+---
+## บันทึกรอบก่อน
+
 # Handover — รับช่วง refactor จาก agent เดิม (2026-09-27)
 
 - รับช่วงงานค้างโดยเก็บทุกส่วนของ agent เดิมไว้ รวมบันทึก geocode priority

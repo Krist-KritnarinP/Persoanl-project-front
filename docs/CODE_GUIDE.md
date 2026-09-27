@@ -46,3 +46,6 @@
 
 ตรวจงาน: npm test, npm run build, npm run test:seo, npm run lint; browser tests ใช้ API จำลองและไม่ใช่หลักฐานว่า Google/SMTP จริงพร้อม
 อ่าน [AGENT_HANDOFF.md](AGENT_HANDOFF.md) ก่อนทำ refactor ต่อ
+
+## AI Trip Planner
+ร่างแผนจากข้อความและปฏิทินที่ `/trips/ai`; ดู [AI_PLANNER.md](AI_PLANNER.md) สำหรับ flow, API, ข้อจำกัด และวิธีทดสอบ

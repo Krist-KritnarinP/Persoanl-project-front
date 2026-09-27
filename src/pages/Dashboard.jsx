@@ -208,7 +208,14 @@ function Dashboard() {
             </p>
           </div>
 
-          <div className="z-10 flex gap-3 w-full md:w-auto">
+          <div className="z-10 flex flex-wrap gap-3 w-full md:w-auto">
+            <button
+              type="button"
+              className="btn btn-outline rounded-full px-6 flex-1 md:flex-none"
+              onClick={() => navigate("/trips/ai")}
+            >
+              ✨ สร้างทริปด้วย AI
+            </button>
             <button
               className="btn btn-primary rounded-full px-6 flex-1 md:flex-none gap-2 shadow-md hover:shadow-lg"
               type="button"
@@ -464,24 +471,16 @@ function Dashboard() {
                 {t("dash.aiSub")}
               </p>
 
-              <div className="space-y-2">
-                <input
-                  type="text"
-                  placeholder={t("dash.aiPh")}
-                  className="input w-full text-sm rounded-full bg-base-100/50"
-                  disabled
-                />
-                <button
-                  className="btn btn-primary btn-sm w-full rounded-full text-sm"
-                  disabled
-                  title={t("dash.aiSoonNote")}
-                >
-                  {t("dash.aiSoon")}
-                </button>
-                <p className="text-xs text-base-content/50 text-center leading-relaxed">
-                  {t("dash.aiSoonNote")}
-                </p>
-              </div>
+              <button
+                type="button"
+                className="btn btn-primary w-full rounded-full"
+                onClick={() => navigate("/trips/ai")}
+              >
+                ✨ ให้ AI ช่วยวางแผน
+              </button>
+              <p className="text-sm text-base-content/70">
+                บอกความต้องการ เลือกวันเดินทาง แล้วตรวจแผนก่อนบันทึก
+              </p>
             </div>
           </aside>
         </div>

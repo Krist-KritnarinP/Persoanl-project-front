@@ -1,3 +1,6 @@
+## งานใหม่หลัง refactor: AI Trip Planner (2026-09-27)
+อ่าน [AI_PLANNER.md](AI_PLANNER.md) และ HANDOVER ล่าสุดก่อนรับช่วง; เพิ่ม planner แยกจาก CRUD/weather เดิม ไม่เปลี่ยน schema/env/dependencies
+
 # Agent handoff — รับช่วง refactor 2026-09-27
 
 สถานะ: รับช่วงและทำ refactor รอบนี้เสร็จแล้ว; agent เดิมอ่านเอกสารนี้และ git log/status ก่อนเริ่มงานใหม่

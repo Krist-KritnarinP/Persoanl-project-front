@@ -1,7 +1,7 @@
 # ROADMAP — จาก MVP สู่โปรดักชันที่เก็บเงินได้จริง
 
-> สถานะปัจจุบัน (2026-09-25): MVP ใช้งานได้ (CRUD ทริป/วัน/กิจกรรม, AI พยากรณ์อากาศ, แชร์ลิงก์, 4 ภาษา)
-> แต่ **ยังไม่พร้อม** รับ user จริง/เก็บเงิน — ขาด: ระบบจ่ายเงิน, external setup/PDPA/monitoring จริง, AI สร้างทริป (ปุ่มยัง disabled)
+> สถานะปัจจุบัน (2026-09-27): MVP ใช้งานได้ (CRUD ทริป/วัน/กิจกรรม, AI พยากรณ์อากาศ, แชร์ลิงก์, 4 ภาษา)
+> แต่ **ยังไม่พร้อม** รับ user จริง/เก็บเงิน — ขาด: ระบบจ่ายเงิน, external setup/PDPA/monitoring จริง
 > ไฟล์นี้คือ task list แบ่ง phase + โมเดลสเกล + แพ็กเกจขาย
 
 ## Phase 0 — Production Readiness (อัปเดต 2026-09-26)
@@ -26,12 +26,13 @@
 
 ## Phase 1 — Core Value & Activation (3–4 สัปดาห์)
 
-> เหตุผล: ฟีเจอร์ที่ทำให้คน "ว้าวแล้วอยู่ต่อ" ยังไม่เสร็จ — ปุ่ม AI สร้างทริปยัง disabled
-- [ ] **AI สร้างทริปอัตโนมัติ (killer feature — พิมพ์คร่าวๆ ได้ทริป+ราคาครบแบบที่ทำให้ทริปญี่ปุ่น/ไอซ์แลนด์):**
-  - Input: ข้อความคร่าวๆ (เช่นที่ user ส่งมา: ลิสต์ที่เที่ยว + วันคร่าวๆ) + งบ + สไตล์ → AI คืน structured JSON (ห้าม freetext): `{trip, days[{date, description, activities[{type, locationName, time, priceEstimate, reason}]}]}`
-  - ราคาประเมิน: สั่ง AI ประเมินต่อกิจกรรมพร้อม `priceConfidence` (high/med/low) + มีตารางราคากลางต่อประเทศให้อ้างอิงใน prompt (เช่น ญี่ปุ่น: รร 3,000–4,000/คืน, JR pass, ค่าเข้าเฉลี่ย) — ราคา AI เป็น "ประมาณ" โชว์ป้าย estimate ให้ user แก้ได้
-  - Validation: zod schema ฝั่ง server + บันทึกผ่าน service เดิม (ownership/cascade เหมือนเดิม) — AI สร้างดราฟต์เท่านั้น user กดยืนยันก่อนบันทึกจริง
-  - คุมต้นทุน: output cap ~4,000 tokens (~60 สตางค์–2 บาท/ทริป) + นับโควต้า Pro (ทริปละ 1 สิทธิ์)
+> AI Trip Planner MVP เปิดจาก Dashboard → /trips/ai; งานต่อยอดยังแยกไว้ด้านล่าง
+- [x] **AI Trip Planner MVP**: ข้อความความต้องการ + ปฏิทินเริ่ม/สิ้นสุด 1–7 วัน → Gemini ร่าง JSON → ตรวจ/แก้/ลบกิจกรรม → ยืนยัน → สร้างทริปและเปิดหน้าเดิม
+  - ตรวจวัน/เวลา/ราคา/ownership ด้วย Zod; AI ไม่ส่งพิกัด; บันทึกทั้งชุดใน transaction พร้อม account lock และ durable receipt กันยืนยันซ้ำ
+  - ฉบับร่าง PLAN แยกจาก WEATHER; cache ฉบับร่างที่ยังไม่บันทึก 6 ชม.; ใช้ AI quota/kill switch/fallback เดิม, output cap 6,000 tokens (ไม่ใช่ระบบ Pro/billing)
+  - ราคา THB ประมาณการรวมทั้งกลุ่มและสมมติฐานแก้ได้ผ่านรายการ; ไม่ยืนยันราคาจริง/เวลาเปิด/เส้นทาง ไม่มีการจอง
+  - วิธีใช้/ข้อจำกัด/ผลทดสอบ: [docs/AI_PLANNER.md](docs/AI_PLANNER.md)
+- [ ] AI Planner ต่อ: แหล่งข้อมูลสถานที่/ราคาที่ตรวจสอบได้, reference prices + confidence ที่มีหลักฐาน, กู้ฉบับร่างที่แก้ไขหลังรีเฟรช, แปล UI เพิ่มจากภาษาไทย, ทริปยาวกว่า 7 วัน/แก้ทริปเดิมผ่านแชต
 - [x] คำนวณงบประมาณรวมจริง — ตรวจพบยอดรวมทริปและรายวันใน TripsActivity แล้ว
 - [ ] Onboarding: ทริปตัวอย่าง + ทัวร์ 3 ขั้นตอนตอนสมัครครั้งแรก
 - [x] Landing page + SEO พื้นฐาน — หน้า `/`, เนื้อหา 4 ภาษา, Thai HTML prerender, meta/OG และ canonical/sitemap เมื่อมีโดเมนจริง; Login ย้าย `/login`
