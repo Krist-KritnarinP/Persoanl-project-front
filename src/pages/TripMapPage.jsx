@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
-import { QRCodeSVG } from "qrcode.react";
+import NavigationQr from "@/components/NavigationQr";
 import {
   FiArrowLeft,
   FiFlag,
@@ -270,7 +270,7 @@ export default function TripMapPage() {
                 </h3>
                 <div className="flex items-center gap-3">
                   <div className="bg-white p-2 rounded-2xl shrink-0">
-                    <QRCodeSVG value={dirUrl} size={120} />
+                    <NavigationQr value={dirUrl} size={120} />
                   </div>
                   <div className="space-y-2 min-w-0">
                     <p className="text-xs text-base-content/70 flex items-start gap-1.5">

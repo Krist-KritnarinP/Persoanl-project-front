@@ -1,6 +1,6 @@
 import React, { useMemo } from "react";
 import { Link } from "react-router-dom";
-import { QRCodeSVG } from "qrcode.react";
+import NavigationQr from "@/components/NavigationQr";
 import {
   FiSmartphone,
   FiExternalLink,
@@ -39,7 +39,7 @@ export default function TripNavCard({ points = [], label, mapHref = null }) {
       {dirUrl ? (
         <div className="flex items-center gap-3">
           <div className="bg-white p-2 rounded-2xl shrink-0">
-            <QRCodeSVG value={dirUrl} size={88} />
+            <NavigationQr value={dirUrl} size={88} />
           </div>
           <div className="min-w-0 space-y-1.5">
             <p className="text-xs text-base-content/70 flex items-start gap-1.5 leading-relaxed">

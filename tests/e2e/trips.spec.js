@@ -44,7 +44,8 @@ test("owner trip keeps totals, sharing, day edits, saved pins and theme when ope
   page.on("pageerror", (e) => errors.push(e.message));
   await page.addInitScript(() => {
     localStorage.setItem("lang", "en");
-    if (!localStorage.getItem("theme")) localStorage.setItem("theme", "liquid-glass");
+    if (!localStorage.getItem("theme"))
+      localStorage.setItem("theme", "liquid-glass");
     localStorage.setItem(
       "authState",
       JSON.stringify({ state: { user: { id: 1 }, token: "test" }, version: 0 }),
@@ -151,4 +152,61 @@ test("public shared trip remains read-only with original date/time and type labe
   await expect(
     page.getByRole("button", { name: /add activity|edit day|share trip/i }),
   ).toHaveCount(0);
+});
+
+test("oversized Thai route cannot crash owner or shared trip; a shorter day restores QR", async ({
+  page,
+}) => {
+  const errors = [];
+  page.on("pageerror", (error) => errors.push(error.message));
+  await page.addInitScript(() => {
+    localStorage.setItem("lang", "en");
+    localStorage.setItem(
+      "authState",
+      JSON.stringify({ state: { user: { id: 1 }, token: "test" }, version: 0 }),
+    );
+  });
+  const trip = fixture();
+  trip.days[0].activities = Array.from({ length: 6 }, (_, i) => ({
+    ...trip.days[0].activities[0],
+    id: 100 + i,
+    locationName: "สถานที่ท่องเที่ยว".repeat(8) + i,
+    latitude: null,
+    longitude: null,
+  }));
+  trip.days.push({
+    ...fixture().days[0],
+    id: 82,
+    dayCount: 2,
+    dayDate: "2026-10-02",
+  });
+  await page.route("**/*tile*", (route) => route.abort());
+  await page.route("**/photon.komoot.io/**", (route) =>
+    route.fulfill({ json: { features: [] } }),
+  );
+  await page.route("http://127.0.0.1:8899/api/**", (route) =>
+    route.fulfill({
+      headers,
+      json: { data: route.request().url().includes("/weather/") ? [] : trip },
+    }),
+  );
+  for (const path of ["/trips/71", "/share/" + token]) {
+    await page.goto(path);
+    await expect(
+      page.getByText(
+        "Route link is too long for a QR code. Select fewer stops on the map.",
+      ),
+    ).toBeVisible();
+    await expect(page.getByText("Unexpected Application Error!")).toHaveCount(
+      0,
+    );
+    await page
+      .getByRole("button", { name: /^Day 2/ })
+      .first()
+      .click();
+    await expect(
+      page.getByRole("img", { name: "Google Maps route QR" }),
+    ).toBeVisible();
+  }
+  expect(errors).toEqual([]);
 });

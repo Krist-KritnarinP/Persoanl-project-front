@@ -1,3 +1,16 @@
+# Handover — QR “Data too long” crash (2026-09-27)
+
+- สาเหตุ: TripNavCard ส่ง URL ซึ่งรวมชื่อสถานที่ percent-encoded เข้า QRCodeSVG โดยไม่ตรวจขนาด; ชื่อไทยหลายจุดทำให้เกิน encoder capacity แม้จำกัดจำนวนจุดแล้ว
+- เพิ่ม src/components/NavigationQr.jsx ใช้ทั้ง TripNavCard (owner/share) และ TripMapPage: ตรวจ UTF-8 byte length <=2,000 ก่อนสร้าง QR level L; เกินแล้วแสดงข้อความแทน QR และคงลิงก์เดิม ไม่ตัดชื่อหรือจุดหมาย
+- มี error boundary เฉพาะ encoder เป็นชั้นสำรอง; reset ตาม URL ทำให้เลือกเส้นทางสั้นแล้ว QR กลับมาได้
+- ข้อความ fallback แปลครบ 4 ภาษา; ไม่เปลี่ยนข้อมูลทริป/AI/ฐานข้อมูล
+- Browser tests 6 ผ่านบน desktop/mobile รวมชื่อไทยยาวใน owner/share, เปลี่ยนวันแล้ว QR กลับมา, regression map/share/edit/theme; build ผ่าน, lint 9 warnings เดิมไม่มี error
+- ผู้ใช้รีเฟรชหน้าเดิมได้ ไม่ต้องสร้างทริปใหม่; QR ของเส้นทางยาวยังต้องเลือกจุดให้น้อยลง ลิงก์ Google Maps ยาวอาจมีข้อจำกัดปลายทาง
+- commit เฉพาะ Frontend; backend ไม่เปลี่ยน ไม่ push/deploy
+
+---
+## บันทึกรอบก่อน
+
 # Handover — ทริปยาว + token notice + ช่องข้อความ (2026-09-27)
 
 - ตามผู้ใช้สั่ง: ยกเลิกเพดาน 7 วันต่อทริป; แบ่งร่างทีละ 7 วันและกดร่างต่อ พร้อมจำนวนวันที่เสร็จ/ทั้งหมด
