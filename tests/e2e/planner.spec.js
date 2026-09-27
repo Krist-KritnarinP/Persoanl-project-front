@@ -185,18 +185,18 @@ test("nine-day draft shows token notice and resumes after quota without losing p
     .fill("เชียงใหม่ เที่ยวแบบสบาย ๆ เก้าวัน");
   await page.getByLabel("วันเริ่มเดินทาง").fill("2026-12-10");
   await page.getByLabel("วันสิ้นสุด").fill("2026-12-18");
-  await expect(page.getByRole("note")).toContainText("2 ช่วง");
+  await expect(page.getByRole("note")).toContainText("กดครั้งเดียว");
   await page.getByRole("button", { name: "✨ ให้ AI ช่วยวางแผน" }).click();
-  await expect(page.getByText(/ร่างแล้ว 7 \/ 9 วัน/)).toBeVisible();
+  await expect(page.getByText(/กำลังจัดแผน 7 \/ 9 วัน/)).toBeVisible();
   await expect(
     page.getByRole("button", { name: "บันทึกเป็นทริปของฉัน" }),
   ).toBeDisabled();
   await expect(page.getByLabel("ชื่อทริป")).toBeDisabled();
-  await page.getByRole("button", { name: "ร่างช่วงถัดไป" }).click();
+
   await expect(page.getByRole("alert")).toContainText("ขีดจำกัด");
-  await expect(page.getByText(/ร่างแล้ว 7 \/ 9 วัน/)).toBeVisible();
-  await page.getByRole("button", { name: "ร่างช่วงถัดไป" }).click();
-  await expect(page.getByText(/ร่างแล้ว 9 \/ 9 วัน/)).toContainText("4,000");
+  await expect(page.getByText(/กำลังจัดแผน 7 \/ 9 วัน/)).toBeVisible();
+  await page.getByRole("button", { name: "ลองทำต่อ" }).click();
+  await expect(page.getByText(/ร่างครบแล้ว 9 \/ 9 วัน/)).toBeVisible();
   await expect(
     page.getByRole("button", { name: "บันทึกเป็นทริปของฉัน" }),
   ).toBeEnabled();

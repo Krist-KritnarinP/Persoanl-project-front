@@ -1,6 +1,7 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { mainApi } from "@/api/mainApi";
+import { generateCompletePlan } from "@/utils/generateCompletePlan";
 import ThemeToggle from "@/components/ThemeToggle";
 
 const types = {
@@ -39,6 +40,8 @@ export default function AiPlanner() {
   const [uncertain, setUncertain] = useState(false);
   const inFlight = useRef(false);
   const submittedPlan = useRef(null);
+  const generation = useRef(null);
+  useEffect(() => () => generation.current?.abort(), []);
   const days = rangeDays(request.startDate, request.endDate);
   const total =
     draft?.plan.days.reduce(
@@ -58,14 +61,17 @@ export default function AiPlanner() {
     setBusy("draft");
     setError("");
     try {
-      const response = await mainApi.post("/planner/draft", request, {
-        timeout: 45000,
+      generation.current = new AbortController();
+      await generateCompletePlan({
+        request,
+        post: mainApi.post.bind(mainApi),
+        signal: generation.current.signal,
+        onProgress: setDraft,
       });
-      setDraft(response.data.data);
       submittedPlan.current = null;
       setUncertain(false);
     } catch (err) {
-      setError(requestError(err));
+      if (!generation.current?.signal.aborted) setError(requestError(err));
     } finally {
       inFlight.current = false;
       setBusy("");
@@ -209,31 +215,9 @@ export default function AiPlanner() {
                   ? ` · เลือกไว้ ${days} วัน`
                   : ""}
               </p>
-              <div
-                className="bg-base-200 p-4 space-y-2 text-sm leading-relaxed"
-                role="note"
-              >
-                <p className="font-semibold">
-                  ยิ่งหลายวัน ยิ่งใช้ token และเวลามากขึ้น
-                </p>
-                <p>
-                  AI อ่านข้อความและสร้างคำตอบโดยใช้ token ไม่ใช่จำนวนวันโดยตรง
-                  ระบบร่างทีละไม่เกิน 7 วัน แล้วให้กดร่างช่วงถัดไป
-                  ใช้โควตาแยกแต่ละครั้ง
-                </p>
-                <p>
-                  {Number.isInteger(days) && days > 0
-                    ? `ทริปนี้แบ่งเป็น ${Math.ceil(days / 7)} ช่วง · `
-                    : ""}
-                  จำกัดการสร้างคำตอบ 6,000 tokens ต่อครั้ง
-                  ไม่ใช่ยอดใช้จริงทั้งหมด ยังมี token ข้อความเข้าและการลองใหม่
-                  ค่าใช้จ่ายขึ้นกับโมเดลและแพ็กเกจ API
-                </p>
-                <p>
-                  โควตารายวันยังมีผล หากเต็มสามารถกลับมากดร่างต่อได้
-                  โดยกรอกความต้องการและวันที่เดิมเพื่อทำต่อจากร่างที่เก็บไว้
-                </p>
-              </div>
+              <p role="note" className="text-sm text-base-content/70">
+                ทริปยาวใช้เวลาและ token มากขึ้น กดครั้งเดียวแล้วรอรับแผนได้เลย
+              </p>
               <button
                 type="submit"
                 className="btn btn-primary w-full sm:w-auto rounded-full px-8"
@@ -250,8 +234,8 @@ export default function AiPlanner() {
             </fieldset>
             <p className="text-sm text-base-content/70" role="status">
               {busy
-                ? "อาจใช้เวลาประมาณ 30 วินาที ยังไม่มีการสร้างทริป"
-                : "ความต้องการจะส่งให้ Gemini เพื่อร่างแผน และเก็บฉบับร่างไว้ในบัญชี ใช้โควตา AI ร่วมกับฟีเจอร์อากาศ"}
+                ? "กำลังจัดแผนให้ครบทุกวัน กรุณาเปิดหน้านี้ไว้"
+                : "ใช้ Gemini ช่วยร่าง คุณตรวจและแก้ไขก่อนบันทึกได้"}
             </p>
           </form>
         ) : (
@@ -262,28 +246,18 @@ export default function AiPlanner() {
                 {request.startDate} → {request.endDate} ·{" "}
                 {draft.plan.days.length} วัน
               </p>
-              <p className="text-sm">
-                ร่างแล้ว {draft.plan.days.length} / {draft.totalDays || days}{" "}
-                วัน · token ที่รายงานจากคำตอบในแผนนี้:{" "}
-                {draft.tokens ? money(draft.tokens) : "ไม่มีข้อมูล"}{" "}
-                (ไม่รวมคำขอที่ล้มเหลวหรือ fallback ก่อนสำเร็จ; cache ไม่เรียก AI
-                เพิ่ม)
+              <p role="status">
+                {draft.complete === false ? "กำลังจัดแผน" : "ร่างครบแล้ว"}{" "}
+                {draft.plan.days.length} / {draft.totalDays || days} วัน
               </p>
-              {draft.complete === false && (
-                <div className="space-y-3">
-                  <p>
-                    แผนยังไม่ครบวัน ร่างช่วงถัดไปก่อนแก้ไขและบันทึก แต่ละช่วงใช้
-                    token และโควตาเพิ่ม
-                  </p>
-                  <button
-                    type="button"
-                    className="btn btn-primary"
-                    disabled={!!busy}
-                    onClick={() => generate()}
-                  >
-                    {busy ? "กำลังร่างช่วงถัดไป…" : "ร่างช่วงถัดไป"}
-                  </button>
-                </div>
+              {draft.complete === false && !busy && (
+                <button
+                  type="button"
+                  className="btn btn-primary"
+                  onClick={() => generate()}
+                >
+                  ลองทำต่อ
+                </button>
               )}
               <p className="font-semibold text-lg">
                 งบกิจกรรมประมาณการรวมทั้งกลุ่ม: ฿{money(total)}

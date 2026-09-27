@@ -1,3 +1,17 @@
+# Handover — ร่างครบในคลิกเดียว + แผน BYOK (2026-09-27)
+
+- AiPlanner ใช้ generateCompletePlan loop ต่อช่วงอัตโนมัติจนจบ; UI สั้นลงเหลือประโยคเดียวพร้อม progress; ลองทำต่อมีเฉพาะเมื่อขัดข้อง
+- API คืน retryAfterSeconds เฉพาะ minute quota; frontend รอแบบ abortable แล้ว retry ไม่เกิน 3 ครั้งติดกัน. Daily/provider quota ไม่ยิงซ้ำอัตโนมัติ
+- ออกจากหน้าแล้ว abort งานรอ/request และไม่ส่งช่วงใหม่; ยังต้องเปิดหน้าไว้ ไม่มี worker/background job รอบนี้
+- เก็บข้อจำกัด provider/ค่าใช้จ่าย key กลางไว้; ไม่เพิ่มเพดานวัน ไม่อ้างว่า AI ใช้ได้ไม่จำกัดจริง
+- เอกสารแผน 1 user/own project key: docs/AI_BYOK_PLAN.md พร้อม secret storage, ownership, per-user quota, no silent shared fallback, worker phase; ยังไม่รับ/จัดเก็บ key ผู้ใช้จริง
+- ทดสอบ unit orchestration สำเร็จ/รอ quota/daily quota/cancel และ browser desktop/mobile; build ผ่าน. ไม่เรียก AI จริงเพิ่ม ไม่แก้ schema/env/ข้อมูล demo
+- ผลตรวจ: Front unit 9, API เดิม 28 + retry quota 1, browser 4 ผ่าน; lint 9 warnings เดิม ไม่มี error
+- commit แยก Front/API ไม่ push/deploy
+
+---
+## บันทึกรอบก่อน
+
 # Handover — QR “Data too long” crash (2026-09-27)
 
 - สาเหตุ: TripNavCard ส่ง URL ซึ่งรวมชื่อสถานที่ percent-encoded เข้า QRCodeSVG โดยไม่ตรวจขนาด; ชื่อไทยหลายจุดทำให้เกิน encoder capacity แม้จำกัดจำนวนจุดแล้ว
