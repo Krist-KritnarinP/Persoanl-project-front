@@ -38,6 +38,14 @@
 - [ ] เปิด SEO บนโดเมนจริง + Search Console และ URL/hreflang แยกภาษา — ดู docs/LANDING_SEO.md
 - [ ] PWA (install ได้, icon, offline หน้าอ่านทริป) — นักเดินทางใช้บนมือถือกลางทาง
 - [ ] แจ้งเตือนก่อนเดินทาง (email/LINE OA): เช็กลิสต์ + อากาศล่วงหน้า 3 วัน
+- [ ] **LINE Bot (Messaging API + LIFF) — ช่องทางหลักของคนไทย, เรียงตามคุ้มค่าสุด:**
+  - ราคา OA ไทย (2026, +VAT 7%): Free 0฿/300 ข้อความ/เดือน, Basic 1,280฿/15,000, Pro 1,780฿/35,000 — **สำคัญ: ข้อความตอบกลับ (Reply) ฟรีไม่กินโควต้า** นับเฉพาะ push/broadcast → ออกแบบให้ bot ตอบเยอะๆ (ฟรี) push เฉพาะเรื่องสำคัญ
+  - อันดับ 1 — **แจ้งเตือนทริป (push)**: อากาศก่อนเดินทาง 3 วัน, เช็กลิสต์ของ, เตือน passport/วีซ่าใกล้หมด (ต่อยอด Document Vault), เตือนไฟล์ท — 1,000 user × 4 ครั้ง/เดือน ≈ 4,000 ข้อความ = Basic เอาอยู่ (~0.3฿/user/เดือน)
+  - อันดับ 2 — **แชทสร้างทริป**: พิมพ์ "อยากไปทะเล 3 วัน งบ 5000" ในแชท → bot ต่อ AI builder สร้างดราฟต์ทริป (reply ฟรี, ไม่ต้องลงแอป = ช่องหาลูกค้าใหม่)
+  - อันดับ 3 — **แชร์ผ่าน LINE**: ส่งการ์ด Flex Message แผนทริปเข้ากลุ่มเพื่อน กดเปิด LIFF ดูทริปได้เลย (viral loop)
+  - อันดับ 4 — **จ่ายเงินผ่าน LINE**: ส่ง QR PromptPay + แจ้งจ่ายสำเร็จในแชท (ต่อกับระบบ billing)
+  - เทคนิค: lib `@line/bot-sdk` + `POST /api/line/webhook` (ตรวจ X-Line-Signature) + ผูก LINE userId ↔ บัญชีแอป (link ผ่าน LIFF login/OTP) + Rich menu ชี้ LIFF (เว็บเดิม ไม่ต้องทำ UI ใหม่) + scheduler (pg_cron/node-cron) ยิงแจ้งเตือน
+  - กฎ: push ต้อง opt-in ก่อน (PDPA) + ทุกข้อความมีปุ่มเลิกติดตาม
 - [ ] Import/Export: ส่งออก PDF/พิมพ์แผนทริป, แชร์เป็นรูป
 - [ ] **รูปภาพประกอบทริป**: อัปโหลดรูปต่อ activity/day → โชว์ใน timeline + หน้า share — ตาราง `trip_photos` (id, activityId?, dayId?, storagePath, caption)
   - **เก็บที่ Supabase Storage** (bucket `trip-photos` แบบ private + signed URL) — ไม่แยก vendor ตอนนี้: auth/RLS พร้อม, ฟรี 1 GB, อยู่ในโปรเจกต์เดียวกับ DB
