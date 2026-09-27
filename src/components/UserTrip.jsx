@@ -78,7 +78,7 @@ function UserTrip({ onClose }) {
       <h3 className="font-bold text-xl mb-4 text-primary">{t("tripForm.title")}</h3>
 
       {errorMessage && (
-        <div className="alert alert-error text-sm mb-4 p-3 rounded-lg text-white">
+        <div className="alert alert-error text-sm mb-4 p-3 rounded-lg" role="alert">
           <span>{errorMessage}</span>
         </div>
       )}

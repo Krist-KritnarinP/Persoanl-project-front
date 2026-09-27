@@ -13,6 +13,7 @@ import {
 import axios from "axios";
 import { useLang } from "@/i18n";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
+import ThemeToggle from "@/components/ThemeToggle";
 import TripInfoCard from "@/components/TripInfoCard";
 import TripMap from "@/components/TripMap";
 import TripNavCard from "@/components/TripNavCard";
@@ -85,7 +86,7 @@ export default function ShareTripView() {
   if (notFound || !trip) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center gap-4 px-4 text-center">
-        <div className="absolute top-4 right-4"><LanguageSwitcher /></div>
+        <div className="absolute top-4 right-4 flex items-center gap-1"><ThemeToggle /><LanguageSwitcher /></div>
         <FiEye className="text-5xl text-base-content/30" />
         <p className="text-lg sm:text-xl font-bold">{t("share.notFound")}</p>
         <button onClick={() => navigate("/")} className="btn btn-primary rounded-full">
@@ -101,8 +102,9 @@ export default function ShareTripView() {
         <span className="font-display text-2xl md:text-3xl tracking-wider bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent whitespace-nowrap">
           AI LHOUNG
         </span>
-        <div className="flex items-center gap-2 shrink-0">
+        <div className="flex items-center gap-1 shrink-0">
           <span className="badge badge-accent badge-outline text-xs sm:text-sm">👁 {t("share.viewOnly")}</span>
+          <ThemeToggle />
           <LanguageSwitcher />
         </div>
       </header>

@@ -7,7 +7,7 @@ const NAMES = { th: "ไทย", en: "English", zh: "中文", ko: "한국어" };
 export default function LanguageSwitcher() {
   const { lang, setLang } = useLang();
   return (
-    <label className="flex items-center gap-1 rounded-full border border-white/30 bg-white/20 pl-2 pr-1 py-1 text-sm shrink-0">
+    <label className="flex items-center gap-1 rounded-full border border-base-content/15 bg-base-100/50 pl-2 pr-1 py-1 text-sm shrink-0">
       <select
         value={lang}
         onChange={(e) => setLang(e.target.value)}

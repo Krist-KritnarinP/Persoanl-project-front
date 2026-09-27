@@ -145,7 +145,7 @@ export default function GeminiWeatherCard({
           onClick={() => setModalText(null)}
         >
           <div
-            className="rounded-3xl bg-white text-slate-800 border border-slate-200 shadow-2xl w-full max-w-lg max-h-[85vh] flex flex-col overflow-hidden"
+            className="rounded-3xl bg-base-100 text-base-content border border-base-content/10 shadow-2xl w-full max-w-lg max-h-[85vh] flex flex-col overflow-hidden"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex items-center justify-between p-5 pb-3 shrink-0">

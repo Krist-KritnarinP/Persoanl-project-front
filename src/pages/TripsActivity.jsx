@@ -24,6 +24,7 @@ import { useTripActivityStore } from "@/stores/tripActivityStore";
 import { toast } from "react-toastify";
 import { useLang } from "@/i18n";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
+import ThemeToggle from "@/components/ThemeToggle";
 import DayModal from "@/components/DayModal";
 import ActivityModal from "@/components/ActivityModal";
 import ActivityDetailModal, { DayDetailModal } from "@/components/DetailModals";
@@ -359,7 +360,10 @@ export default function TripActivity() {
             </span>
           </div>
         </button>
-        <LanguageSwitcher />
+        <div className="flex items-center gap-1 shrink-0">
+          <ThemeToggle />
+          <LanguageSwitcher />
+        </div>
       </header>
 
       {/* HEADER / NAVIGATION — ย้อนกลับทีละสเตป: map → trip → dashboard */}
@@ -716,7 +720,7 @@ export default function TripActivity() {
               </div>
             ) : shareToken ? (
               <div className="space-y-3">
-                <div className="flex items-center gap-2 rounded-2xl bg-white/20 border border-white/20 px-3 py-2.5 text-sm break-all">
+                <div className="flex items-center gap-2 rounded-2xl bg-base-100/60 border border-base-content/10 px-3 py-2.5 text-sm break-all">
                   <FiLink className="shrink-0 text-primary" />
                   <span className="truncate">{`${window.location.origin}/share/${shareToken}`}</span>
                 </div>

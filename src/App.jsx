@@ -1,5 +1,6 @@
 import { ToastContainer } from "react-toastify"
 import AppRouter from "./routes/AppRouter"
+import { THEME_DARK, useTheme } from "./theme"
 
 
 
@@ -7,11 +8,13 @@ import AppRouter from "./routes/AppRouter"
 
 
 function App() {
+  const { theme } = useTheme();
   return (
     <>
     <AppRouter/>
     <ToastContainer
     position="top-center"
+       theme={theme === THEME_DARK ? "dark" : "light"}
        style={{ zIndex: 9999 }}/>
       
     </>

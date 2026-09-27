@@ -16,7 +16,7 @@ export default function TripInfoCard({ trip, formatDate }) {
             {trip?.destination || t("day.noDest")}
           </p>
         </div>
-        <div className="flex items-center gap-2 bg-white/20 px-4 py-2 rounded-full backdrop-blur-md border border-white/30 text-sm sm:text-base shrink-0 self-start md:self-auto">
+        <div className="flex items-center gap-2 bg-base-100/60 px-4 py-2 rounded-full border border-base-content/10 text-sm sm:text-base shrink-0 self-start md:self-auto">
           <FiCalendar className="text-primary shrink-0" />
           <span className="whitespace-nowrap">
             {formatDate(trip?.startDate)} - {formatDate(trip?.endDate)}
@@ -24,7 +24,7 @@ export default function TripInfoCard({ trip, formatDate }) {
         </div>
       </div>
       {trip?.tripDescription && (
-        <p className="text-sm sm:text-base opacity-75 pt-2 border-t border-white/20 leading-relaxed">
+        <p className="text-sm sm:text-base opacity-75 pt-2 border-t border-base-content/10 leading-relaxed">
           {trip.tripDescription}
         </p>
       )}

@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { mainApi } from '@/api/mainApi';
 import { useLang } from '@/i18n';
+import ThemeToggle from '@/components/ThemeToggle';
 
 function ForgotPassword() {
   const { t } = useLang();
@@ -23,6 +24,7 @@ function ForgotPassword() {
 
   return (
     <main className="min-h-screen grid place-items-center px-4 py-10">
+      <div className="absolute top-4 right-4"><ThemeToggle /></div>
       <section className="card w-full max-w-md bg-base-100 shadow-xl">
         <div className="card-body">
           <h1 className="card-title justify-center">{t('auth.forgotTitle')}</h1>

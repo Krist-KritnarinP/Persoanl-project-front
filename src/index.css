@@ -7,27 +7,28 @@
   default: true;
   color-scheme: light;
 
-  /* Brand */
-  --color-primary: #00a86b;
+  /* Brand — text/background pairs are WCAG AA in BOTH themes
+     (dark theme restores the bright variants, see DARK THEME EXTENSION) */
+  --color-primary: #0b7a52;
   --color-primary-content: #ffffff;
 
   --color-secondary: #343434;
   --color-secondary-content: #ffffff;
 
-  --color-accent: #e86c6e;
+  --color-accent: #b93f42;
   --color-accent-content: #ffffff;
 
   --color-neutral: #727972;
   --color-neutral-content: #ffffff;
 
   /* Semantic */
-  --color-info: #5b9fb0;
+  --color-info: #2f6b7d;
   --color-info-content: #ffffff;
 
-  --color-success: #00a86b;
+  --color-success: #0b7a52;
   --color-success-content: #ffffff;
 
-  --color-warning: #d89b45;
+  --color-warning: #8a5f06;
   --color-warning-content: #ffffff;
 
   --color-error: #c94b4b;
@@ -487,8 +488,8 @@ body {
   background:
     linear-gradient(
       135deg,
-      rgba(0, 168, 107, 0.86),
-      rgba(0, 168, 107, 0.62)
+      #0e7f57,
+      #0a6b48
     );
 
   color: white;
@@ -497,7 +498,7 @@ body {
     rgba(255, 255, 255, 0.42);
 
   box-shadow:
-    0 10px 30px rgba(0, 168, 107, 0.22),
+    0 10px 30px rgba(10, 107, 72, 0.28),
 
     inset 0 1px 0
       rgba(255, 255, 255, 0.55),
@@ -510,12 +511,12 @@ body {
   background:
     linear-gradient(
       135deg,
-      rgba(0, 168, 107, 0.94),
-      rgba(0, 168, 107, 0.72)
+      #0c7a54,
+      #096141
     );
 
   box-shadow:
-    0 16px 40px rgba(0, 168, 107, 0.28),
+    0 16px 40px rgba(10, 107, 72, 0.34),
 
     inset 0 1px 0
       rgba(255, 255, 255, 0.68);
@@ -809,3 +810,99 @@ body {
 .glass::before, .btn::after { display: none; }
 .glass-floating { animation: none; }
 .input:focus, .textarea:focus, .select:focus { transform: none; }
+
+/* =========================================================
+   DARK THEME EXTENSION — contrast-checked pairs (WCAG AA)
+   body 16.7:1 · muted/50 4.6:1 · primary text 5.9:1
+   badges white-on-#0b7a52 5.4:1 · error text 7.6:1
+   ========================================================= */
+
+html[data-theme="liquid-glass-dark"] {
+  background: #111613;
+}
+
+/* Lighter error for dark surfaces (was 4.0:1, now 7.6:1).
+   Bright variants for text usages that need them on dark
+   (solid badges/buttons are pinned below instead). */
+[data-theme="liquid-glass-dark"] {
+  --color-primary: #2fbf8a;
+  --color-accent: #e86c6e;
+  --color-info: #5b9fb0;
+  --color-warning: #d89b45;
+  --color-error: #ef8a8a;
+}
+
+/* Solid badges/buttons keep white text readable in dark
+   (white on bright variants was 2.4-4.0:1, now 5.4-6.0:1) */
+[data-theme="liquid-glass-dark"] .bg-primary,
+[data-theme="liquid-glass-dark"] .bg-success,
+[data-theme="liquid-glass-dark"] .badge-primary {
+  background-color: #0b7a52;
+  border-color: #0b7a52;
+}
+[data-theme="liquid-glass-dark"] .badge-accent {
+  background-color: #b93f42;
+  border-color: #b93f42;
+}
+[data-theme="liquid-glass-dark"] .badge-info {
+  background-color: #2f6b7d;
+  border-color: #2f6b7d;
+}
+[data-theme="liquid-glass-dark"] .badge-warning,
+[data-theme="liquid-glass-dark"] .btn-warning {
+  background-color: #8a5f06;
+  border-color: #8a5f06;
+}
+[data-theme="liquid-glass-dark"] .btn-error {
+  background-color: #c94b4b;
+  border-color: #c94b4b;
+}
+
+/* Ghost buttons used a hardcoded light-theme ink (#17201b) which
+   nearly disappears on dark glass — follow the theme instead */
+[data-theme="liquid-glass-dark"] .btn-ghost {
+  color: #f2f5f2;
+}
+
+/* Soften harsh white hover flashes on dark surfaces */
+[data-theme="liquid-glass-dark"] .hover\:bg-white\/10:hover {
+  background-color: rgba(255, 255, 255, 0.06);
+}
+[data-theme="liquid-glass-dark"] .hover\:bg-white\/15:hover {
+  background-color: rgba(255, 255, 255, 0.07);
+}
+[data-theme="liquid-glass-dark"] .hover\:bg-white\/20:hover,
+[data-theme="liquid-glass-dark"] .hover\:bg-white\/30:hover {
+  background-color: rgba(255, 255, 255, 0.09);
+}
+
+/* Form controls: translucent white becomes near-invisible in dark */
+[data-theme="liquid-glass-dark"] .input,
+[data-theme="liquid-glass-dark"] .textarea,
+[data-theme="liquid-glass-dark"] .select {
+  background: rgba(255, 255, 255, 0.07);
+  border-color: rgba(255, 255, 255, 0.16);
+  color-scheme: dark;
+}
+[data-theme="liquid-glass-dark"] .input::placeholder,
+[data-theme="liquid-glass-dark"] .textarea::placeholder {
+  color: rgba(242, 245, 242, 0.42);
+}
+
+[data-theme="liquid-glass-dark"] .leaflet-container {
+  background: #202923;
+}
+
+/* DaisyUI aura glow uses currentColor (near-white in dark) — tone it down */
+[data-theme="liquid-glass-dark"] .aura-dual {
+  background-image: repeating-conic-gradient(
+    from var(--aura-angle),
+    transparent 0%,
+    transparent 40%,
+    color-mix(in srgb, currentColor 35%, transparent) 50%
+  );
+}
+[data-theme="liquid-glass-dark"] .aura::before,
+[data-theme="liquid-glass-dark"] .aura::after {
+  opacity: 0.12;
+}

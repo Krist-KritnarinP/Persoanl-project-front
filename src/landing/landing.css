@@ -1,9 +1,27 @@
 .landing {
-  --lp-ink: #272b2a;
-  --lp-brand: #234f40;
-  --lp-paper: #faf8f1;
-  --lp-muted: #505650;
-  background: var(--lp-paper);
+  --lp-ink: #17201b;
+  --lp-brand: #00a86b;
+  --lp-brand-deep: #0a7a52;
+  --lp-paper: #eaf0e9;
+  --lp-muted: rgba(23, 32, 27, 0.68);
+  --lp-accent: #e86c6e;
+  --lp-info: #5b9fb0;
+  --lp-warning: #d89b45;
+  --lp-card: rgba(255, 255, 255, 0.72);
+  --lp-line: rgba(23, 32, 27, 0.1);
+  --lp-radius: 1.75rem;
+  background:
+    radial-gradient(
+      800px circle at 10% 0%,
+      rgba(0, 168, 107, 0.14),
+      transparent 55%
+    ),
+    radial-gradient(
+      700px circle at 90% 10%,
+      rgba(232, 108, 110, 0.12),
+      transparent 55%
+    ),
+    var(--lp-paper);
   color: var(--lp-ink);
   overflow: clip;
   font-size: 17px;
@@ -22,7 +40,7 @@
   -webkit-tap-highlight-color: transparent;
 }
 .landing :focus-visible {
-  outline: 3px solid #c06527;
+  outline: 3px solid #00a86b;
   outline-offset: 5px;
 }
 .lp-wrap {
@@ -34,8 +52,13 @@
   align-items: center;
   justify-content: space-between;
   gap: 24px;
-  height: 100px;
-  border-bottom: 1px solid #173d3420;
+  min-height: 76px;
+  margin-top: 16px;
+  padding: 12px 22px;
+  border: 1px solid rgba(255, 255, 255, 0.42);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.62);
+  box-shadow: 0 8px 24px rgba(23, 32, 27, 0.08);
 }
 .lp-brand {
   font-weight: 800;
@@ -109,24 +132,30 @@
   width: 7px;
   height: 7px;
   border-radius: 50%;
-  background: #a2b16d;
+  background: #00a86b;
 }
 .landing h1 {
+  font-family:
+    "Sriracha",
+    "Noto Sans Thai",
+    "Noto Sans",
+    system-ui,
+    sans-serif;
   font-size: clamp(42px, 4.8vw, 68px);
   line-height: 1.4;
-  letter-spacing: -2px;
-  font-weight: 700;
+  letter-spacing: -0.5px;
+  font-weight: 400;
   margin: 0 0 23px;
 }
 .landing h1 em {
   font-style: normal;
-  color: #89502f;
+  color: #0a7a52;
 }
 .lp-intro {
   font-size: 18px;
   line-height: 1.9;
   max-width: 440px;
-  color: #505650;
+  color: var(--lp-muted);
 }
 .lp-actions {
   display: flex;
@@ -139,20 +168,26 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 25px;
-  padding: 16px 23px;
-  background: var(--lp-brand);
+  gap: 12px;
+  padding: 16px 26px;
+  background: linear-gradient(135deg, #0e7f57, #0a6b48);
   color: white;
-  border-radius: 7px;
-  font-weight: 600;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.42);
+  font-weight: 700;
   font-size: 17px;
+  box-shadow:
+    0 10px 30px rgba(10, 107, 72, 0.28),
+    inset 0 1px 0 rgba(255, 255, 255, 0.55);
   transition:
     background 0.18s,
-    transform 0.18s;
+    transform 0.18s,
+    box-shadow 0.18s;
 }
 .lp-button:hover {
-  background: #2f5948;
+  background: linear-gradient(135deg, #0c7a54, #096141);
   transform: translateY(-2px);
+  box-shadow: 0 16px 40px rgba(10, 107, 72, 0.34);
 }
 .lp-button svg {
   font-size: 20px;
@@ -181,12 +216,13 @@
 }
 .lp-postcard {
   position: relative;
-  transform: rotate(3deg);
-  border-radius: 100px 100px 8px 8px;
+  transform: rotate(2deg);
+  border-radius: var(--lp-radius);
   overflow: hidden;
   aspect-ratio: 1/1.05;
-  background: #b6c2a6;
-  box-shadow: 0 18px 30px #193f3510;
+  background: #d7e0d8;
+  border: 1px solid rgba(255, 255, 255, 0.42);
+  box-shadow: 0 20px 60px rgba(23, 32, 27, 0.1);
 }
 .lp-postcard > img {
   position: absolute;
@@ -203,6 +239,8 @@
   align-items: center;
   font-size: 12px;
   letter-spacing: 2px;
+  /* Fixed ink: sits over the light sky area of the artwork in both themes */
+  color: #17201b;
 }
 .lp-postcard-top svg {
   font-size: 24px;
@@ -222,7 +260,11 @@
   letter-spacing: 2px;
 }
 .lp-postcard-caption strong {
-  font-family: Georgia, serif;
+  font-family:
+    "Sriracha",
+    "Noto Sans Thai",
+    system-ui,
+    sans-serif;
   font-size: 40px;
   font-weight: 400;
   line-height: 1.06;
@@ -234,19 +276,19 @@
   position: absolute;
   right: -5px;
   top: 42px;
-  border: 1px solid #183f3510;
-  background: #fffdf6;
-  border-radius: 13px;
+  border: 1px solid rgba(255, 255, 255, 0.42);
+  background: rgba(255, 255, 255, 0.72);
+  border-radius: 1.25rem;
   padding: 16px;
   display: flex;
   align-items: center;
   gap: 13px;
-  transform: rotate(7deg);
-  box-shadow: 0 8px 20px #173f3512;
+  transform: rotate(5deg);
+  box-shadow: 0 8px 24px rgba(23, 32, 27, 0.08);
 }
 .lp-weather-sticker > svg {
   font-size: 32px;
-  color: #bc842f;
+  color: #d89b45;
 }
 .lp-weather-sticker b {
   font-size: 29px;
@@ -265,12 +307,12 @@
   display: flex;
   align-items: center;
   gap: 14px;
-  background: #fffefb;
-  border: 1px solid #1b403520;
-  box-shadow: 0 12px 25px #183f3510;
-  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.78);
+  border: 1px solid rgba(255, 255, 255, 0.42);
+  box-shadow: 0 12px 25px rgba(23, 32, 27, 0.08);
+  border-radius: 1.25rem;
   padding: 17px 20px;
-  transform: rotate(-5deg);
+  transform: rotate(-4deg);
 }
 .lp-plan-sticker b {
   font-size: 16px;
@@ -282,12 +324,14 @@
 }
 .lp-tiny-icon {
   padding: 13px;
-  border-radius: 8px;
-  background: #edf0e6;
+  border-radius: 1rem;
+  background: rgba(0, 168, 107, 0.12);
+  color: #00a86b;
   font-size: 20px;
 }
 .lp-check {
-  background: #e2ebd2;
+  background: rgba(0, 168, 107, 0.14);
+  color: #0a7a52;
   border-radius: 50%;
   padding: 6px;
   margin-left: 18px;
@@ -296,16 +340,19 @@
   position: absolute;
   right: -1px;
   bottom: -27px;
-  font-family: Georgia, serif;
-  font-style: italic;
+  font-family:
+    "Sriracha",
+    "Noto Sans Thai",
+    system-ui,
+    sans-serif;
   font-size: 16px;
   line-height: 1.2;
-  transform: rotate(-8deg);
-  color: #565b52;
+  transform: rotate(-6deg);
+  color: rgba(23, 32, 27, 0.6);
 }
 .lp-ribbon {
-  border-block: 1px solid #183f351a;
-  background: #f0f0e5;
+  border-block: 1px solid var(--lp-line);
+  background: rgba(255, 255, 255, 0.5);
 }
 .lp-ribbon > .lp-wrap {
   display: flex;
@@ -322,11 +369,11 @@
 }
 .lp-ribbon-number {
   font-size: 13px;
-  color: #62675d;
+  color: rgba(23, 32, 27, 0.55);
 }
 .lp-spark {
   font-size: 19px;
-  color: #91a17c;
+  color: #e86c6e;
   margin-left: 15px;
 }
 .lp-section {
@@ -340,11 +387,17 @@
   margin-bottom: 40px;
 }
 .landing h2 {
+  font-family:
+    "Sriracha",
+    "Noto Sans Thai",
+    "Noto Sans",
+    system-ui,
+    sans-serif;
   font-size: clamp(32px, 3.2vw, 44px);
   line-height: 1.45;
-  letter-spacing: -1px;
+  letter-spacing: 0;
   white-space: pre-line;
-  font-weight: 600;
+  font-weight: 400;
   margin: 0;
 }
 .lp-section-heading > p {
@@ -360,10 +413,11 @@
 }
 .lp-feature {
   grid-column: span 2;
-  border: 1px solid #173d3420;
-  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.42);
+  border-radius: var(--lp-radius);
   padding: 27px;
-  background: #fffdf8;
+  background: rgba(255, 255, 255, 0.72);
+  box-shadow: 0 8px 24px rgba(23, 32, 27, 0.06);
 }
 .lp-feature-top {
   display: flex;
@@ -375,7 +429,7 @@
   font-size: 22px;
 }
 .lp-feature-top > span {
-  color: #62675d;
+  color: rgba(23, 32, 27, 0.55);
   font-size: 13px;
 }
 .landing h3 {
@@ -395,16 +449,16 @@
   grid-column: span 3;
 }
 .lp-feature-3 {
-  background: #f0eee5;
+  background: rgba(0, 168, 107, 0.08);
 }
 .lp-feature-4 {
-  background: #eee9de;
+  background: rgba(232, 108, 110, 0.08);
 }
 .lp-feature small {
   display: block;
   font-size: 13px;
   line-height: 1.7;
-  color: #4e554c;
+  color: rgba(23, 32, 27, 0.65);
   margin-top: 12px;
 }
 .lp-mini-days,
@@ -423,15 +477,15 @@
   flex-direction: column;
   gap: 10px;
   padding: 11px;
-  background: #eff1e6;
-  border-radius: 7px;
+  background: rgba(23, 32, 27, 0.05);
+  border-radius: 1rem;
   font-size: 12px;
   width: 31%;
   font-weight: 650;
 }
 .lp-mini-days span:last-child {
-  background: #1b4539;
-  color: #e9f0ce;
+  background: #0b7a52;
+  color: #ffffff;
 }
 .lp-mini-days svg {
   font-size: 21px;
@@ -439,16 +493,16 @@
 .lp-mini-map {
   display: flex;
   align-items: center;
-  border-radius: 7px;
+  border-radius: 1rem;
   background:
     repeating-linear-gradient(
       0deg,
       transparent,
       transparent 21px,
-      #193f3509 22px
+      rgba(23, 32, 27, 0.06) 22px
     ),
-    repeating-linear-gradient(90deg, #f0f1e7, #f0f1e7 21px, #193f3509 22px);
-  color: #76914f;
+    repeating-linear-gradient(90deg, rgba(255,255,255,.7), rgba(255,255,255,.7) 21px, rgba(23, 32, 27, 0.06) 22px);
+  color: #5b9fb0;
   padding: 10px;
 }
 .lp-mini-map svg {
@@ -466,7 +520,7 @@
   font-weight: 500;
 }
 .lp-mini-budget b span {
-  color: #62675d;
+  color: rgba(23, 32, 27, 0.55);
   font-size: 21px;
 }
 .lp-mini-budget > div {
@@ -477,21 +531,21 @@
 .lp-mini-budget i {
   width: 45%;
   height: 6px;
-  background: #264e3e;
+  background: #00a86b;
   border-radius: 3px;
 }
 .lp-mini-budget i:nth-child(2) {
   width: 35%;
-  background: #a6b887;
+  background: #5b9fb0;
 }
 .lp-mini-budget i:last-child {
   width: 20%;
-  background: #dfc28a;
+  background: #e86c6e;
 }
 .lp-sample-section {
   padding: 75px 0;
-  background: #f0ede6;
-  border-block: 1px solid #173d3415;
+  background: #e3eae3;
+  border-block: 1px solid var(--lp-line);
 }
 .lp-sample-layout {
   display: grid;
@@ -520,19 +574,19 @@
 }
 .lp-sample-stats span {
   font-size: 14px;
-  color: #505650;
+  color: var(--lp-muted);
 }
 .lp-sample-note {
   font-size: 13px;
-  color: #505650;
+  color: var(--lp-muted);
   max-width: 330px;
   margin-top: 30px;
 }
 .lp-itinerary {
-  background: #fffefa;
-  border-radius: 14px;
-  box-shadow: 0 16px 35px #2e4c2e0c;
-  border: 1px solid #1c41351a;
+  background: rgba(255, 255, 255, 0.85);
+  border-radius: var(--lp-radius);
+  box-shadow: 0 20px 60px rgba(23, 32, 27, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.42);
   transform: rotate(-1deg);
 }
 .lp-itinerary-head {
@@ -540,7 +594,7 @@
   justify-content: space-between;
   align-items: center;
   padding: 23px 26px;
-  border-bottom: 1px solid #183f3512;
+  border-bottom: 1px solid var(--lp-line);
   font-size: 15px;
   font-weight: 600;
 }
@@ -558,17 +612,18 @@
   padding: 22px 26px 0;
 }
 .lp-day-tabs button {
-  background: #f2f2e9;
-  padding: 8px 16px;
-  border-radius: 6px;
+  background: rgba(23, 32, 27, 0.06);
+  padding: 8px 18px;
+  border-radius: 999px;
   border: 1px solid transparent;
   font-size: 14px;
   cursor: pointer;
-  font-weight: 600;
+  font-weight: 700;
 }
 .lp-day-tabs button[aria-pressed="true"] {
-  background: var(--lp-brand);
+  background: #0b7a52;
   color: white;
+  box-shadow: 0 8px 20px rgba(10, 107, 72, 0.3);
 }
 .lp-day-content {
   padding: 18px 26px 25px;
@@ -588,14 +643,14 @@
 }
 .lp-stop-time {
   font-size: 13px;
-  color: #565b52;
+  color: var(--lp-muted);
 }
 .lp-stop-dot {
   position: relative;
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background: #799a55;
+  background: #00a86b;
   flex: none;
 }
 .lp-stop:not(:last-child) .lp-stop-dot:after {
@@ -603,7 +658,7 @@
   position: absolute;
   width: 1px;
   height: 60px;
-  background: #dbe2d3;
+  background: rgba(23, 32, 27, 0.12);
   top: 9px;
   left: 3px;
 }
@@ -617,7 +672,7 @@
 }
 .lp-stop div span {
   font-size: 12px;
-  color: #565b52;
+  color: var(--lp-muted);
   display: flex;
   align-items: center;
   gap: 3px;
@@ -625,17 +680,17 @@
 }
 .lp-stop > svg {
   font-size: 17px;
-  color: #819170;
+  color: #00a86b;
 }
 .lp-itinerary-bottom {
   padding: 15px 26px;
-  border-top: 1px solid #173d3415;
+  border-top: 1px solid var(--lp-line);
   font-size: 12px;
   letter-spacing: 1.5px;
   display: flex;
   align-items: center;
   gap: 8px;
-  color: #505650;
+  color: var(--lp-muted);
 }
 .lp-how {
   display: grid;
@@ -654,16 +709,19 @@
   display: flex;
   gap: 23px;
   padding: 24px 0;
-  border-bottom: 1px solid #173d3420;
+  border-bottom: 1px solid var(--lp-line);
 }
 .lp-how li:first-child {
   padding-top: 5px;
 }
 .lp-how li > span {
-  font-family: Georgia, serif;
+  font-family:
+    "Sriracha",
+    "Noto Sans Thai",
+    system-ui,
+    sans-serif;
   font-size: 27px;
-  color: #62675d;
-  font-style: italic;
+  color: #0a7a52;
 }
 .lp-how li p {
   font-size: 16px;
@@ -680,7 +738,7 @@
   font-size: 32px;
 }
 .lp-faq details {
-  border-bottom: 1px solid #173d3420;
+  border-bottom: 1px solid var(--lp-line);
 }
 .lp-faq summary {
   cursor: pointer;
@@ -716,30 +774,35 @@
 .lp-last {
   position: relative;
   isolation: isolate;
-  background: #29332f;
-  color: #fffbee;
-  border-radius: 14px;
+  background:
+    radial-gradient(600px circle at 85% 20%, rgba(0, 168, 107, 0.35), transparent 55%),
+    radial-gradient(500px circle at 70% 90%, rgba(232, 108, 110, 0.25), transparent 55%),
+    #17201b;
+  color: #f2f5f2;
+  border-radius: var(--lp-radius);
   padding: 55px 60px;
   overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.12);
 }
 .lp-last h2 {
   font-size: clamp(29px, 3.5vw, 45px);
 }
 .lp-last .lp-eyebrow {
-  color: #e0e3d8;
+  color: rgba(242, 245, 242, 0.75);
 }
 .lp-last p:not(.lp-eyebrow) {
   font-size: 17px;
-  color: #e0e3d8;
+  color: rgba(242, 245, 242, 0.8);
   margin-top: 15px;
 }
 .lp-button-light {
-  background: #e9eccf;
-  color: #214237;
+  background: #ffffff;
+  color: #0a7a52;
   margin-top: 25px;
+  border-color: transparent;
 }
 .lp-button-light:hover {
-  background: #f4f4df;
+  background: #f2f5f2;
 }
 .lp-last-compass {
   position: absolute;
@@ -836,11 +899,12 @@
     width: calc(100% - 40px);
   }
   .lp-nav {
-    min-height: 78px;
+    min-height: 68px;
     height: auto;
-    padding-block: 18px;
+    padding: 14px 18px;
     flex-wrap: wrap;
     gap: 12px;
+    border-radius: 1.5rem;
   }
   .lp-brand {
     font-size: 19px;
@@ -875,7 +939,7 @@
   }
   .landing h1 {
     font-size: clamp(36px, 8.8vw, 58px);
-    letter-spacing: -1px;
+    letter-spacing: 0;
     margin-bottom: 19px;
   }
   .lp-intro {
@@ -887,9 +951,9 @@
     margin-top: 24px;
   }
   .lp-button {
-    padding: 14px 19px;
+    padding: 14px 22px;
     font-size: 15px;
-    gap: 20px;
+    gap: 10px;
   }
   .lp-text-link {
     font-size: 14px;
@@ -1060,4 +1124,115 @@
   .lp-button:hover {
     transform: none;
   }
+}
+
+/* =========================================================
+   LANDING DARK THEME — follows app toggle
+   ========================================================= */
+[data-theme="liquid-glass-dark"] .landing {
+  --lp-ink: #f2f5f2;
+  --lp-brand: #2fbf8a;
+  --lp-brand-deep: #2fbf8a;
+  --lp-paper: #111613;
+  --lp-muted: rgba(242, 245, 242, 0.68);
+  --lp-card: rgba(30, 38, 33, 0.9);
+  --lp-line: rgba(255, 255, 255, 0.12);
+  background:
+    radial-gradient(800px circle at 10% 0%, rgba(0, 168, 107, 0.16), transparent 55%),
+    radial-gradient(700px circle at 90% 10%, rgba(232, 108, 110, 0.1), transparent 55%),
+    #111613;
+}
+[data-theme="liquid-glass-dark"] .lp-nav {
+  background: rgba(26, 34, 30, 0.9);
+  border-color: rgba(255, 255, 255, 0.12);
+}
+[data-theme="liquid-glass-dark"] .lp-nav-links a,
+[data-theme="liquid-glass-dark"] .lp-login,
+[data-theme="liquid-glass-dark"] .lp-brand {
+  color: #f2f5f2;
+}
+[data-theme="liquid-glass-dark"] .lp-nav-end select {
+  color: #f2f5f2;
+}
+[data-theme="liquid-glass-dark"] .lp-nav-end option {
+  color: #17201b;
+}
+[data-theme="liquid-glass-dark"] .landing h1 em {
+  color: #2fbf8a;
+}
+[data-theme="liquid-glass-dark"] .lp-feature {
+  background: rgba(30, 38, 33, 0.92);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+[data-theme="liquid-glass-dark"] .lp-feature-3 {
+  background: rgba(0, 168, 107, 0.14);
+}
+[data-theme="liquid-glass-dark"] .lp-feature-4 {
+  background: rgba(232, 108, 110, 0.14);
+}
+[data-theme="liquid-glass-dark"] .lp-ribbon {
+  background: rgba(255, 255, 255, 0.04);
+}
+[data-theme="liquid-glass-dark"] .lp-sample-section {
+  background: #171d19;
+}
+[data-theme="liquid-glass-dark"] .lp-itinerary {
+  background: rgba(30, 38, 33, 0.94);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+[data-theme="liquid-glass-dark"] .lp-day-tabs button {
+  background: rgba(255, 255, 255, 0.08);
+  color: #f2f5f2;
+}
+/* Solid jade chips keep white text readable in dark (3.1:1 -> 5.4:1) */
+[data-theme="liquid-glass-dark"] .lp-day-tabs button[aria-pressed="true"],
+[data-theme="liquid-glass-dark"] .lp-mini-days span:last-child {
+  background: #0b7a52;
+}
+[data-theme="liquid-glass-dark"] .lp-how li > span {
+  color: #2fbf8a;
+}
+[data-theme="liquid-glass-dark"] .lp-weather-sticker,
+[data-theme="liquid-glass-dark"] .lp-plan-sticker {
+  background: rgba(30, 38, 33, 0.94);
+  border-color: rgba(255, 255, 255, 0.12);
+}
+[data-theme="liquid-glass-dark"] .lp-mini-days span {
+  background: rgba(255, 255, 255, 0.08);
+  color: #f2f5f2;
+}
+[data-theme="liquid-glass-dark"] .lp-mini-map {
+  background:
+    repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 21px,
+      rgba(255, 255, 255, 0.09) 22px
+    ),
+    repeating-linear-gradient(90deg, rgba(30, 38, 33, 0.9), rgba(30, 38, 33, 0.9) 21px, rgba(255, 255, 255, 0.09) 22px);
+}
+[data-theme="liquid-glass-dark"] .lp-mini-budget b span,
+[data-theme="liquid-glass-dark"] .lp-feature-top > span,
+[data-theme="liquid-glass-dark"] .lp-ribbon-number,
+[data-theme="liquid-glass-dark"] .lp-feature small {
+  color: rgba(242, 245, 242, 0.62);
+}
+[data-theme="liquid-glass-dark"] .lp-art-note {
+  color: rgba(242, 245, 242, 0.6);
+}
+[data-theme="liquid-glass-dark"] .lp-tiny-icon {
+  background: rgba(47, 191, 138, 0.14);
+  color: #2fbf8a;
+}
+[data-theme="liquid-glass-dark"] .lp-check {
+  background: rgba(47, 191, 138, 0.16);
+  color: #2fbf8a;
+}
+[data-theme="liquid-glass-dark"] .lp-skip {
+  background: #1a221e;
+  color: #f2f5f2;
+}
+[data-theme="liquid-glass-dark"] .lp-footer p,
+[data-theme="liquid-glass-dark"] .lp-footer > span {
+  color: rgba(242, 245, 242, 0.55);
 }

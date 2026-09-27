@@ -5,6 +5,7 @@ import { mainApi } from '@/api/mainApi';
 import { useLang } from '@/i18n';
 import useUserStore from '@/stores/userStore';
 import { passwordSchema } from '@/validations/schema';
+import ThemeToggle from '@/components/ThemeToggle';
 
 function ResetPassword() {
   const { t } = useLang();
@@ -37,6 +38,7 @@ function ResetPassword() {
 
   return (
     <main className="min-h-screen grid place-items-center px-4 py-10">
+      <div className="absolute top-4 right-4"><ThemeToggle /></div>
       <section className="card w-full max-w-md bg-base-100 shadow-xl">
         <div className="card-body">
           <h1 className="card-title justify-center">{t('auth.newPasswordTitle')}</h1>

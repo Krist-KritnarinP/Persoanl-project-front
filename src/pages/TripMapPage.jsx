@@ -13,6 +13,7 @@ import {
 import { useTripActivityStore } from "@/stores/tripActivityStore";
 import { useLang } from "@/i18n";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
+import ThemeToggle from "@/components/ThemeToggle";
 import { MapBody, TYPE_COLORS } from "@/components/TripMap";
 import { useTripCoordinates } from "@/hooks/useTripCoordinates";
 import { gmapsDirUrl, gmapsSearchUrl, pointOf } from "@/utils/gmaps";
@@ -92,7 +93,10 @@ export default function TripMapPage() {
             AI LHOUNG
           </span>
         </button>
-        <LanguageSwitcher />
+        <div className="flex items-center gap-1 shrink-0">
+          <ThemeToggle />
+          <LanguageSwitcher />
+        </div>
       </header>
 
       <div className="flex items-center justify-between gap-2">

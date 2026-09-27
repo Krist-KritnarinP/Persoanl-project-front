@@ -9,17 +9,17 @@ import { useLang } from "@/i18n";
 import { gmapsSearchUrl } from "@/utils/gmaps";
 
 export const TYPE_COLORS = {
-  ATTRACTION: "#8b5cf6",
-  RESTAURANT: "#f59e0b",
-  ACCOMMODATION: "#3b82f6",
-  TRANSPORT: "#0ea5e9",
+  ATTRACTION: "#7c3aed",
+  RESTAURANT: "#b45309",
+  ACCOMMODATION: "#2563eb",
+  TRANSPORT: "#0369a1",
 };
 
 const iconCache = new Map();
 function numberedIcon(n, type, dimmed = false) {
   const key = `${n}/${type}/${dimmed}`;
   if (iconCache.has(key)) return iconCache.get(key);
-  const color = TYPE_COLORS[type] || "#10b981";
+  const color = TYPE_COLORS[type] || "#0b7a52";
   const icon = L.divIcon({
     className: "trip-pin",
     html: `<div style="background:${color};color:#fff;width:28px;height:28px;border-radius:9999px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:13px;border:2px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,.35);${dimmed ? "opacity:.35;filter:grayscale(1);" : ""}">${n}</div>`,

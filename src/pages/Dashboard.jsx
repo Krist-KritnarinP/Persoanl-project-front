@@ -17,6 +17,7 @@ import {
 } from "react-icons/fi";
 import CreateTrip from "@/components/UserTrip";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
+import ThemeToggle from "@/components/ThemeToggle";
 import { useLang } from "@/i18n";
 import useTripStore from "@/stores/tripStore";
 import useUserStore from "@/stores/userStore";
@@ -150,6 +151,7 @@ function Dashboard() {
 
         {/* Profile */}
         <div className="flex items-center gap-1 sm:gap-2 shrink-0">
+          <ThemeToggle />
           <LanguageSwitcher />
           <button
             onClick={() => navigate("/userprofile")}

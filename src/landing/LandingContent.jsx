@@ -12,6 +12,7 @@ import {
   FiMinus,
 } from "react-icons/fi";
 import { copy } from "./copy";
+import ThemeToggle from "@/components/ThemeToggle";
 
 export default function LandingContent({
   lang = "th",
@@ -44,6 +45,7 @@ export default function LandingContent({
           <a href="#how">{c.nav[2]}</a>
         </nav>
         <div className="lp-nav-end">
+          <ThemeToggle />
           <select
             aria-label="Language"
             value={lang}

@@ -3,6 +3,7 @@ import { FiHome, FiTruck, FiCoffee, FiNavigation, FiChevronDown, FiCheck, FiCros
 import { useLang } from "@/i18n";
 import { geocodePlace } from "@/utils/geocode";
 import { toast } from "react-toastify";
+import ClockTimePicker from "@/components/ClockTimePicker";
 
 const TYPE_OPTIONS = [
   { value: "ATTRACTION", icon: FiNavigation, color: "badge-accent" },
@@ -49,24 +50,33 @@ export default function ActivityModal({
   const current = TYPE_OPTIONS.find((o) => o.value === (activityFormData.activityType || "ATTRACTION")) || TYPE_OPTIONS[0];
   const CurrentIcon = current.icon;
 
+  const handleFormSubmit = (e) => {
+    if (!activityFormData.activityTime) {
+      e.preventDefault();
+      toast.warn(t("act.needTime"));
+      return;
+    }
+    onSubmit(e);
+  };
+
   return (
     <dialog className="modal modal-open px-4">
-      <div className="modal-box bg-white text-slate-800 w-full max-w-lg shadow-2xl rounded-3xl space-y-4 border border-slate-200">
-        <h3 className="font-bold text-xl border-b border-slate-200 pb-3 text-slate-900">
+      <div className="modal-box bg-base-100 text-base-content w-full max-w-lg shadow-2xl rounded-3xl space-y-4 border border-base-content/10">
+        <h3 className="font-bold text-xl border-b border-base-content/10 pb-3">
           {editingActivity ? t("act.editAct") : t("act.addAct")}
         </h3>
 
-        <form onSubmit={(e) => onSubmit(e)} className="space-y-4">
+        <form onSubmit={handleFormSubmit} className="space-y-4">
           {/* ชื่อสถานที่ */}
           <div className="form-control">
             <label className="label py-1">
-              <span className="label-text font-semibold text-sm text-slate-700">{t("act.location")}</span>
+              <span className="label-text font-semibold text-sm">{t("act.location")}</span>
             </label>
             <input
               type="text"
               required
               placeholder={t("act.location")}
-              className="input input-bordered rounded-xl bg-white text-slate-900 border-slate-300 text-base"
+              className="input input-bordered rounded-xl text-base"
               value={activityFormData.locationName || ""}
               onChange={(e) =>
                 setActivityFormData({ ...activityFormData, locationName: e.target.value })
@@ -77,13 +87,13 @@ export default function ActivityModal({
           {/* ประเภทกิจกรรม (custom dropdown มี icon) */}
           <div className="form-control">
             <label className="label py-1">
-              <span className="label-text font-semibold text-sm text-slate-700">{t("act.attr")} / {t("act.rest")}</span>
+              <span className="label-text font-semibold text-sm">{t("act.attr")} / {t("act.rest")}</span>
             </label>
             <div className="relative">
               <button
                 type="button"
                 onClick={() => setTypeOpen((v) => !v)}
-                className="input input-bordered rounded-xl w-full bg-white text-slate-900 border-slate-300 text-base flex items-center gap-2.5 justify-between"
+                className="input input-bordered rounded-xl w-full text-base flex items-center gap-2.5 justify-between"
               >
                 <span className="flex items-center gap-2.5 min-w-0">
                   <span className={`p-1.5 rounded-lg shrink-0 ${current.color}`}>
@@ -96,7 +106,7 @@ export default function ActivityModal({
               {typeOpen && (
                 <>
                   <div className="fixed inset-0 z-10" onClick={() => setTypeOpen(false)} />
-                  <ul className="absolute z-20 mt-1 w-full rounded-2xl border border-slate-200 bg-white shadow-xl overflow-hidden py-1">
+                  <ul className="absolute z-20 mt-1 w-full rounded-2xl border border-base-content/10 bg-base-100 shadow-xl overflow-hidden py-1">
                     {TYPE_OPTIONS.map((opt) => {
                       const Icon = opt.icon;
                       const selected = opt.value === current.value;
@@ -108,7 +118,7 @@ export default function ActivityModal({
                               setActivityFormData({ ...activityFormData, activityType: opt.value });
                               setTypeOpen(false);
                             }}
-                            className={`w-full flex items-center gap-2.5 px-3 py-2.5 text-base hover:bg-slate-100 ${selected ? "bg-slate-50 font-bold" : ""}`}
+                            className={`w-full flex items-center gap-2.5 px-3 py-2.5 text-base hover:bg-base-content/10 ${selected ? "bg-base-content/10 font-bold" : ""}`}
                           >
                             <span className={`p-1.5 rounded-lg shrink-0 ${opt.color}`}>
                               <Icon className="text-base" />
@@ -129,21 +139,18 @@ export default function ActivityModal({
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div className="form-control">
               <label className="label py-1">
-                <span className="label-text font-semibold text-sm text-slate-700">⏰ {t("act.time")}</span>
+                <span className="label-text font-semibold text-sm">⏰ {t("act.time")} *</span>
               </label>
-              <input
-                type="time"
-                required
-                className="input input-bordered rounded-xl w-full bg-white text-slate-900 border-slate-300 text-base"
+              <ClockTimePicker
                 value={activityFormData.activityTime || ""}
-                onChange={(e) =>
-                  setActivityFormData({ ...activityFormData, activityTime: e.target.value })
+                onChange={(next) =>
+                  setActivityFormData({ ...activityFormData, activityTime: next })
                 }
               />
             </div>
             <div className="form-control">
               <label className="label py-1">
-                <span className="label-text font-semibold text-sm text-slate-700">{t("act.price")}</span>
+                <span className="label-text font-semibold text-sm">{t("act.price")}</span>
               </label>
               <input
                 type="number"
@@ -160,10 +167,10 @@ export default function ActivityModal({
           {/* รายละเอียดเพิ่มเติม */}
           <div className="form-control">
             <label className="label py-1">
-              <span className="label-text font-semibold text-sm text-slate-700">{t("act.desc")}</span>
+              <span className="label-text font-semibold text-sm">{t("act.desc")}</span>
             </label>
             <textarea
-              className="textarea textarea-bordered rounded-xl text-base bg-white text-slate-900 border-slate-300"
+              className="textarea textarea-bordered rounded-xl text-base"
               rows={2}
               value={activityFormData.description || ""}
               onChange={(e) =>
@@ -176,7 +183,7 @@ export default function ActivityModal({
           <div className="form-control">
             <div className="flex items-center justify-between gap-2">
               <label className="label py-1">
-                <span className="label-text font-semibold text-sm text-slate-700">📍 Map (optional)</span>
+                <span className="label-text font-semibold text-sm">📍 Map (optional)</span>
               </label>
               <button
                 type="button"
@@ -193,7 +200,7 @@ export default function ActivityModal({
                 type="number"
                 step="any"
                 placeholder={t("map.lat")}
-                className="input input-bordered rounded-xl bg-white text-slate-900 border-slate-300 text-base"
+                className="input input-bordered rounded-xl text-base"
                 value={activityFormData.latitude ?? ""}
                 onChange={(e) => setActivityFormData({ ...activityFormData, latitude: e.target.value })}
               />
@@ -201,18 +208,18 @@ export default function ActivityModal({
                 type="number"
                 step="any"
                 placeholder={t("map.lng")}
-                className="input input-bordered rounded-xl bg-white text-slate-900 border-slate-300 text-base"
+                className="input input-bordered rounded-xl text-base"
                 value={activityFormData.longitude ?? ""}
                 onChange={(e) => setActivityFormData({ ...activityFormData, longitude: e.target.value })}
               />
             </div>
           </div>
 
-          <div className="modal-action pt-2 border-t border-slate-100">
+          <div className="modal-action pt-2 border-t border-base-content/10">
             <button
               type="button"
               onClick={onClose}
-              className="btn btn-ghost rounded-full text-slate-600 hover:bg-slate-100"
+              className="btn btn-ghost rounded-full"
             >
               {t("common.cancel")}
             </button>
