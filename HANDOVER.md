@@ -1,3 +1,16 @@
+# Handover — ทริปยาว + token notice + ช่องข้อความ (2026-09-27)
+
+- ตามผู้ใช้สั่ง: ยกเลิกเพดาน 7 วันต่อทริป; แบ่งร่างทีละ 7 วันและกดร่างต่อ พร้อมจำนวนวันที่เสร็จ/ทั้งหมด
+- แจ้ง token ก่อนเริ่มและแสดง usage ที่มีข้อมูล; โควตาเดิมยังคงอยู่ ติดโควตาแล้วทำต่อได้จาก PLAN v2 เดิมข้ามวัน
+- partial draft ยังแก้/confirm ไม่ได้; เมื่อครบจึงเปิดให้แก้และบันทึกเหมือนเดิม; merge ภายใต้ account lock
+- parser planner ย้ายมาก่อน global JSON parser ตรวจ auth ก่อนรับ payload 10 MB; API อื่นไม่เปลี่ยน
+- textarea ความต้องการเอา rounded ออก เพิ่ม padding/line height แก้ตัวอักษรถูกบัง
+- API 28 unit ผ่าน; browser ทริป 9 วัน/resume/notice/textarea บน desktop/mobile; build ผ่าน. รอบนี้ไม่ได้เรียก Gemini จริงหรือแก้ DB demo
+- คู่มือ/ข้อจำกัด: docs/AI_PLANNER.md; ไม่เพิ่ม dependency/schema/env; commit แยกสอง repo ไม่ push
+
+---
+## บันทึกรอบก่อน
+
 # Handover — AI Trip Planner MVP (2026-09-27)
 
 - ทำครบ flow ข้อความ + ปฏิทิน 1–7 วัน → Gemini draft → Zod validate → preview แก้/ลบกิจกรรม → ยืนยัน atomic save → เปิดหน้าทริปเดิม

@@ -102,10 +102,11 @@ test("planner calendar, generation failure, editable preview and lost-save retry
     .getByLabel("อยากเที่ยวแบบไหน?")
     .fill("เชียงใหม่ 2 คน ชอบเที่ยวในเมือง");
   await page.getByLabel("วันเริ่มเดินทาง").fill("2026-12-10");
-  await page.getByLabel("วันสิ้นสุด").fill("2026-12-18");
-  await page.getByRole("button", { name: "✨ ให้ AI ช่วยวางแผน" }).click();
-  await expect(page.getByRole("alert")).toContainText("1–7");
-  expect(generations).toBe(0);
+  await expect(page.getByRole("note")).toContainText("token");
+  await expect(page.getByLabel("อยากเที่ยวแบบไหน?")).toHaveCSS(
+    "border-radius",
+    "0px",
+  );
   await page.getByLabel("วันสิ้นสุด").fill("2026-12-10");
   await page.getByRole("button", { name: "✨ ให้ AI ช่วยวางแผน" }).click();
   await expect(page.getByRole("alert")).toContainText("AI ยังร่างแผนไม่ได้");
@@ -139,4 +140,65 @@ test("planner calendar, generation failure, editable preview and lost-save retry
   await page.getByRole("button", { name: "ลองบันทึกอีกครั้ง" }).click();
   await expect(page).toHaveURL(/\/trips\/88$/);
   expect(errors).toEqual([]);
+});
+
+test("nine-day draft shows token notice and resumes after quota without losing progress", async ({
+  page,
+}) => {
+  await page.addInitScript(() =>
+    localStorage.setItem(
+      "authState",
+      JSON.stringify({ state: { user: { id: 1 }, token: "test" }, version: 0 }),
+    ),
+  );
+  let calls = 0;
+  await page.route("http://127.0.0.1:8899/api/**", async (route) => {
+    if (route.request().method() === "OPTIONS")
+      return route.fulfill({ status: 204, headers });
+    expect(new URL(route.request().url()).pathname).toBe("/api/planner/draft");
+    expect(route.request().postDataJSON().endDate).toBe("2026-12-18");
+    calls++;
+    if (calls === 2) return route.fulfill({ status: 429, headers, json: {} });
+    const count = calls === 1 ? 7 : 9;
+    return route.fulfill({
+      headers,
+      json: {
+        data: {
+          draftId: 72,
+          totalDays: 9,
+          complete: count === 9,
+          tokens: count === 7 ? 3000 : 4000,
+          plan: {
+            ...plan,
+            days: Array.from({ length: count }, (_, i) => ({
+              ...plan.days[0],
+              date: `2026-12-${10 + i}`,
+            })),
+          },
+        },
+      },
+    });
+  });
+  await page.goto("/trips/ai");
+  await page
+    .getByLabel("อยากเที่ยวแบบไหน?")
+    .fill("เชียงใหม่ เที่ยวแบบสบาย ๆ เก้าวัน");
+  await page.getByLabel("วันเริ่มเดินทาง").fill("2026-12-10");
+  await page.getByLabel("วันสิ้นสุด").fill("2026-12-18");
+  await expect(page.getByRole("note")).toContainText("2 ช่วง");
+  await page.getByRole("button", { name: "✨ ให้ AI ช่วยวางแผน" }).click();
+  await expect(page.getByText(/ร่างแล้ว 7 \/ 9 วัน/)).toBeVisible();
+  await expect(
+    page.getByRole("button", { name: "บันทึกเป็นทริปของฉัน" }),
+  ).toBeDisabled();
+  await expect(page.getByLabel("ชื่อทริป")).toBeDisabled();
+  await page.getByRole("button", { name: "ร่างช่วงถัดไป" }).click();
+  await expect(page.getByRole("alert")).toContainText("ขีดจำกัด");
+  await expect(page.getByText(/ร่างแล้ว 7 \/ 9 วัน/)).toBeVisible();
+  await page.getByRole("button", { name: "ร่างช่วงถัดไป" }).click();
+  await expect(page.getByText(/ร่างแล้ว 9 \/ 9 วัน/)).toContainText("4,000");
+  await expect(
+    page.getByRole("button", { name: "บันทึกเป็นทริปของฉัน" }),
+  ).toBeEnabled();
+  await expect(page.getByLabel("ชื่อทริป")).toBeEnabled();
 });

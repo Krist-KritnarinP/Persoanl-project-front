@@ -48,10 +48,10 @@ export default function AiPlanner() {
     ) || 0;
 
   async function generate(event) {
-    event.preventDefault();
+    event?.preventDefault();
     if (inFlight.current) return;
-    if (!Number.isInteger(days) || days < 1 || days > 7) {
-      setError("เลือกวันเริ่มและสิ้นสุดให้เป็นทริป 1–7 วัน");
+    if (!Number.isInteger(days) || days < 1) {
+      setError("เลือกวันสิ้นสุดให้ตรงกับหรืออยู่หลังวันเริ่มเดินทาง");
       return;
     }
     inFlight.current = true;
@@ -157,7 +157,8 @@ export default function AiPlanner() {
               <label className="block space-y-2">
                 <span className="font-semibold text-lg">อยากเที่ยวแบบไหน?</span>
                 <textarea
-                  className="textarea w-full text-base min-h-36"
+                  className="textarea w-full text-base min-h-40 rounded-none px-4 py-3 leading-relaxed"
+                  style={{ borderRadius: 0, lineHeight: 1.75 }}
                   required
                   minLength={10}
                   maxLength={2000}
@@ -203,11 +204,36 @@ export default function AiPlanner() {
                 </label>
               </div>
               <p className="text-sm text-base-content/70">
-                รองรับ 1–7 วันต่อทริป
+                ไม่จำกัดจำนวนวันของทริป
                 {Number.isInteger(days) && days > 0
                   ? ` · เลือกไว้ ${days} วัน`
                   : ""}
               </p>
+              <div
+                className="bg-base-200 p-4 space-y-2 text-sm leading-relaxed"
+                role="note"
+              >
+                <p className="font-semibold">
+                  ยิ่งหลายวัน ยิ่งใช้ token และเวลามากขึ้น
+                </p>
+                <p>
+                  AI อ่านข้อความและสร้างคำตอบโดยใช้ token ไม่ใช่จำนวนวันโดยตรง
+                  ระบบร่างทีละไม่เกิน 7 วัน แล้วให้กดร่างช่วงถัดไป
+                  ใช้โควตาแยกแต่ละครั้ง
+                </p>
+                <p>
+                  {Number.isInteger(days) && days > 0
+                    ? `ทริปนี้แบ่งเป็น ${Math.ceil(days / 7)} ช่วง · `
+                    : ""}
+                  จำกัดการสร้างคำตอบ 6,000 tokens ต่อครั้ง
+                  ไม่ใช่ยอดใช้จริงทั้งหมด ยังมี token ข้อความเข้าและการลองใหม่
+                  ค่าใช้จ่ายขึ้นกับโมเดลและแพ็กเกจ API
+                </p>
+                <p>
+                  โควตารายวันยังมีผล หากเต็มสามารถกลับมากดร่างต่อได้
+                  โดยกรอกความต้องการและวันที่เดิมเพื่อทำต่อจากร่างที่เก็บไว้
+                </p>
+              </div>
               <button
                 type="submit"
                 className="btn btn-primary w-full sm:w-auto rounded-full px-8"
@@ -236,6 +262,29 @@ export default function AiPlanner() {
                 {request.startDate} → {request.endDate} ·{" "}
                 {draft.plan.days.length} วัน
               </p>
+              <p className="text-sm">
+                ร่างแล้ว {draft.plan.days.length} / {draft.totalDays || days}{" "}
+                วัน · token ที่รายงานจากคำตอบในแผนนี้:{" "}
+                {draft.tokens ? money(draft.tokens) : "ไม่มีข้อมูล"}{" "}
+                (ไม่รวมคำขอที่ล้มเหลวหรือ fallback ก่อนสำเร็จ; cache ไม่เรียก AI
+                เพิ่ม)
+              </p>
+              {draft.complete === false && (
+                <div className="space-y-3">
+                  <p>
+                    แผนยังไม่ครบวัน ร่างช่วงถัดไปก่อนแก้ไขและบันทึก แต่ละช่วงใช้
+                    token และโควตาเพิ่ม
+                  </p>
+                  <button
+                    type="button"
+                    className="btn btn-primary"
+                    disabled={!!busy}
+                    onClick={() => generate()}
+                  >
+                    {busy ? "กำลังร่างช่วงถัดไป…" : "ร่างช่วงถัดไป"}
+                  </button>
+                </div>
+              )}
               <p className="font-semibold text-lg">
                 งบกิจกรรมประมาณการรวมทั้งกลุ่ม: ฿{money(total)}
               </p>
@@ -255,7 +304,10 @@ export default function AiPlanner() {
                 </div>
               )}
             </div>
-            <fieldset disabled={!!busy || uncertain} className="space-y-5">
+            <fieldset
+              disabled={!!busy || uncertain || draft.complete === false}
+              className="space-y-5"
+            >
               <label className="block space-y-2">
                 <span className="font-semibold">ชื่อทริป</span>
                 <input
@@ -386,7 +438,7 @@ export default function AiPlanner() {
               <button
                 type="submit"
                 className="btn btn-primary rounded-full"
-                disabled={!!busy}
+                disabled={!!busy || draft.complete === false}
               >
                 {busy === "save"
                   ? "กำลังบันทึก…"

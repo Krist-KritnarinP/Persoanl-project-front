@@ -27,12 +27,12 @@
 ## Phase 1 — Core Value & Activation (3–4 สัปดาห์)
 
 > AI Trip Planner MVP เปิดจาก Dashboard → /trips/ai; งานต่อยอดยังแยกไว้ด้านล่าง
-- [x] **AI Trip Planner MVP**: ข้อความความต้องการ + ปฏิทินเริ่ม/สิ้นสุด 1–7 วัน → Gemini ร่าง JSON → ตรวจ/แก้/ลบกิจกรรม → ยืนยัน → สร้างทริปและเปิดหน้าเดิม
+- [x] **AI Trip Planner MVP**: ข้อความความต้องการ + ปฏิทินเริ่ม/สิ้นสุด ไม่จำกัดจำนวนวัน (ร่างทีละ 7 วันแล้วกดต่อ) → Gemini ร่าง JSON → ตรวจ/แก้/ลบกิจกรรม → ยืนยัน → สร้างทริปและเปิดหน้าเดิม
   - ตรวจวัน/เวลา/ราคา/ownership ด้วย Zod; AI ไม่ส่งพิกัด; บันทึกทั้งชุดใน transaction พร้อม account lock และ durable receipt กันยืนยันซ้ำ
-  - ฉบับร่าง PLAN แยกจาก WEATHER; cache ฉบับร่างที่ยังไม่บันทึก 6 ชม.; ใช้ AI quota/kill switch/fallback เดิม, output cap 6,000 tokens (ไม่ใช่ระบบ Pro/billing)
+  - ฉบับร่าง PLAN แยกจาก WEATHER; ร่าง v2 เก็บความคืบหน้าข้ามวันจนยืนยัน พร้อม token notice/usage; ใช้ AI quota/kill switch/fallback เดิม, output cap 6,000 tokens (ไม่ใช่ระบบ Pro/billing)
   - ราคา THB ประมาณการรวมทั้งกลุ่มและสมมติฐานแก้ได้ผ่านรายการ; ไม่ยืนยันราคาจริง/เวลาเปิด/เส้นทาง ไม่มีการจอง
   - วิธีใช้/ข้อจำกัด/ผลทดสอบ: [docs/AI_PLANNER.md](docs/AI_PLANNER.md)
-- [ ] AI Planner ต่อ: แหล่งข้อมูลสถานที่/ราคาที่ตรวจสอบได้, reference prices + confidence ที่มีหลักฐาน, กู้ฉบับร่างที่แก้ไขหลังรีเฟรช, แปล UI เพิ่มจากภาษาไทย, ทริปยาวกว่า 7 วัน/แก้ทริปเดิมผ่านแชต
+- [ ] AI Planner ต่อ: แหล่งข้อมูลสถานที่/ราคาที่ตรวจสอบได้, reference prices + confidence ที่มีหลักฐาน, กู้ฉบับร่างที่แก้ไขหลังรีเฟรช, แปล UI เพิ่มจากภาษาไทย, แก้ทริปเดิมผ่านแชต
 - [x] คำนวณงบประมาณรวมจริง — ตรวจพบยอดรวมทริปและรายวันใน TripsActivity แล้ว
 - [ ] Onboarding: ทริปตัวอย่าง + ทัวร์ 3 ขั้นตอนตอนสมัครครั้งแรก
 - [x] Landing page + SEO พื้นฐาน — หน้า `/`, เนื้อหา 4 ภาษา, Thai HTML prerender, meta/OG และ canonical/sitemap เมื่อมีโดเมนจริง; Login ย้าย `/login`
