@@ -7,6 +7,7 @@ import {
 } from "react-router-dom";
 
 import Landing from "@/pages/Landing";
+import AppLayout from "@/layouts/AppLayout";
 import RouteSeo from "@/components/RouteSeo";
 
 const AiPlanner = lazy(() => import("@/pages/AiPlanner"));
@@ -24,7 +25,7 @@ import useUserStore from "@/stores/userStore";
 // เช็กสิทธิ์คนที่ Login แล้ว
 const ProtectRoute = () => {
   const user = useUserStore((state) => state.user);
-  return user ? <Outlet /> : <Navigate to="/login" replace />;
+  return user ? <AppLayout /> : <Navigate to="/login" replace />;
 };
 
 // เช็กสิทธิ์คนที่ยังไม่ได้ Login

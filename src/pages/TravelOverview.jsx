@@ -1,15 +1,7 @@
 import { useState, useMemo, lazy, Suspense } from "react";
 import { Link } from "react-router-dom";
-import {
-  FiArrowLeft,
-  FiMapPin,
-  FiCalendar,
-  FiCreditCard,
-  FiCompass,
-} from "react-icons/fi";
+import { FiMapPin, FiCalendar, FiCreditCard, FiCompass } from "react-icons/fi";
 import { useLang } from "@/i18n";
-import LanguageSwitcher from "@/components/LanguageSwitcher";
-import ThemeToggle from "@/components/ThemeToggle";
 import TravelCalendar from "@/components/travel/TravelCalendar";
 import useTravelOverview from "@/hooks/useTravelOverview";
 import { dateKey, travelStatus, tripsOnDate } from "@/utils/travelOverview";
@@ -65,16 +57,6 @@ export default function TravelOverview() {
   ];
   return (
     <main className="min-h-screen p-4 md:p-8 max-w-7xl mx-auto space-y-6">
-      <header className="flex flex-wrap justify-between items-center gap-3">
-        <Link to="/dashboard" className="btn btn-ghost">
-          <FiArrowLeft />
-          {t("planner.back")}
-        </Link>
-        <div className="flex items-center gap-2">
-          <ThemeToggle />
-          <LanguageSwitcher />
-        </div>
-      </header>
       <section className="space-y-2">
         <p className="text-sm font-semibold text-primary">AI LHOUNG</p>
         <h1 className="text-3xl md:text-4xl font-bold">{t("travel.title")}</h1>

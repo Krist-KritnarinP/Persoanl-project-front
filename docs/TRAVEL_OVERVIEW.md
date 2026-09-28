@@ -1,7 +1,7 @@
 # Travel overview / ภาพรวมการเดินทาง
 
 ## เปิดใช้งาน
-หน้า /dashboard มีกล่องแผนที่ใต้ AI Trip Assistant → เปิดแดชบอร์ดการเดินทาง → /travel-overview (ต้อง login)
+เปิดเมนู “ภาพรวม” ใน sidebar → /travel-overview (ต้อง login); กล่องทางเข้าเดิมบน Dashboard ถูกยุบแล้ว
 - รวมทุกทริป: เลือกผ่านมาแล้ว / อยู่ในช่วงเดินทาง / กำลังจะไป / ยังไม่ระบุวัน
 - ปฏิทินรายเดือนแสดงช่วงเริ่มถึงสิ้นสุด รวมวันสุดท้าย; คลิกวันที่กรองทริป แผนที่ และยอดรวม คลิกซ้ำหรือล้างวันที่เพื่อคืนรายการ
 - แสดงค่าใช้จ่ายที่บันทึกต่อทริปและรวมตามตัวกรอง กดรายการเปิดหน้าทริปเดิม
@@ -18,7 +18,7 @@
 
 ## Code map
 Front:
-- components/travel/TravelOverviewCard.jsx: กล่องทางเข้าใต้ AI Trip Assistant
+- layouts/AppLayout.jsx: sidebar ทางเข้าหน้าภาพรวมแทนกล่องเดิม
 - pages/TravelOverview.jsx: stats/filter/list และประสาน calendar/map
 - components/travel/TravelCalendar.jsx: ปฏิทิน 42 ช่อง/เปลี่ยนเดือน
 - components/travel/TravelMap.jsx: Leaflet แบบ lazy, สีตามวันที่กิจกรรม, ไม่มีการค้นพิกัดเพิ่ม

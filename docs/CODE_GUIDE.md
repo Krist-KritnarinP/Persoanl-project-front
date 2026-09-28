@@ -52,3 +52,10 @@
 
 ## Travel overview
 แดชบอร์ดแผนที่/ปฏิทิน/ค่าใช้จ่ายที่ `/travel-overview`; ดู [TRAVEL_OVERVIEW.md](TRAVEL_OVERVIEW.md) สำหรับ data flow และความหมายของสถานะ/ยอดเงิน
+
+## Shared sidebar (2026-09-28)
+`layouts/AppLayout.jsx` เป็น shell ของ protected routes ผ่าน ProtectRoute ใน AppRouter; จัดการ desktop collapse, mobile drawer, settings และ user/logout ด้านล่าง ใช้ Outlet/Suspense คงหน้าลูกและ handlers เดิม
+- /travel-overview = ภาพรวม; /dashboard = ทริปของฉัน; /trips/ai = สร้างทริปด้วย AI
+- หน้าทริปและ map ยังมีปุ่มเฉพาะทริป ส่วน global navbar ถูกถอดออกแล้ว
+- ไม่เพิ่ม sidebar ให้ public/share/auth; อย่าเพิ่ม global header ซ้ำในหน้าลูก
+- tests/e2e/helpers/sidebar.js ใช้เปิด navigation/settings ตาม viewport; ปุ่มเลือกภาษาอยู่ใน settings dialog

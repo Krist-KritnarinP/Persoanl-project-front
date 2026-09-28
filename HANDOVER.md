@@ -1,3 +1,16 @@
+# Handover — Responsive shared sidebar (2026-09-28)
+
+- เพิ่ม layouts/AppLayout.jsx ครอบ protected routes: ภาพรวม / ทริปของฉัน / สร้างทริปด้วย AI
+- ด้านล่างมีภาษาและธีม, user/profile และ Logout ใช้ store เดิม ไม่เปลี่ยน auth logic
+- Desktop ย่อเป็นไอคอนและจำค่า localStorage; mobile native dialog drawer มี backdrop/Escape/focus trap/คืน focus และปิดเมื่อเปลี่ยนหน้า/ขยายจอ
+- Dashboard เหลือ trip list/search/CRUD; สถิติอยู่ TravelOverview, เอา AI/overview teaser และ navbar ซ้ำออก; URL เดิมคงอยู่
+- Public landing/login/reset/share ไม่มี sidebar; ไม่ทำ trip tabs หรือ split bills รอบนี้
+- Front unit 13 + build ผ่าน; browser 16 cases ผ่านหลังแก้ selectors/คืน focus และ rerun เฉพาะที่ล้มเหลว (sidebar, trips/share/map, overview, 4ภาษา)
+- Lint ไม่มี error: 6 warnings เดิม + 1 เรื่องปิด modal ใน effect เมื่อ route เปลี่ยน (ตั้งใจรองรับ history navigation)
+- ไม่แก้ API/schema/DB/dependencies; ไม่มี AI call; commit Front เท่านั้น ไม่ push
+
+---
+
 # Handover — แผนหารบิลทริป (2026-09-28)
 
 - ผู้ใช้สั่งทำแผนรอ ยังไม่เริ่มฟีเจอร์ และไม่ใช้ AI

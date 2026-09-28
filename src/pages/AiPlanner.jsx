@@ -1,10 +1,8 @@
 import { useLang } from "@/i18n";
-import LanguageSwitcher from "@/components/LanguageSwitcher";
 import { useEffect, useRef, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { mainApi } from "@/api/mainApi";
 import { generateCompletePlan } from "@/utils/generateCompletePlan";
-import ThemeToggle from "@/components/ThemeToggle";
 
 const types = {
   ATTRACTION: "planner.typeAttraction",
@@ -126,15 +124,6 @@ export default function AiPlanner() {
   return (
     <main className="min-h-screen px-4 py-6 md:py-10 text-base-content">
       <div className="max-w-4xl mx-auto space-y-6">
-        <header className="flex items-center justify-between gap-3">
-          <Link to="/dashboard" className="btn btn-ghost rounded-full">
-            {t("planner.back")}
-          </Link>
-          <div className="flex items-center gap-2">
-            <LanguageSwitcher />
-            <ThemeToggle />
-          </div>
-        </header>
         <section className="space-y-3">
           <span className="badge badge-outline">{t("planner.badge")}</span>
           <h1 className="text-3xl md:text-4xl font-bold">

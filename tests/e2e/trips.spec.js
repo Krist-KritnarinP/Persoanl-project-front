@@ -1,3 +1,4 @@
+import { openSettings } from "./helpers/sidebar";
 import { test, expect } from "@playwright/test";
 const headers = {
   "access-control-allow-origin": "http://127.0.0.1:5188",
@@ -97,7 +98,9 @@ test("owner trip keeps totals, sharing, day edits, saved pins and theme when ope
     .getByRole("button", { name: /revoke|disable|stop sharing/i })
     .click();
   await expect.poll(() => mutations).toContain("DELETE/api/trips/71/share");
+  await openSettings(page);
   await page.getByRole("button", { name: "Switch to dark theme" }).click();
+  await page.keyboard.press("Escape");
   await expect(page.locator("html")).toHaveAttribute(
     "data-theme",
     "liquid-glass-dark",

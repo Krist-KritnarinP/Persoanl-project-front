@@ -13,8 +13,6 @@ import {
 import { useTripActivityStore } from "@/stores/tripActivityStore";
 import { formatTripDate } from "@/utils/datetime";
 import { useLang } from "@/i18n";
-import LanguageSwitcher from "@/components/LanguageSwitcher";
-import ThemeToggle from "@/components/ThemeToggle";
 import { MapBody, TYPE_COLORS } from "@/components/TripMap";
 import { useTripCoordinates } from "@/hooks/useTripCoordinates";
 import { gmapsDirUrl, gmapsSearchUrl, pointOf } from "@/utils/gmaps";
@@ -99,29 +97,6 @@ export default function TripMapPage() {
 
   return (
     <div className="min-h-screen w-full px-4 md:px-8 py-4 space-y-4">
-      <header className="navbar glass rounded-3xl md:rounded-full justify-between px-4 md:px-6 py-3 shadow-lg gap-2">
-        <button
-          onClick={() => navigate("/dashboard")}
-          title={t("nav.dashboard")}
-          className="flex items-center gap-2 min-w-0 cursor-pointer rounded-2xl"
-        >
-          <div className="w-10 h-10 rounded-full bg-primary/20 border border-primary/30 flex items-center justify-center overflow-hidden shrink-0">
-            <img
-              src="/image/MiniDog.PNG"
-              alt="Minidog"
-              className="w-full h-full object-cover"
-            />
-          </div>
-          <span className="font-display text-2xl md:text-3xl tracking-wider bg-linear-to-r from-primary to-accent bg-clip-text text-transparent whitespace-nowrap">
-            AI LHOUNG
-          </span>
-        </button>
-        <div className="flex items-center gap-1 shrink-0">
-          <ThemeToggle />
-          <LanguageSwitcher />
-        </div>
-      </header>
-
       <div className="flex items-center justify-between gap-2">
         <div className="flex items-center gap-2 min-w-0">
           <button

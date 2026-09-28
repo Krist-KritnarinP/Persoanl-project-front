@@ -1,6 +1,4 @@
-import LanguageSwitcher from "@/components/LanguageSwitcher";
 import AccountDataControls from "@/components/AccountDataControls";
-import ThemeToggle from "@/components/ThemeToggle";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { FiArrowLeft, FiUser, FiSave } from "react-icons/fi";
@@ -80,10 +78,6 @@ function Userprofile() {
         <button onClick={() => navigate(-1)} className="btn btn-ghost gap-2">
           <FiArrowLeft /> {t("common.back")}
         </button>
-        <div className="flex items-center gap-2">
-          <LanguageSwitcher />
-          <ThemeToggle />
-        </div>
       </div>
 
       <div className="glass glass-card p-5 md:p-6 rounded-3xl space-y-4">

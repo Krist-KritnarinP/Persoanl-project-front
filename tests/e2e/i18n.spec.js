@@ -1,3 +1,4 @@
+import { openSettings } from "./helpers/sidebar";
 import { test, expect } from "@playwright/test";
 test.setTimeout(90000);
 import { additions } from "../../src/i18n/additions.js";
@@ -97,6 +98,7 @@ test("all pages support switching all four languages without rendering errors", 
     "/share/example",
   ]) {
     await page.goto(path);
+    if (!path.startsWith("/share/")) await openSettings(page);
     for (const lang of ["en", "zh", "ko", "th"]) {
       await page.getByRole("combobox", { name: "Language" }).selectOption(lang);
       if (lang !== "th") {
@@ -183,7 +185,9 @@ test("planner sends the selected language and translates preview and validation 
     .getByRole("button", { name: additions.en["planner.generate"] })
     .click();
   for (const lang of ["en", "zh", "ko", "th"]) {
+    await openSettings(page);
     await page.getByRole("combobox", { name: "Language" }).selectOption(lang);
+    await page.keyboard.press("Escape");
     await expect(
       page.getByRole("heading", { name: additions[lang]["planner.review"] }),
     ).toBeVisible();
