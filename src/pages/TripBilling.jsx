@@ -8,6 +8,13 @@ import BillForm from "@/components/billing/BillForm";
 import { Field, MoneyInput } from "@/components/billing/SplitEditor";
 import { moneyText } from "@/utils/billing";
 import { localToday } from "@/utils/travelOverview";
+import {
+  FiArrowRight,
+  FiPlus,
+  FiUsers,
+  FiFileText,
+  FiRepeat,
+} from "react-icons/fi";
 export default function TripBilling() {
   const { tripId } = useParams();
   return <BillingWorkspace key={tripId} tripId={tripId} />;
@@ -33,6 +40,12 @@ function BillingWorkspace({ tripId }) {
   });
   const pending = useRef(null),
     sending = useRef(false);
+  useEffect(() => {
+    if (editing)
+      document
+        .getElementById("billing-editor")
+        ?.scrollIntoView({ behavior: "smooth", block: "start" });
+  }, [editing]);
   const load = useCallback(
     async (signal) => {
       const [ledger, details] = await Promise.all([
@@ -125,33 +138,67 @@ function BillingWorkspace({ tripId }) {
         b.data.shares[person] !== undefined ||
         b.data.payments[person] !== undefined),
   );
+  const outstanding = data.summary.debts.reduce((n, d) => n + d.remaining, 0);
+  const hasMembers = data.members.some((m) => m.active);
+  const canAddBill = hasMembers && !editing;
   return (
-    <main className="billing-workspace w-full p-4 md:p-8 space-y-6">
+    <main className="billing-workspace mx-auto w-full max-w-[1500px] space-y-7 p-4 pb-16 md:p-8">
       {!sidebarEnabled && (
         <div className="flex justify-end gap-2">
           <LanguageSwitcher />
           <ThemeToggle />
         </div>
       )}
-      <Link className="btn btn-ghost" to={`/trips/${tripId}`}>
+      <Link
+        className="btn btn-ghost btn-sm px-0 hover:bg-transparent"
+        to={`/trips/${tripId}`}
+      >
         ← {t("bill.back")}
       </Link>
-      <h1 className="text-3xl font-bold">
-        {t("bill.heading")} · {trip?.tripName}
-      </h1>
-      <p className="text-base-content/70">{t("bill.notice")}</p>
+      <header className="billing-hero relative overflow-hidden rounded-[2rem] p-6 md:p-9">
+        <div className="relative z-10 max-w-3xl space-y-4">
+          <span className="billing-eyebrow inline-flex rounded-full px-3 py-1 text-xs font-bold tracking-wide">
+            {trip?.tripName}
+          </span>
+          <div>
+            <h1 className="text-3xl font-extrabold tracking-tight md:text-5xl">
+              {t("bill.heading")}
+            </h1>
+            <p className="mt-2 max-w-xl text-base leading-relaxed text-white/85 md:text-lg">
+              {t("bill.workspaceIntro")}
+            </p>
+          </div>
+          <button
+            type="button"
+            className="btn billing-hero-action gap-2 border-0 px-5"
+            disabled={!!editing}
+            onClick={() => {
+              if (canAddBill) setEditing({});
+              else
+                document
+                  .getElementById("billing-members")
+                  ?.scrollIntoView({ behavior: "smooth" });
+            }}
+          >
+            <FiPlus aria-hidden="true" />{" "}
+            {t(hasMembers ? "bill.new" : "bill.startWithMembers")}
+            <FiArrowRight aria-hidden="true" />
+          </button>
+        </div>
+        <span aria-hidden="true" className="billing-hero-orbit" />
+      </header>
       <nav aria-label={t("bill.quickNav")} className="flex flex-wrap gap-2">
         {[
-          ["members", "bill.members"],
-          ["bills", "bill.list"],
-          ["repay", "bill.repay"],
-        ].map(([id, key]) => (
+          ["members", "bill.members", FiUsers],
+          ["bills", "bill.list", FiFileText],
+          ["repay", "bill.repay", FiRepeat],
+        ].map(([id, key, Icon]) => (
           <a
             key={id}
             href={`#billing-${id}`}
-            className="btn btn-sm btn-outline"
+            className="billing-nav-link inline-flex shrink-0 items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold"
           >
-            {t(key)}
+            <Icon aria-hidden="true" /> {t(key)}
           </a>
         ))}
       </nav>
@@ -160,23 +207,47 @@ function BillingWorkspace({ tripId }) {
           {t(error)}
         </p>
       )}
-      <section className="grid sm:grid-cols-2 gap-3">
-        <div className="bg-base-100 rounded-xl p-5">
-          <p>{t("bill.confirmedTotal")}</p>
-          <strong className="text-2xl">฿{moneyText(data.summary.total)}</strong>
+      <section
+        className="grid gap-3 sm:grid-cols-2"
+        aria-label={t("bill.overview")}
+      >
+        <div className="billing-stat rounded-3xl p-5 md:p-6">
+          <p className="text-sm font-semibold opacity-75">
+            {t("bill.confirmedTotal")}
+          </p>
+          <strong className="mt-2 block text-3xl font-extrabold tracking-tight md:text-4xl">
+            ฿{moneyText(data.summary.total)}
+          </strong>
         </div>
-        <div className="bg-base-100 rounded-xl p-5">
-          <p>{t("bill.outstanding")}</p>
-          <strong className="text-2xl">
-            ฿
-            {moneyText(data.summary.debts.reduce((n, d) => n + d.remaining, 0))}
+        <div className="billing-stat billing-stat-due rounded-3xl p-5 md:p-6">
+          <p className="text-sm font-semibold opacity-75">
+            {t("bill.outstanding")}
+          </p>
+          <strong className="mt-2 block text-3xl font-extrabold tracking-tight md:text-4xl">
+            ฿{moneyText(outstanding)}
           </strong>
         </div>
       </section>
-      <section id="billing-members" className="space-y-3">
-        <h2 className="text-xl font-bold">{t("bill.members")}</h2>
+      <p className="text-sm text-base-content/65">{t("bill.notice")}</p>
+      <section
+        id="billing-members"
+        className="billing-panel space-y-5 rounded-3xl p-5 md:p-7"
+      >
+        <div className="flex items-center gap-3">
+          <span className="billing-panel-icon">
+            <FiUsers aria-hidden="true" />
+          </span>
+          <div>
+            <h2 className="text-xl font-bold md:text-2xl">
+              {t("bill.members")}
+            </h2>
+            <p className="text-sm text-base-content/65">
+              {t("bill.membersIntro")}
+            </p>
+          </div>
+        </div>
         <form
-          className="flex flex-wrap gap-2"
+          className="flex flex-col gap-2 sm:flex-row"
           onSubmit={async (e) => {
             e.preventDefault();
             if (
@@ -190,39 +261,64 @@ function BillingWorkspace({ tripId }) {
         >
           <input
             aria-label={t("bill.memberName")}
-            className="input"
+            className="input w-full sm:max-w-sm"
             required
             maxLength={80}
             value={name}
             onChange={(e) => setName(e.target.value)}
             placeholder={t("bill.memberName")}
           />
-          <button className="btn btn-outline" disabled={busy}>
-            {t("bill.addMember")}
+          <button className="btn btn-primary gap-2" disabled={busy}>
+            <FiPlus aria-hidden="true" /> {t("bill.addMember")}
           </button>
         </form>
         <div className="grid sm:grid-cols-2 xl:grid-cols-3 gap-3">
           {data.summary.members.map((m) => (
             <article
               key={m.id}
-              className="bg-base-100 border border-base-content/10 rounded-xl p-4 space-y-1"
+              className="billing-person rounded-2xl p-4 space-y-3"
             >
-              <h3 className="font-bold">
+              <h3 className="font-bold text-lg">
                 {m.name}
                 {!m.active && ` · ${t("bill.archived")}`}
               </h3>
-              <p>
-                {t("bill.paid")}: ฿{moneyText(m.paid)} · {t("bill.share")}: ฿
-                {moneyText(m.share)}
-              </p>
-              <p>
-                {t("bill.sent")}: ฿{moneyText(m.sent)} · {t("bill.received")}: ฿
-                {moneyText(m.received)}
-              </p>
-              <p>
-                {t("bill.owed")}: ฿{moneyText(m.owed)} · {t("bill.receivable")}:
-                ฿{moneyText(m.receivable)}
-              </p>
+              <div className="grid grid-cols-2 gap-3 text-sm">
+                <p>
+                  <span className="block text-base-content/60">
+                    {t("bill.paid")}
+                  </span>
+                  <strong>฿{moneyText(m.paid)}</strong>
+                </p>
+                <p>
+                  <span className="block text-base-content/60">
+                    {t("bill.share")}
+                  </span>
+                  <strong>฿{moneyText(m.share)}</strong>
+                </p>
+              </div>
+              <div className="flex flex-wrap gap-2 text-xs font-semibold">
+                {m.owed > 0 && (
+                  <span className="billing-owed rounded-full px-3 py-1.5">
+                    {t("bill.owed")} ฿{moneyText(m.owed)}
+                  </span>
+                )}
+                {m.receivable > 0 && (
+                  <span className="billing-receivable rounded-full px-3 py-1.5">
+                    {t("bill.receivable")} ฿{moneyText(m.receivable)}
+                  </span>
+                )}
+                {!m.owed && !m.receivable && (
+                  <span className="text-base-content/60">
+                    {t("bill.settled")}
+                  </span>
+                )}
+              </div>
+              {(m.sent > 0 || m.received > 0) && (
+                <p className="text-xs text-base-content/60">
+                  {t("bill.sent")}: ฿{moneyText(m.sent)} · {t("bill.received")}:
+                  ฿{moneyText(m.received)}
+                </p>
+              )}
               <div className="flex gap-2">
                 <button
                   className="btn btn-xs btn-ghost"
@@ -258,39 +354,56 @@ function BillingWorkspace({ tripId }) {
             </article>
           ))}
         </div>
+        {hasMembers && !editing && (
+          <button
+            type="button"
+            className="btn btn-primary gap-2"
+            onClick={() => setEditing({})}
+          >
+            {t("bill.continueToBill")} <FiArrowRight aria-hidden="true" />
+          </button>
+        )}
       </section>
-      <button
-        className="btn btn-primary"
-        disabled={!data.members.some((m) => m.active) || !!editing}
-        onClick={() => setEditing({})}
-      >
-        {t("bill.new")}
-      </button>
       {editing && (
-        <BillForm
-          key={editing.id || "new"}
-          tripId={tripId}
-          members={data.members}
-          activities={activities}
-          editing={editing.id ? editing : null}
-          busy={busy}
-          onCancel={() => setEditing(null)}
-          onSave={async (bill) => {
-            if (
-              await confirmed({
-                action: "bill.save",
-                ...(editing.id
-                  ? { id: editing.id, version: editing.version }
-                  : {}),
-                bill,
-              })
-            )
-              setEditing(null);
-          }}
-        />
+        <div id="billing-editor" className="scroll-mt-6">
+          <BillForm
+            key={editing.id || "new"}
+            tripId={tripId}
+            members={data.members}
+            activities={activities}
+            editing={editing.id ? editing : null}
+            busy={busy}
+            onCancel={() => setEditing(null)}
+            onSave={async (bill) => {
+              if (
+                await confirmed({
+                  action: "bill.save",
+                  ...(editing.id
+                    ? { id: editing.id, version: editing.version }
+                    : {}),
+                  bill,
+                })
+              )
+                setEditing(null);
+            }}
+          />
+        </div>
       )}
-      <section id="billing-bills" className="space-y-3">
-        <h2 className="text-xl font-bold">{t("bill.list")}</h2>
+      <section
+        id="billing-bills"
+        className="billing-panel space-y-5 rounded-3xl p-5 md:p-7"
+      >
+        <div className="flex items-center gap-3">
+          <span className="billing-panel-icon">
+            <FiFileText aria-hidden="true" />
+          </span>
+          <div>
+            <h2 className="text-xl font-bold md:text-2xl">{t("bill.list")}</h2>
+            <p className="text-sm text-base-content/65">
+              {t("bill.billsIntro")}
+            </p>
+          </div>
+        </div>
         <div className="flex flex-wrap gap-2">
           <select
             aria-label={t("bill.filterPerson")}
@@ -325,7 +438,11 @@ function BillingWorkspace({ tripId }) {
             ))}
           </select>
         </div>
-        {!filtered.length && <p>{t("bill.empty")}</p>}
+        {!filtered.length && (
+          <p className="billing-empty rounded-2xl p-8 text-center text-base-content/70">
+            {t("bill.empty")}
+          </p>
+        )}
         {filtered.map((b) => {
           const locked = data.settlements.some(
             (s) => !s.reversed && s.allocations.some((a) => a.billId === b.id),
@@ -333,9 +450,9 @@ function BillingWorkspace({ tripId }) {
           return (
             <details
               key={b.id}
-              className="bg-base-100 border border-base-content/10 rounded-xl p-4"
+              className="billing-person rounded-2xl p-4 md:p-5"
             >
-              <summary className="cursor-pointer font-semibold">
+              <summary className="cursor-pointer font-semibold text-base md:text-lg">
                 {b.date} · {b.title} · ฿{moneyText(b.total)} ·{" "}
                 {t(b.voided ? "bill.void" : "bill.posted")}
               </summary>
@@ -405,148 +522,173 @@ function BillingWorkspace({ tripId }) {
       </section>
       <section
         id="billing-repay"
-        className="bg-base-100 rounded-2xl p-4 space-y-4"
+        className="billing-panel space-y-4 rounded-3xl p-5 md:p-7"
       >
-        <h2 className="text-xl font-bold">{t("bill.repay")}</h2>
-        <p className="text-sm">{t("bill.repayNote")}</p>
-        <div className="grid sm:grid-cols-2 gap-3">
-          {["fromId", "toId"].map((key) => (
-            <Field
-              key={key}
-              label={t(key === "fromId" ? "bill.from" : "bill.to")}
-            >
-              <select
-                className="select w-full"
-                value={repay[key]}
-                onChange={(e) =>
-                  setRepay({ ...repay, [key]: e.target.value, billIds: [] })
-                }
-              >
-                <option value="">—</option>
-                {data.members.map((m) => (
-                  <option key={m.id} value={m.id}>
-                    {m.name}
-                  </option>
-                ))}
-              </select>
-            </Field>
-          ))}
+        <div className="flex items-center gap-3">
+          <span className="billing-panel-icon">
+            <FiRepeat aria-hidden="true" />
+          </span>
+          <h2 className="text-xl font-bold md:text-2xl">{t("bill.repay")}</h2>
         </div>
-        {choices.map((d) => (
-          <label key={d.billId} className="flex items-center gap-2">
-            <input
-              type="checkbox"
-              className="checkbox checkbox-sm"
-              checked={repay.billIds.includes(d.billId)}
-              onChange={(e) =>
-                setRepay({
-                  ...repay,
-                  billIds: e.target.checked
-                    ? [...repay.billIds, d.billId]
-                    : repay.billIds.filter((id) => id !== d.billId),
-                })
-              }
-            />
-            {d.title} · ฿{moneyText(d.remaining)}
-          </label>
-        ))}
-        <button
-          className="btn btn-sm btn-ghost"
-          onClick={() =>
-            setRepay({ ...repay, billIds: choices.map((d) => d.billId) })
-          }
-        >
-          {t("bill.selectAll")}
-        </button>
-        <p>
-          {t("bill.selectedDebt")}: ฿{moneyText(owed)}
-        </p>
-        <div className="grid sm:grid-cols-2 gap-3">
-          <Field label={t("bill.repayAmount")}>
-            <MoneyInput
-              value={repay.amount}
-              onChange={(e) => setRepay({ ...repay, amount: e.target.value })}
-            />
-          </Field>
-          <Field label={t("bill.date")}>
-            <input
-              type="date"
-              className="input w-full"
-              value={repay.date}
-              onChange={(e) => setRepay({ ...repay, date: e.target.value })}
-            />
-          </Field>
-        </div>
-        <p>
-          {t("bill.remaining")}: ฿
-          {moneyText(
-            Math.max(0, owed - Math.round(Number(repay.amount || 0) * 100)),
-          )}
-        </p>
-        <button
-          className="btn btn-primary"
-          disabled={
-            busy ||
-            !owed ||
-            Number(repay.amount) <= 0 ||
-            Number(repay.amount) * 100 > owed
-          }
-          onClick={async () => {
-            if (
-              await confirmed({ action: "settlement.add", settlement: repay })
-            )
-              setRepay({ ...repay, amount: "", billIds: [] });
-          }}
-        >
-          {t("bill.recordRepayment")}
-        </button>
-      </section>
-      <section className="space-y-3">
-        <h2 className="text-xl font-bold">{t("bill.repaymentHistory")}</h2>
-        {data.settlements.map((s) => (
-          <article key={s.id} className="bg-base-100 rounded-xl p-4 space-y-2">
-            <p>
-              {s.date} · {names[s.fromId]} → {names[s.toId]} · ฿
-              {moneyText(s.amount)} {s.reversed && `(${t("bill.reversed")})`}
-            </p>
-            {s.allocations.map((a) => (
-              <p className="text-sm" key={a.billId}>
-                {data.bills.find((b) => b.id === a.billId)?.title}: ฿
-                {moneyText(a.amount)}
-              </p>
+        {outstanding === 0 ? (
+          <p className="billing-empty rounded-2xl p-6 text-sm text-base-content/70">
+            {t("bill.noOutstanding")}
+          </p>
+        ) : (
+          <div className="space-y-4">
+            <p className="text-sm">{t("bill.repayNote")}</p>
+            <div className="grid sm:grid-cols-2 gap-3">
+              {["fromId", "toId"].map((key) => (
+                <Field
+                  key={key}
+                  label={t(key === "fromId" ? "bill.from" : "bill.to")}
+                >
+                  <select
+                    className="select w-full"
+                    value={repay[key]}
+                    onChange={(e) =>
+                      setRepay({ ...repay, [key]: e.target.value, billIds: [] })
+                    }
+                  >
+                    <option value="">—</option>
+                    {data.members.map((m) => (
+                      <option key={m.id} value={m.id}>
+                        {m.name}
+                      </option>
+                    ))}
+                  </select>
+                </Field>
+              ))}
+            </div>
+            {choices.map((d) => (
+              <label key={d.billId} className="flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  className="checkbox checkbox-sm"
+                  checked={repay.billIds.includes(d.billId)}
+                  onChange={(e) =>
+                    setRepay({
+                      ...repay,
+                      billIds: e.target.checked
+                        ? [...repay.billIds, d.billId]
+                        : repay.billIds.filter((id) => id !== d.billId),
+                    })
+                  }
+                />
+                {d.title} · ฿{moneyText(d.remaining)}
+              </label>
             ))}
             <button
-              className="btn btn-sm btn-outline"
-              disabled={busy || s.reversed}
+              className="btn btn-sm btn-ghost"
               onClick={() =>
-                confirmed({
-                  action: "settlement.reverse",
-                  id: s.id,
-                  version: s.version,
-                })
+                setRepay({ ...repay, billIds: choices.map((d) => d.billId) })
               }
             >
-              {t("bill.reverse")}
+              {t("bill.selectAll")}
             </button>
-          </article>
-        ))}
+            <p>
+              {t("bill.selectedDebt")}: ฿{moneyText(owed)}
+            </p>
+            <div className="grid sm:grid-cols-2 gap-3">
+              <Field label={t("bill.repayAmount")}>
+                <MoneyInput
+                  value={repay.amount}
+                  onChange={(e) =>
+                    setRepay({ ...repay, amount: e.target.value })
+                  }
+                />
+              </Field>
+              <Field label={t("bill.date")}>
+                <input
+                  type="date"
+                  className="input w-full"
+                  value={repay.date}
+                  onChange={(e) => setRepay({ ...repay, date: e.target.value })}
+                />
+              </Field>
+            </div>
+            <p>
+              {t("bill.remaining")}: ฿
+              {moneyText(
+                Math.max(0, owed - Math.round(Number(repay.amount || 0) * 100)),
+              )}
+            </p>
+            <button
+              className="btn btn-primary"
+              disabled={
+                busy ||
+                !owed ||
+                Number(repay.amount) <= 0 ||
+                Number(repay.amount) * 100 > owed
+              }
+              onClick={async () => {
+                if (
+                  await confirmed({
+                    action: "settlement.add",
+                    settlement: repay,
+                  })
+                )
+                  setRepay({ ...repay, amount: "", billIds: [] });
+              }}
+            >
+              {t("bill.recordRepayment")}
+            </button>
+          </div>
+        )}
       </section>
-      <details className="bg-base-100 rounded-xl p-4">
-        <summary>{t("bill.history")}</summary>
-        {data.history.map((event) => (
-          <p className="text-sm py-2" key={event.id}>
-            {new Date(event.createdAt).toLocaleString(locale)} ·{" "}
-            {t("bill.event." + event.action)} ·{" "}
-            {event.result.title ||
-              event.result.name ||
-              names[event.result.fromId] ||
-              ""}
-            {event.before?.total !== undefined
-              ? ` · ฿${moneyText(event.before.total)} → ฿${moneyText(event.result.total)}`
-              : ""}
-          </p>
-        ))}
-      </details>
+      {data.settlements.length > 0 && (
+        <section className="billing-panel space-y-3 rounded-3xl p-5 md:p-7">
+          <h2 className="text-xl font-bold">{t("bill.repaymentHistory")}</h2>
+          {data.settlements.map((s) => (
+            <article
+              key={s.id}
+              className="bg-base-100 rounded-xl p-4 space-y-2"
+            >
+              <p>
+                {s.date} · {names[s.fromId]} → {names[s.toId]} · ฿
+                {moneyText(s.amount)} {s.reversed && `(${t("bill.reversed")})`}
+              </p>
+              {s.allocations.map((a) => (
+                <p className="text-sm" key={a.billId}>
+                  {data.bills.find((b) => b.id === a.billId)?.title}: ฿
+                  {moneyText(a.amount)}
+                </p>
+              ))}
+              <button
+                className="btn btn-sm btn-outline"
+                disabled={busy || s.reversed}
+                onClick={() =>
+                  confirmed({
+                    action: "settlement.reverse",
+                    id: s.id,
+                    version: s.version,
+                  })
+                }
+              >
+                {t("bill.reverse")}
+              </button>
+            </article>
+          ))}
+        </section>
+      )}
+      {data.history.length > 0 && (
+        <details className="billing-panel rounded-3xl p-5">
+          <summary>{t("bill.history")}</summary>
+          {data.history.map((event) => (
+            <p className="text-sm py-2" key={event.id}>
+              {new Date(event.createdAt).toLocaleString(locale)} ·{" "}
+              {t("bill.event." + event.action)} ·{" "}
+              {event.result.title ||
+                event.result.name ||
+                names[event.result.fromId] ||
+                ""}
+              {event.before?.total !== undefined
+                ? ` · ฿${moneyText(event.before.total)} → ฿${moneyText(event.result.total)}`
+                : ""}
+            </p>
+          ))}
+        </details>
+      )}
     </main>
   );
 }

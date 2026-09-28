@@ -1,5 +1,15 @@
 export const additions = {
   th: {
+    "bill.overview": "ภาพรวมบัญชีทริป",
+    "bill.workspaceIntro":
+      "เพิ่มบิล หารกับเพื่อน และดูยอดที่ต้องเคลียร์ในที่เดียว",
+    "bill.membersIntro": "เพิ่มชื่อเพื่อนได้เลย ไม่ต้องสมัครสมาชิก",
+    "bill.billsIntro": "แตะบิลเพื่อดูรายละเอียดและยอดของแต่ละคน",
+    "bill.settled": "ไม่มีเงินค้าง",
+    "bill.startWithMembers": "เริ่มเพิ่มสมาชิก",
+    "bill.continueToBill": "ต่อไป เพิ่มบิลแรก",
+    "bill.noOutstanding":
+      "ยังไม่มียอดค้าง เมื่อบันทึกบิลแล้วจะจัดการการคืนเงินได้ที่นี่",
     "bill.featureTitle": "หารค่าใช้จ่ายในทริป",
     "bill.featureDescription":
       "เพิ่มบิล แชร์ยอดกับเพื่อน และดูว่าใครยังค้างเท่าไร",
@@ -224,6 +234,16 @@ export const additions = {
       "กิจกรรมมีรายละเอียดมากเกินการวิเคราะห์ครั้งเดียว กรุณาลดข้อมูลที่ซ้ำแล้วลองใหม่",
   },
   en: {
+    "bill.overview": "Trip bill overview",
+    "bill.workspaceIntro":
+      "Add bills, split with friends, and keep track of what is still owed.",
+    "bill.membersIntro": "Add friends by name. They do not need an account.",
+    "bill.billsIntro": "Open a bill to see details and each person's share.",
+    "bill.settled": "All settled",
+    "bill.startWithMembers": "Start with members",
+    "bill.continueToBill": "Next: add a bill",
+    "bill.noOutstanding":
+      "Nothing owed right now. Repayments will appear here after you add a bill.",
     "bill.featureTitle": "Split trip expenses",
     "bill.featureDescription":
       "Add bills, split costs with friends, and see who still owes what.",
@@ -448,6 +468,14 @@ export const additions = {
       "This itinerary is too large for one analysis. Remove duplicate details and try again.",
   },
   zh: {
+    "bill.overview": "旅行账目概览",
+    "bill.workspaceIntro": "添加账单、与朋友分摊，并随时查看未结金额。",
+    "bill.membersIntro": "输入朋友的名字即可，无需注册。",
+    "bill.billsIntro": "打开账单查看明细和每个人的份额。",
+    "bill.settled": "已结清",
+    "bill.startWithMembers": "先添加成员",
+    "bill.continueToBill": "下一步：添加账单",
+    "bill.noOutstanding": "目前没有未结金额。添加账单后可在此记录还款。",
     "bill.featureTitle": "分摊旅行费用",
     "bill.featureDescription": "添加账单、与朋友分摊，并查看每个人的未结金额。",
     "bill.featureAction": "打开旅行账本",
@@ -658,6 +686,16 @@ export const additions = {
     "weather.sizeLimit": "行程内容过多，无法一次分析。请减少重复信息后重试。",
   },
   ko: {
+    "bill.overview": "여행 장부 요약",
+    "bill.workspaceIntro":
+      "청구서를 추가하고 친구와 나누며 남은 정산 금액을 확인하세요.",
+    "bill.membersIntro": "이름만 입력하면 됩니다. 친구가 가입할 필요는 없어요.",
+    "bill.billsIntro": "청구서를 열어 내역과 각자의 부담액을 확인하세요.",
+    "bill.settled": "정산 완료",
+    "bill.startWithMembers": "멤버부터 추가",
+    "bill.continueToBill": "다음: 청구서 추가",
+    "bill.noOutstanding":
+      "현재 미정산 금액이 없습니다. 청구서를 추가하면 여기서 상환을 기록할 수 있습니다.",
     "bill.featureTitle": "여행 경비 나누기",
     "bill.featureDescription":
       "청구서를 추가하고 친구와 나누며 남은 정산 금액을 확인하세요.",

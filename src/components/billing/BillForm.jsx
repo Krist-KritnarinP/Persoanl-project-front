@@ -86,18 +86,18 @@ export default function BillForm({
   };
   return (
     <form
-      className="bg-base-100 border border-base-content/15 rounded-2xl p-4 md:p-6 space-y-5"
+      className="billing-form rounded-3xl p-5 md:p-8"
       onSubmit={(e) => {
         e.preventDefault();
         calculate();
       }}
     >
-      <fieldset disabled={busy || loading} className="space-y-5">
-        <h2 className="text-xl font-bold">
+      <fieldset disabled={busy || loading} className="space-y-6">
+        <h2 className="text-2xl font-extrabold">
           {t(editing ? "bill.edit" : "bill.new")}
         </h2>
         <p className="text-sm text-base-content/70">{t("bill.formNote")}</p>
-        <h3 className="font-bold text-lg">{t("bill.stepItems")}</h3>
+        <h3 className="billing-step-title">{t("bill.stepItems")}</h3>
         <Field label={t("bill.fromActivity")}>
           <select
             className="select w-full"
@@ -139,7 +139,7 @@ export default function BillForm({
         {form.lines.map((l, i) => (
           <section
             key={i}
-            className="border border-base-content/15 rounded-xl p-3 space-y-3"
+            className="billing-subcard rounded-2xl p-4 space-y-3"
           >
             <div className="grid sm:grid-cols-[1fr_10rem_auto] gap-2">
               <Field label={t("bill.item")}>
@@ -195,14 +195,14 @@ export default function BillForm({
         >
           {t("bill.addItem")}
         </button>
-        <h3 className="font-bold text-lg">{t("bill.stepCharges")}</h3>
+        <h3 className="billing-step-title">{t("bill.stepCharges")}</h3>
         <div className="space-y-3">
           {["service", "vat", "tip"].map((kind) => {
             const c = form.charges.find((c) => c.kind === kind);
             return (
               <section
                 key={kind}
-                className="border border-base-content/15 rounded-xl p-3 space-y-3"
+                className="billing-subcard rounded-2xl p-4 space-y-3"
               >
                 <label className="flex gap-2 font-semibold items-center">
                   <input
@@ -315,12 +315,15 @@ export default function BillForm({
           })}
         </div>
         <section className="space-y-2">
-          <h3 className="font-bold text-lg">{t("bill.stepPayers")}</h3>
+          <h3 className="billing-step-title">{t("bill.stepPayers")}</h3>
           <p className="text-sm text-base-content/70">{t("bill.payerNote")}</p>
           {active.map((m) => {
             const payment = form.payments.find((p) => p.memberId === m.id);
             return (
-              <div key={m.id} className="flex flex-wrap gap-2 items-center">
+              <div
+                key={m.id}
+                className="billing-subcard flex flex-wrap items-center gap-2 rounded-xl p-3"
+              >
                 <label className="flex gap-2 items-center min-w-32">
                   <input
                     type="checkbox"
@@ -376,7 +379,7 @@ export default function BillForm({
         )}
         {preview && (
           <section
-            className="bg-primary/5 border border-primary/20 rounded-xl p-4 space-y-2"
+            className="billing-preview rounded-2xl p-5 space-y-2"
             aria-label={t("bill.preview")}
           >
             <h3 className="font-bold">
@@ -430,7 +433,7 @@ export default function BillForm({
               )}
           </section>
         )}
-        <div className="flex flex-wrap gap-2">
+        <div className="flex flex-wrap gap-2 border-t border-base-content/10 pt-5">
           <button
             disabled={busy || loading}
             className="btn btn-outline"

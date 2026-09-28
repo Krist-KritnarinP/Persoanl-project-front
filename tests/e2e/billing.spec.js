@@ -162,6 +162,14 @@ test("billing imports activity, previews charges, records a partial repayment an
       page.getByRole("heading", { name, exact: true }),
     ).toBeVisible();
   }
+  await expect(
+    page.getByRole("button", { name: "Next: add a bill" }),
+  ).toBeVisible();
+  await expect(
+    page
+      .getByRole("navigation", { name: "Billing sections" })
+      .getByRole("link", { name: "Settle during the trip" }),
+  ).toBeVisible();
   await page.getByRole("button", { name: "Add bill", exact: true }).click();
   const form = page.locator("form").filter({
     has: page.getByRole("heading", { name: "Add bill", exact: true }),

@@ -852,3 +852,126 @@ select {
 .billing-workspace section[id] {
   scroll-margin-top: 5rem;
 }
+
+/* Billing workspace keeps the money hierarchy clear in both themes. */
+.billing-hero {
+  color: #fffdf6;
+  background:
+    radial-gradient(circle at 86% 20%, #3c8567 0, transparent 33%),
+    linear-gradient(130deg, #123c32 0%, #185944 63%, #276a52 100%);
+  box-shadow: 0 24px 48px rgb(14 64 46 / 19%);
+}
+.billing-eyebrow {
+  background: rgb(255 255 255 / 17%);
+  color: #fff;
+}
+.billing-hero-action {
+  background: #ffdb8d;
+  color: #2e2b20;
+}
+.billing-hero-action:hover {
+  background: #ffe8b5;
+  color: #24251f;
+}
+.billing-hero-orbit {
+  position: absolute;
+  width: 18rem;
+  height: 18rem;
+  right: -4rem;
+  bottom: -11rem;
+  border: 3rem solid rgb(255 255 255 / 8%);
+  border-radius: 50%;
+  pointer-events: none;
+}
+.billing-nav-link,
+.billing-panel,
+.billing-form {
+  background: var(--color-base-100);
+  border: 1px solid
+    color-mix(in srgb, var(--color-base-content) 12%, transparent);
+  box-shadow: 0 10px 30px rgb(0 0 0 / 5%);
+}
+.billing-nav-link:hover {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+}
+.billing-stat {
+  background: #e6f1e8;
+  color: #173f32;
+  border: 1px solid #bad9c6;
+}
+.billing-stat-due {
+  background: #fff0d7;
+  color: #69410c;
+  border-color: #e5c88c;
+}
+.billing-panel-icon {
+  width: 2.75rem;
+  height: 2.75rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  border-radius: 0.875rem;
+  background: color-mix(
+    in srgb,
+    var(--color-primary) 14%,
+    var(--color-base-100)
+  );
+  color: var(--color-primary);
+  font-size: 1.25rem;
+}
+.billing-person,
+.billing-subcard,
+.billing-empty {
+  background: color-mix(
+    in srgb,
+    var(--color-base-100) 80%,
+    var(--color-base-200)
+  );
+  border: 1px solid
+    color-mix(in srgb, var(--color-base-content) 15%, transparent);
+}
+.billing-owed {
+  background: #fff0d7;
+  color: #69410c;
+}
+.billing-receivable {
+  background: #def1e5;
+  color: #19533a;
+}
+.billing-step-title {
+  display: flex;
+  align-items: center;
+  min-height: 2.75rem;
+  padding: 0.6rem 1rem;
+  border-radius: 0.875rem;
+  background: color-mix(
+    in srgb,
+    var(--color-primary) 13%,
+    var(--color-base-100)
+  );
+  color: var(--color-base-content);
+  font-size: 1.1rem;
+  font-weight: 800;
+}
+.billing-preview {
+  background: #e6f1e8;
+  color: #173f32;
+  border: 1px solid #bad9c6;
+}
+[data-theme="liquid-glass-dark"] .billing-stat {
+  background: #1e4637;
+  color: #f0f9f1;
+  border-color: #4d8968;
+}
+[data-theme="liquid-glass-dark"] .billing-stat-due {
+  background: #543e23;
+  color: #ffe4b6;
+  border-color: #987349;
+}
+[data-theme="liquid-glass-dark"] .billing-preview {
+  background: #1e4637;
+  color: #f0f9f1;
+  border-color: #4d8968;
+}
