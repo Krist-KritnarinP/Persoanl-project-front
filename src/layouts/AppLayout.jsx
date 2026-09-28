@@ -8,7 +8,8 @@ import {
   FiLogOut,
   FiMenu,
   FiX,
-  FiChevronsLeft,
+  FiChevronLeft,
+  FiChevronRight,
   FiSettings,
 } from "react-icons/fi";
 import { useLang } from "@/i18n";
@@ -206,13 +207,13 @@ export default function AppLayout() {
           <div className={`flex items-center mb-6 justify-between px-2`}>
             <span className="font-bold text-lg tracking-wide">AI LHOUNG</span>
             <button
-              className="btn btn-ghost btn-circle"
+              className="grid h-8 w-6 place-items-center rounded-md text-base-content/60 hover:bg-base-content/10 hover:text-base-content focus-visible:outline-2 focus-visible:outline-primary"
               aria-label={t("side.classic")}
               title={t("side.classic")}
               aria-expanded={sidebarEnabled}
               onClick={toggle}
             >
-              <FiChevronsLeft />
+              <FiChevronLeft aria-hidden="true" />
             </button>
           </div>
           <SidebarContent {...content} />
@@ -251,17 +252,20 @@ export default function AppLayout() {
       {!sidebarEnabled && (
         <button
           data-testid="enable-sidebar"
-          className="btn btn-primary fixed bottom-5 right-5 z-40 shadow-lg rounded-full"
+          type="button"
+          aria-label={t("side.enable")}
+          title={t("side.enable")}
+          aria-expanded={false}
+          className="fixed left-0 top-6 z-40 grid h-10 w-6 place-items-center rounded-r-md border border-l-0 border-base-content/15 bg-base-100/95 text-base-content/60 shadow-sm hover:text-base-content hover:bg-base-200 focus-visible:outline-2 focus-visible:outline-primary"
           onClick={toggle}
         >
-          <FiMenu />
-          {t("side.enable")}
+          <FiChevronRight aria-hidden="true" className="text-base" />
         </button>
       )}
       {modal === "menu" && (
         <Modal title={t("side.navigation")} onClose={close} drawer>
-          <button className="btn btn-outline mb-4" onClick={toggle}>
-            {t("side.classic")}
+          <button type="button" className="grid h-8 w-6 mb-3 place-items-center rounded-md text-base-content/60 hover:bg-base-content/10 focus-visible:outline-2 focus-visible:outline-primary" aria-label={t("side.classic")} title={t("side.classic")} onClick={toggle}>
+            <FiChevronLeft aria-hidden="true" />
           </button>
           <SidebarContent {...content} />
         </Modal>

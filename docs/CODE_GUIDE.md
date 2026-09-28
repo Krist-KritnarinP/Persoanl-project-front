@@ -61,4 +61,4 @@
 - tests/e2e/helpers/sidebar.js ใช้เปิด navigation/settings ตาม viewport; ปุ่มเลือกภาษาอยู่ใน settings dialog
 
 ### ปรับโหมดตามผู้ใช้ (2026-09-28)
-Sidebar ปิดแล้วกลับ classic layout เต็ม ไม่ย่อเป็น icon rail: AppLayout เก็บ navigationMode และส่ง sidebarEnabled ผ่าน Outlet context. หน้าลูกแสดง header/ส่วน dashboard เดิมเฉพาะ classic โดยใช้ logic ชุดเดียว. เปิด sidebar กลับด้วยปุ่มมุมขวาล่าง. Mobile ปุ่ม X ปิด drawer; ปุ่ม “ใช้หน้าตาเดิม” เปลี่ยนโหมดทั้งแอป.
+Sidebar ปิดแล้วกลับ classic layout เต็ม ไม่ย่อเป็น icon rail: AppLayout เก็บ navigationMode และส่ง sidebarEnabled ผ่าน Outlet context. หน้าลูกแสดง header/ส่วน dashboard เดิมเฉพาะ classic โดยใช้ logic ชุดเดียว. เปิด sidebar กลับด้วยลูกศรเล็กชิดขอบซ้ายบน. Mobile ปุ่ม X ปิด drawer; ปุ่ม “ใช้หน้าตาเดิม” เปลี่ยนโหมดทั้งแอป.

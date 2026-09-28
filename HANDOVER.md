@@ -1,3 +1,12 @@
+# Handover — Small sidebar edge arrow (2026-09-28)
+
+- ตาม feedback ผู้ใช้: เอาปุ่มเปิด Sidebar ใหญ่มุมขวาล่างออก เปลี่ยนเป็นแถบลูกศรเล็กชิดขอบซ้ายบน (left0/top6)
+- ปุ่มปิดโหมดใน sidebar/drawer ใช้ลูกศรเล็กด้วย มี aria-label/title และ keyboard focus
+- ไม่เปลี่ยนหน้าเดิม/logic/การจำโหมด; ไม่มี backend หรือ DB changes
+- ตรวจ browser desktop/mobile การสลับโหมดและ logout; commit Front ไม่ push
+
+---
+
 # Handover — Sidebar / classic layout switch (2026-09-28)
 
 - แก้ตามผู้ใช้: ปิด Sidebar ต้องซ่อนทั้งแถบและคืน header/ดีไซน์ก่อน sidebar ไม่ใช่ย่อเป็นไอคอน
