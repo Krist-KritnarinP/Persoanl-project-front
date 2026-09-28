@@ -140,6 +140,7 @@ export const useTripActivityStore = create((set, get) => ({
     try {
       // The API reads the owned itinerary; no duplicate activity payload or client log.
       const payload = { tripId: Number(tripId), language };
+      if (import.meta.env.DEV) console.log("[Weather → API]", payload);
       const res = await mainApi.post("/weather/predict-weather", payload, {
         timeout: 120000,
       });

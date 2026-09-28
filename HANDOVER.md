@@ -1,3 +1,13 @@
+# Handover — Weather development logs (2026-09-28)
+
+- Front dev Console แสดง [Weather → API] พร้อม tripId/language
+- API terminal แสดง [Weather → AI] พร้อม prompt จริง จำนวน characters (ไม่ใช่ tokens) และ output budget ก่อนเรียก provider
+- Cache hit แสดงว่าใช้ประวัติ ไม่มี AI request; ไม่ log key/header/credentials
+- Backend เปิด log เมื่อ NODE_ENV=development หรือ npm run dev เท่านั้น และปิดเสมอเมื่อ NODE_ENV=production; prompt มีสถานที่/วันเดินทาง อย่าแชร์ log สาธารณะ
+- ตรวจ syntax/diff; ไม่เรียก AI เพิ่ม ไม่เปลี่ยน logic request/cache; commit ทั้งสอง repo ไม่ push
+
+---
+
 # Handover — AI Weather รายช่วงเวลา + Modal (2026-09-28)
 
 - เพิ่มแนวโน้มอากาศตามพื้นที่กิจกรรม เช้า/กลางวัน/เย็น พร้อมผลต่อแผนและการเตรียมตัว รองรับ 4 ภาษา
