@@ -35,8 +35,8 @@ function Login() {
       await login(data);
       toast.success(t("auth.loginOk"));
       navigate("/dashboard");
-    } catch (err) {
-      toast.error(err?.response?.data?.message || t("auth.loginFail"));
+    } catch {
+      toast.error(t("auth.loginFail"));
     }
   };
 
@@ -118,7 +118,7 @@ function Login() {
                         placeholder={t("auth.email")}
                       />
                       <p className="text-sm text-error mt-1">
-                        {errors.email?.message}
+                        {errors.email && t(errors.email.message)}
                       </p>
                     </div>
 
@@ -130,7 +130,7 @@ function Login() {
                         placeholder={t("auth.password")}
                       />
                       <p className="text-sm text-error mt-1">
-                        {errors.password?.message}
+                        {errors.password && t(errors.password.message)}
                       </p>
                     </div>
 

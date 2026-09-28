@@ -1,3 +1,5 @@
+import { useLang } from "@/i18n";
+import LanguageSwitcher from "@/components/LanguageSwitcher";
 import { useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { mainApi } from "@/api/mainApi";
@@ -5,30 +7,28 @@ import { generateCompletePlan } from "@/utils/generateCompletePlan";
 import ThemeToggle from "@/components/ThemeToggle";
 
 const types = {
-  ATTRACTION: "สถานที่เที่ยว",
-  RESTAURANT: "อาหาร",
-  TRANSPORT: "เดินทาง",
-  ACCOMMODATION: "ที่พัก",
+  ATTRACTION: "planner.typeAttraction",
+  RESTAURANT: "planner.typeRestaurant",
+  TRANSPORT: "planner.typeTransport",
+  ACCOMMODATION: "planner.typeAccommodation",
 };
-const money = (value) =>
-  Number(value).toLocaleString("th-TH", { maximumFractionDigits: 2 });
+
 const rangeDays = (start, end) =>
   (Date.parse(end) - Date.parse(start)) / 86400000 + 1;
 
 function requestError(error, saving = false) {
   const status = error.response?.status;
-  if (status === 429)
-    return "เรียกใช้งานถึงขีดจำกัดแล้ว กรุณารอสักครู่ หรือกลับมาใหม่เมื่อโควตารายวันเริ่มรอบใหม่";
-  if (status === 400)
-    return "ข้อมูลไม่ถูกต้อง กรุณาตรวจวันที่ เวลา ชื่อกิจกรรม และค่าใช้จ่าย";
-  if (status === 404) return "ไม่พบฉบับร่างนี้ กรุณาร่างแผนใหม่";
-  return saving
-    ? "ยังยืนยันผลการบันทึกไม่ได้ กดบันทึกอีกครั้งเพื่อตรวจและรับทริปเดิมโดยไม่สร้างซ้ำ"
-    : "AI ยังร่างแผนไม่ได้ อาจติดการเชื่อมต่อหรือการตั้งค่า กรุณาลองใหม่ ข้อความของคุณยังอยู่";
+  if (status === 429) return "planner.quota";
+  if (status === 400) return "planner.invalid";
+  if (status === 404) return "planner.missing";
+  return saving ? "planner.saveUnknown" : "planner.failed";
 }
 
 export default function AiPlanner() {
   const navigate = useNavigate();
+  const { t, lang, locale } = useLang();
+  const money = (value) =>
+    Number(value).toLocaleString(locale, { maximumFractionDigits: 2 });
   const [request, setRequest] = useState({
     requirements: "",
     startDate: "",
@@ -54,7 +54,7 @@ export default function AiPlanner() {
     event?.preventDefault();
     if (inFlight.current) return;
     if (!Number.isInteger(days) || days < 1) {
-      setError("เลือกวันสิ้นสุดให้ตรงกับหรืออยู่หลังวันเริ่มเดินทาง");
+      setError("planner.dateError");
       return;
     }
     inFlight.current = true;
@@ -63,7 +63,7 @@ export default function AiPlanner() {
     try {
       generation.current = new AbortController();
       await generateCompletePlan({
-        request,
+        request: { ...request, language: draft?.request?.language || lang },
         post: mainApi.post.bind(mainApi),
         signal: generation.current.signal,
         onProgress: setDraft,
@@ -128,30 +128,34 @@ export default function AiPlanner() {
       <div className="max-w-4xl mx-auto space-y-6">
         <header className="flex items-center justify-between gap-3">
           <Link to="/dashboard" className="btn btn-ghost rounded-full">
-            ← กลับหน้าทริป
+            {t("planner.back")}
           </Link>
-          <ThemeToggle />
+          <div className="flex items-center gap-2">
+            <LanguageSwitcher />
+            <ThemeToggle />
+          </div>
         </header>
         <section className="space-y-3">
-          <span className="badge badge-outline">
-            AI TRIP PLANNER · ทดลองใช้
-          </span>
+          <span className="badge badge-outline">{t("planner.badge")}</span>
           <h1 className="text-3xl md:text-4xl font-bold">
-            เล่าทริปที่อยากไป ให้ AI ช่วยร่าง
+            {t("planner.title")}
           </h1>
           <p className="text-base-content/75 text-lg">
-            บอกความต้องการ เลือกวันเดินทาง แล้วตรวจแผนก่อนบันทึกเป็นทริปของคุณ
+            {t("planner.subtitle")}
           </p>
-          <ol className="flex flex-wrap gap-3 text-sm" aria-label="ขั้นตอน">
-            <li className={!draft ? "font-bold" : ""}>1. บอกความต้องการ</li>
-            <li className={draft ? "font-bold" : ""}>2. ตรวจและแก้แผน</li>
-            <li>3. บันทึกแล้วออกเดินทาง</li>
+          <ol
+            className="flex flex-wrap gap-3 text-sm"
+            aria-label={t("planner.steps")}
+          >
+            <li className={!draft ? "font-bold" : ""}>{t("planner.step1")}</li>
+            <li className={draft ? "font-bold" : ""}>{t("planner.step2")}</li>
+            <li>{t("planner.step3")}</li>
           </ol>
         </section>
 
         {error && (
           <div role="alert" className="alert alert-error break-words">
-            {error}
+            {t(error)}
           </div>
         )}
         {!draft ? (
@@ -161,27 +165,28 @@ export default function AiPlanner() {
           >
             <fieldset disabled={!!busy} className="space-y-5">
               <label className="block space-y-2">
-                <span className="font-semibold text-lg">อยากเที่ยวแบบไหน?</span>
+                <span className="font-semibold text-lg">
+                  {t("planner.requirements")}
+                </span>
                 <textarea
                   className="textarea w-full text-base min-h-40 rounded-none px-4 py-3 leading-relaxed"
                   style={{ borderRadius: 0, lineHeight: 1.75 }}
                   required
                   minLength={10}
                   maxLength={2000}
-                  placeholder="เช่น เชียงใหม่ ไป 2 คน งบรวม 10,000 บาท ชอบคาเฟ่และธรรมชาติ ไม่เช่ารถ ขอเที่ยวสบาย ๆ"
+                  placeholder={t("planner.placeholder")}
                   value={request.requirements}
                   onChange={(e) =>
                     setRequest({ ...request, requirements: e.target.value })
                   }
                 />
                 <span className="block text-sm text-base-content/70">
-                  ใส่จุดหมาย จำนวนคน งบรวม และวิธีเดินทาง เพื่อให้แผนตรงใจ ·
-                  ไม่ต้องใส่ข้อมูลส่วนตัว
+                  {t("planner.help")}
                 </span>
               </label>
               <div className="grid sm:grid-cols-2 gap-4">
                 <label className="block space-y-2">
-                  <span className="font-semibold">วันเริ่มเดินทาง</span>
+                  <span className="font-semibold">{t("planner.start")}</span>
                   <input
                     type="date"
                     className="input w-full"
@@ -195,7 +200,7 @@ export default function AiPlanner() {
                   />
                 </label>
                 <label className="block space-y-2">
-                  <span className="font-semibold">วันสิ้นสุด</span>
+                  <span className="font-semibold">{t("planner.end")}</span>
                   <input
                     type="date"
                     className="input w-full"
@@ -210,13 +215,13 @@ export default function AiPlanner() {
                 </label>
               </div>
               <p className="text-sm text-base-content/70">
-                ไม่จำกัดจำนวนวันของทริป
+                {t("planner.noCap")}
                 {Number.isInteger(days) && days > 0
-                  ? ` · เลือกไว้ ${days} วัน`
+                  ? ` · ${t("planner.selected", { count: days })}`
                   : ""}
               </p>
               <p role="note" className="text-sm text-base-content/70">
-                ทริปยาวใช้เวลาและ token มากขึ้น กดครั้งเดียวแล้วรอรับแผนได้เลย
+                {t("planner.notice")}
               </p>
               <button
                 type="submit"
@@ -225,30 +230,31 @@ export default function AiPlanner() {
                 {busy ? (
                   <>
                     <span className="loading loading-spinner loading-sm" />{" "}
-                    กำลังร่างแผน…
+                    {t("planner.generating")}
                   </>
                 ) : (
-                  "✨ ให้ AI ช่วยวางแผน"
+                  t("planner.generate")
                 )}
               </button>
             </fieldset>
             <p className="text-sm text-base-content/70" role="status">
-              {busy
-                ? "กำลังจัดแผนให้ครบทุกวัน กรุณาเปิดหน้านี้ไว้"
-                : "ใช้ Gemini ช่วยร่าง คุณตรวจและแก้ไขก่อนบันทึกได้"}
+              {busy ? t("planner.wait") : t("planner.consent")}
             </p>
           </form>
         ) : (
           <form onSubmit={save} className="space-y-5">
             <div className="bg-base-100 border border-base-content/15 rounded-3xl p-5 space-y-3">
-              <h2 className="text-2xl font-bold">ตรวจแผนก่อนบันทึก</h2>
+              <h2 className="text-2xl font-bold">{t("planner.review")}</h2>
               <p>
                 {request.startDate} → {request.endDate} ·{" "}
-                {draft.plan.days.length} วัน
+                {draft.plan.days.length} {t("planner.days")}
               </p>
               <p role="status">
-                {draft.complete === false ? "กำลังจัดแผน" : "ร่างครบแล้ว"}{" "}
-                {draft.plan.days.length} / {draft.totalDays || days} วัน
+                {draft.complete === false
+                  ? t("planner.planning")
+                  : t("planner.complete")}{" "}
+                {draft.plan.days.length} / {draft.totalDays || days}{" "}
+                {t("planner.days")}
               </p>
               {draft.complete === false && !busy && (
                 <button
@@ -256,20 +262,18 @@ export default function AiPlanner() {
                   className="btn btn-primary"
                   onClick={() => generate()}
                 >
-                  ลองทำต่อ
+                  {t("planner.resume")}
                 </button>
               )}
               <p className="font-semibold text-lg">
-                งบกิจกรรมประมาณการรวมทั้งกลุ่ม: ฿{money(total)}
+                {t("planner.budget", { amount: money(total) })}
               </p>
               <p className="text-sm text-base-content/75">
-                รวมเฉพาะรายการด้านล่าง ไม่ใช่ราคาจองจริง โปรดตรวจสถานที่
-                เวลาเปิด และการเดินทางอีกครั้ง
-                พิกัดจะค้นหาด้วยระบบแผนที่หลังบันทึก
+                {t("planner.disclaimer")}
               </p>
               {draft.plan.assumptions.length > 0 && (
                 <div>
-                  <h3 className="font-bold">สมมติฐานของแผน</h3>
+                  <h3 className="font-bold">{t("planner.assumptions")}</h3>
                   <ul className="list-disc pl-5 space-y-1">
                     {draft.plan.assumptions.map((a, i) => (
                       <li key={i}>{a}</li>
@@ -283,7 +287,7 @@ export default function AiPlanner() {
               className="space-y-5"
             >
               <label className="block space-y-2">
-                <span className="font-semibold">ชื่อทริป</span>
+                <span className="font-semibold">{t("planner.tripName")}</span>
                 <input
                   className="input w-full"
                   required
@@ -303,7 +307,7 @@ export default function AiPlanner() {
                   className="bg-base-100 border border-base-content/15 rounded-3xl p-4 md:p-6 space-y-4"
                 >
                   <h3 className="text-xl font-bold">
-                    วันที่ {di + 1} · {day.date}
+                    {t("planner.day", { count: di + 1 })} · {day.date}
                   </h3>
                   <p className="text-base-content/75">{day.description}</p>
                   {day.activities.map((a, ai) => (
@@ -313,12 +317,12 @@ export default function AiPlanner() {
                     >
                       <div className="flex justify-between items-center gap-2">
                         <span className="badge badge-ghost">
-                          {types[a.activityType]}
+                          {t(types[a.activityType])}
                         </span>
                         <button
                           type="button"
                           className="btn btn-ghost btn-sm text-error"
-                          aria-label={`ลบกิจกรรม ${a.locationName}`}
+                          aria-label={`${t("planner.remove")} ${a.locationName}`}
                           onClick={() =>
                             setDraft({
                               ...draft,
@@ -338,11 +342,11 @@ export default function AiPlanner() {
                             })
                           }
                         >
-                          ลบกิจกรรม
+                          {t("planner.remove")}
                         </button>
                       </div>
                       <label className="block space-y-1">
-                        <span>สถานที่ / กิจกรรม</span>
+                        <span>{t("planner.place")}</span>
                         <input
                           className="input w-full"
                           required
@@ -355,7 +359,7 @@ export default function AiPlanner() {
                       </label>
                       <div className="grid grid-cols-2 gap-3">
                         <label className="block space-y-1">
-                          <span>เวลา</span>
+                          <span>{t("planner.time")}</span>
                           <input
                             type="time"
                             className="input w-full"
@@ -367,7 +371,7 @@ export default function AiPlanner() {
                           />
                         </label>
                         <label className="block space-y-1">
-                          <span>ประมาณการ (บาท)</span>
+                          <span>{t("planner.price")}</span>
                           <input
                             type="number"
                             className="input w-full"
@@ -390,7 +394,7 @@ export default function AiPlanner() {
                         </label>
                       </div>
                       <label className="block space-y-1">
-                        <span>รายละเอียด / การเดินทาง</span>
+                        <span>{t("planner.details")}</span>
                         <textarea
                           className="textarea w-full text-base"
                           maxLength={500}
@@ -402,9 +406,7 @@ export default function AiPlanner() {
                       </label>
                     </div>
                   ))}
-                  {!day.activities.length && (
-                    <p>ยังไม่มีกิจกรรมวันนี้ เพิ่มได้ในหน้าทริปหลังบันทึก</p>
-                  )}
+                  {!day.activities.length && <p>{t("planner.emptyDay")}</p>}
                 </section>
               ))}
             </fieldset>
@@ -415,10 +417,10 @@ export default function AiPlanner() {
                 disabled={!!busy || draft.complete === false}
               >
                 {busy === "save"
-                  ? "กำลังบันทึก…"
+                  ? t("planner.saving")
                   : uncertain
-                    ? "ลองบันทึกอีกครั้ง"
-                    : "บันทึกเป็นทริปของฉัน"}
+                    ? t("planner.retrySave")
+                    : t("planner.save")}
               </button>
               <button
                 type="button"
@@ -429,12 +431,10 @@ export default function AiPlanner() {
                   setError("");
                 }}
               >
-                กลับไปแก้ความต้องการ
+                {t("planner.editRequest")}
               </button>
               <p className="w-full text-sm text-base-content/70">
-                {uncertain
-                  ? "พักการแก้ไขไว้จนกว่าจะยืนยันผลบันทึกได้ เพื่อป้องกันข้อมูลไม่ตรงกัน"
-                  : "ยังไม่สร้างทริปจนกว่าจะกดบันทึก · การแก้ไขในหน้านี้จะหายเมื่อรีเฟรชหน้า"}
+                {uncertain ? t("planner.locked") : t("planner.unsaved")}
               </p>
             </div>
           </form>

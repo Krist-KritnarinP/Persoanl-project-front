@@ -1,3 +1,4 @@
+import LanguageSwitcher from "@/components/LanguageSwitcher";
 import AccountDataControls from "@/components/AccountDataControls";
 import ThemeToggle from "@/components/ThemeToggle";
 import { useEffect, useState } from "react";
@@ -46,7 +47,7 @@ function Userprofile() {
     }
     if (form.password && !passwordSchema.safeParse(form.password).success) {
       toast.error(
-        passwordSchema.safeParse(form.password).error.issues[0].message,
+        t(passwordSchema.safeParse(form.password).error.issues[0].message),
       );
       return;
     }
@@ -58,7 +59,7 @@ function Userprofile() {
         payload.currentPassword = form.currentPassword;
       }
       const resp = await mainApi.put("/users/me", payload);
-      toast.success(resp.data?.message || t("profile.ok"));
+      toast.success(t("profile.ok"));
       if (resp.data.reauthenticate) {
         useUserStore.getState().clearSession();
         navigate("/", { replace: true });
@@ -66,8 +67,8 @@ function Userprofile() {
         useUserStore.setState({ user: resp.data.user });
         setForm((f) => ({ ...f, password: "", currentPassword: "" }));
       }
-    } catch (err) {
-      toast.error(err?.response?.data?.message || t("profile.fail"));
+    } catch {
+      toast.error(t("profile.fail"));
     } finally {
       setLoading(false);
     }
@@ -79,7 +80,10 @@ function Userprofile() {
         <button onClick={() => navigate(-1)} className="btn btn-ghost gap-2">
           <FiArrowLeft /> {t("common.back")}
         </button>
-        <ThemeToggle />
+        <div className="flex items-center gap-2">
+          <LanguageSwitcher />
+          <ThemeToggle />
+        </div>
       </div>
 
       <div className="glass glass-card p-5 md:p-6 rounded-3xl space-y-4">

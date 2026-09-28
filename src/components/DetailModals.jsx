@@ -131,7 +131,8 @@ export function DayDetailModal({
       >
         <div>
           <h3 className="font-bold text-xl sm:text-2xl flex items-center gap-2">
-            <FiFlag className="text-primary" /> Day {day.dayCount}
+            <FiFlag className="text-primary" />{" "}
+            {t("planner.day", { count: day.dayCount })}
           </h3>
           <p className="text-sm sm:text-base opacity-70 mt-0.5">
             {formatDate(day.dayDate)}

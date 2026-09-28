@@ -22,17 +22,12 @@ function UserRegister() {
   const onSubmit = async (data) => {
     try {
       const { confirmPassword: _omit, ...payload } = data;
-      const resp = await mainApi.post("/auth/register", payload);
-      toast.success(resp.data.message || t("auth.registerOk"));
+      await mainApi.post("/auth/register", payload);
+      toast.success(t("auth.registerOk"));
       reset();
       document.getElementById("createaccount")?.close();
-    } catch (err) {
-      const msg =
-        err.response?.data?.message ||
-        err.response?.data?.error ||
-        Object.values(err.response?.data?.error || {}).flat()[0] ||
-        t("auth.registerFail");
-      toast.error(msg);
+    } catch {
+      toast.error(t("auth.registerFail"));
     }
   };
   return (
@@ -53,7 +48,9 @@ function UserRegister() {
             placeholder={t("auth.username")}
             className="input input-bordered w-full text-base"
           />
-          <p className="text-sm text-error">{errors.username?.message}</p>
+          <p className="text-sm text-error">
+            {errors.username && t(errors.username.message)}
+          </p>
         </div>
 
         <div className="w-full">
@@ -63,7 +60,9 @@ function UserRegister() {
             {...register("email")}
             className="input input-bordered w-full text-base"
           />
-          <p className="text-sm text-error">{errors.email?.message}</p>
+          <p className="text-sm text-error">
+            {errors.email && t(errors.email.message)}
+          </p>
         </div>
 
         <div className="w-full">
@@ -73,7 +72,9 @@ function UserRegister() {
             placeholder={t("auth.password")}
             className="input input-bordered w-full text-base"
           />
-          <p className="text-sm text-error">{errors.password?.message}</p>
+          <p className="text-sm text-error">
+            {errors.password && t(errors.password.message)}
+          </p>
         </div>
 
         <div className="w-full">
@@ -84,7 +85,7 @@ function UserRegister() {
             className="input input-bordered w-full text-base"
           />
           <p className="text-sm text-error">
-            {errors.confirmPassword?.message}
+            {errors.confirmPassword && t(errors.confirmPassword.message)}
           </p>
         </div>
 

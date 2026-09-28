@@ -1,3 +1,6 @@
+## งานล่าสุด: i18n (2026-09-28)
+UI ใหม่ต้องมีคำแปลครบ th/en/zh/ko ใช้ t(key, values); language ใน AI request/cache แยกจากการแสดงเนื้อหาเดิม อ่าน [I18N_AUDIT.md](I18N_AUDIT.md)
+
 ## งานใหม่หลัง refactor: AI Trip Planner (2026-09-27)
 อ่าน [AI_PLANNER.md](AI_PLANNER.md) และ HANDOVER ล่าสุดก่อนรับช่วง; เพิ่ม planner แยกจาก CRUD/weather เดิม ไม่เปลี่ยน schema/env/dependencies
 

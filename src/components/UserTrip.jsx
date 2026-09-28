@@ -26,7 +26,7 @@ function UserTrip({ onClose }) {
     setErrorMessage("");
 
     if (!formData.tripName.trim()) {
-      setErrorMessage(t("tripForm.needName"));
+      setErrorMessage("tripForm.needName");
       return;
     }
     if (
@@ -34,7 +34,7 @@ function UserTrip({ onClose }) {
       formData.endDate &&
       formData.endDate < formData.startDate
     ) {
-      setErrorMessage(t("tripForm.badDates"));
+      setErrorMessage("tripForm.badDates");
       return;
     }
 
@@ -64,16 +64,12 @@ function UserTrip({ onClose }) {
           onClose();
         }
       } else {
-        setErrorMessage(t("tripForm.failCreate"));
+        setErrorMessage("tripForm.failCreate");
       }
     } catch (err) {
       console.error("Submit Create Trip Error:", err);
       // แสดงข้อความ Error ที่มาจาก Backend (ถ้ามี)
-      const msg =
-        err?.response?.data?.message ||
-        err?.message ||
-        t("tripForm.failCreate");
-      setErrorMessage(msg);
+      setErrorMessage("tripForm.failCreate");
     }
   };
 
@@ -88,7 +84,7 @@ function UserTrip({ onClose }) {
           className="alert alert-error text-sm mb-4 p-3 rounded-lg"
           role="alert"
         >
-          <span>{errorMessage}</span>
+          <span>{t(errorMessage)}</span>
         </div>
       )}
 

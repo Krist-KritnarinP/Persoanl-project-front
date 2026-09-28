@@ -1,3 +1,4 @@
+import LanguageSwitcher from "@/components/LanguageSwitcher";
 import { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
@@ -30,7 +31,7 @@ function ResetPassword() {
     event.preventDefault();
     const validation = passwordSchema.safeParse(password);
     if (!validation.success)
-      return toast.error(validation.error.issues[0].message);
+      return toast.error(t(validation.error.issues[0].message));
     if (password !== confirmPassword)
       return toast.error(t("auth.passwordMismatch"));
     setBusy(true);
@@ -40,8 +41,8 @@ function ResetPassword() {
       setPassword("");
       setConfirmPassword("");
       setDone(true);
-    } catch (error) {
-      toast.error(error?.response?.data?.message || t("auth.resetInvalid"));
+    } catch {
+      toast.error(t("auth.resetInvalid"));
     } finally {
       setBusy(false);
     }
@@ -50,7 +51,10 @@ function ResetPassword() {
   return (
     <main className="min-h-screen grid place-items-center px-4 py-10">
       <div className="absolute top-4 right-4">
-        <ThemeToggle />
+        <div className="flex items-center gap-2">
+          <LanguageSwitcher />
+          <ThemeToggle />
+        </div>
       </div>
       <section className="card w-full max-w-md bg-base-100 shadow-xl">
         <div className="card-body">

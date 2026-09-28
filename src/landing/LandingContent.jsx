@@ -1,3 +1,4 @@
+import { additions } from "../i18n/additions";
 import React, { useState } from "react";
 import {
   FiArrowUpRight,
@@ -37,7 +38,7 @@ export default function LandingContent({
           AI LHOUNG<span className="lp-brand-dot">✳</span>
         </a>
         <nav
-          aria-label={lang === "th" ? "เมนูหลัก" : "Main navigation"}
+          aria-label={(additions[lang] || additions.th)["ui.navigation"]}
           className="lp-nav-links"
         >
           <a href="#features">{c.nav[0]}</a>

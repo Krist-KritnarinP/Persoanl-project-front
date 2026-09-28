@@ -214,7 +214,7 @@ function Dashboard() {
               className="btn btn-outline rounded-full px-6 flex-1 md:flex-none"
               onClick={() => navigate("/trips/ai")}
             >
-              ✨ สร้างทริปด้วย AI
+              {t("planner.create")}
             </button>
             <button
               className="btn btn-primary rounded-full px-6 flex-1 md:flex-none gap-2 shadow-md hover:shadow-lg"
@@ -476,10 +476,10 @@ function Dashboard() {
                 className="btn btn-primary w-full rounded-full"
                 onClick={() => navigate("/trips/ai")}
               >
-                ✨ ให้ AI ช่วยวางแผน
+                {t("planner.generate")}
               </button>
               <p className="text-sm text-base-content/70">
-                บอกความต้องการ เลือกวันเดินทาง แล้วตรวจแผนก่อนบันทึก
+                {t("planner.subtitle")}
               </p>
             </div>
           </aside>

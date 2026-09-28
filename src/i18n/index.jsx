@@ -1,3 +1,4 @@
+import { additions } from "./additions";
 import React, {
   createContext,
   useContext,
@@ -17,6 +18,7 @@ export const LOCALES = { th: "th-TH", en: "en-US", zh: "zh-CN", ko: "ko-KR" };
 
 const dict = {
   th: {
+    ...additions.th,
     "auth.googleLinkTitle": "ยืนยันบัญชีเดิม",
     "auth.googleLinkHelp":
       "อีเมลนี้มีบัญชีอยู่แล้ว กรุณายืนยันรหัสผ่านของเว็บเพื่อเชื่อม Google",
@@ -191,7 +193,8 @@ const dict = {
     "map.empty": "ยังปักหมุดไม่ได้ — ลองใส่ชื่อสถานที่ให้ชัดเจนขึ้น",
     "map.note": "แตะตัวเลขเพื่อดูชื่อสถานที่",
     "map.navTitle": "นำทาง + QR",
-    "map.qrTooLong": "ลิงก์ยาวเกินสร้าง QR กรุณาเลือกจุดนำทางให้น้อยลงในหน้าแผนที่",
+    "map.qrTooLong":
+      "ลิงก์ยาวเกินสร้าง QR กรุณาเลือกจุดนำทางให้น้อยลงในหน้าแผนที่",
     "map.qrHint": "สแกน QR ด้วยมือถือเพื่อเปิดเส้นทางใน Google Maps",
     "map.openGmaps": "เปิดเส้นทางใน Google Maps",
     "map.lat": "ละติจูด",
@@ -208,6 +211,7 @@ const dict = {
     "map.backToTrip": "กลับหน้าทริป",
   },
   en: {
+    ...additions.en,
     "auth.googleLinkTitle": "Confirm your existing account",
     "auth.googleLinkHelp":
       "This email already has an account. Enter your website password to link Google.",
@@ -384,7 +388,8 @@ const dict = {
     "map.empty": "No pins yet — try a more specific place name",
     "map.note": "Tap a number to see the place",
     "map.navTitle": "Navigate + QR",
-    "map.qrTooLong": "Route link is too long for a QR code. Select fewer stops on the map.",
+    "map.qrTooLong":
+      "Route link is too long for a QR code. Select fewer stops on the map.",
     "map.qrHint": "Scan with your phone to open the route in Google Maps",
     "map.openGmaps": "Open route in Google Maps",
     "map.lat": "Latitude",
@@ -401,6 +406,7 @@ const dict = {
     "map.backToTrip": "Back to trip",
   },
   zh: {
+    ...additions.zh,
     "auth.googleLinkTitle": "确认已有账户",
     "auth.googleLinkHelp": "此邮箱已有账户。请输入网站密码以关联 Google。",
     "auth.googleLinkConfirm": "确认并关联 Google",
@@ -584,6 +590,7 @@ const dict = {
     "map.backToTrip": "返回旅程",
   },
   ko: {
+    ...additions.ko,
     "auth.googleLinkTitle": "기존 계정 확인",
     "auth.googleLinkHelp":
       "이미 가입된 이메일입니다. Google 연결을 위해 웹사이트 비밀번호를 입력하세요.",
@@ -758,7 +765,8 @@ const dict = {
     "map.empty": "아직 핀이 없습니다 — 장소 이름을 더 구체적으로 입력해 보세요",
     "map.note": "숫자를 눌러 장소를 확인하세요",
     "map.navTitle": "길찾기 + QR",
-    "map.qrTooLong": "경로 링크가 너무 길어 QR 코드를 만들 수 없습니다. 지도에서 경유지를 줄여 주세요.",
+    "map.qrTooLong":
+      "경로 링크가 너무 길어 QR 코드를 만들 수 없습니다. 지도에서 경유지를 줄여 주세요.",
     "map.qrHint": "휴대폰으로 스캔해 Google Maps에서 경로 열기",
     "map.openGmaps": "Google Maps에서 경로 열기",
     "map.lat": "위도",
@@ -803,7 +811,11 @@ export function LanguageProvider({ children }) {
   }, [lang]);
 
   const value = useMemo(() => {
-    const t = (key) => dict[lang]?.[key] ?? dict.th[key] ?? key;
+    const t = (key, values = {}) =>
+      (dict[lang]?.[key] ?? dict.th[key] ?? key).replace(
+        /\{(\w+)\}/g,
+        (match, name) => values[name] ?? match,
+      );
     return { lang, setLang: setLangState, t, locale: LOCALES[lang] || "th-TH" };
   }, [lang]);
 

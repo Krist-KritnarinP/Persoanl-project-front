@@ -1,3 +1,4 @@
+import { useLang } from "@/i18n";
 import React from "react";
 import { FiClock, FiEdit2, FiTrash2 } from "react-icons/fi";
 
@@ -9,6 +10,7 @@ export default function ActivityItem({
   onDelete,
   onView,
 }) {
+  const { t } = useLang();
   const Icon = typeConfig?.icon || FiClock;
 
   return (
@@ -66,7 +68,7 @@ export default function ActivityItem({
             onEdit(activity);
           }}
           className="btn btn-ghost btn-sm text-info hover:bg-white/20"
-          aria-label="edit"
+          aria-label={t("common.edit")}
         >
           <FiEdit2 />
         </button>
@@ -76,7 +78,7 @@ export default function ActivityItem({
             onDelete(activity.id);
           }}
           className="btn btn-ghost btn-sm text-error hover:bg-white/20"
-          aria-label="delete"
+          aria-label={t("common.delete")}
         >
           <FiTrash2 />
         </button>

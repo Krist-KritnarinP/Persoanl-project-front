@@ -1,3 +1,4 @@
+import LanguageSwitcher from "@/components/LanguageSwitcher";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { toast } from "react-toastify";
@@ -17,8 +18,8 @@ function ForgotPassword() {
     try {
       await mainApi.post("/auth/forgot-password", { email });
       setSent(true);
-    } catch (error) {
-      toast.error(error?.response?.data?.message || t("auth.resetUnavailable"));
+    } catch {
+      toast.error(t("auth.resetUnavailable"));
     } finally {
       setBusy(false);
     }
@@ -27,7 +28,10 @@ function ForgotPassword() {
   return (
     <main className="min-h-screen grid place-items-center px-4 py-10">
       <div className="absolute top-4 right-4">
-        <ThemeToggle />
+        <div className="flex items-center gap-2">
+          <LanguageSwitcher />
+          <ThemeToggle />
+        </div>
       </div>
       <section className="card w-full max-w-md bg-base-100 shadow-xl">
         <div className="card-body">

@@ -5,11 +5,11 @@ import { copy } from "../landing/copy";
 const site = import.meta.env.VITE_SITE_URL?.trim().replace(/\/$/, "");
 export default function RouteSeo() {
   const { pathname } = useLocation();
-  const { lang } = useLang();
+  const { lang, t } = useLang();
   useEffect(() => {
     const c = copy[lang] || copy.th;
     const home = pathname === "/";
-    document.title = home ? c.title : "AI LHOUNG — Travel Planner";
+    document.title = home ? c.title : `AI LHOUNG — ${t("nav.tagline")}`;
     const meta = (key, value, property = false) => {
       const attr = property ? "property" : "name";
       let node = document.head.querySelector(`meta[${attr}="${key}"]`);
@@ -20,12 +20,15 @@ export default function RouteSeo() {
       }
       node.content = value;
     };
-    meta("description", home ? c.description : "AI LHOUNG Travel Planner");
+    meta(
+      "description",
+      home ? c.description : `AI LHOUNG — ${t("nav.tagline")}`,
+    );
     meta("robots", home && site ? "index,follow" : "noindex,nofollow");
     meta("og:title", document.title, true);
     meta(
       "og:description",
-      home ? c.description : "AI LHOUNG Travel Planner",
+      home ? c.description : `AI LHOUNG — ${t("nav.tagline")}`,
       true,
     );
     let canonical = document.head.querySelector('link[rel="canonical"]');
@@ -41,6 +44,6 @@ export default function RouteSeo() {
     const ogUrl = document.head.querySelector('meta[property="og:url"]');
     if (home && site) meta("og:url", `${site}/`, true);
     else ogUrl?.remove();
-  }, [pathname, lang]);
+  }, [pathname, lang, t]);
   return <Outlet />;
 }

@@ -94,7 +94,7 @@ export default function TripMapPage() {
   };
 
   const subtitle = activeDay
-    ? `Day ${activeDay.dayCount} · ${formatDate(activeDay.dayDate)}`
+    ? `${t("planner.day", { count: activeDay.dayCount })} · ${formatDate(activeDay.dayDate)}`
     : t("day.overview");
 
   return (
@@ -102,7 +102,7 @@ export default function TripMapPage() {
       <header className="navbar glass rounded-3xl md:rounded-full justify-between px-4 md:px-6 py-3 shadow-lg gap-2">
         <button
           onClick={() => navigate("/dashboard")}
-          title="AI LHOUNG — กลับหน้า dashboard"
+          title={t("nav.dashboard")}
           className="flex items-center gap-2 min-w-0 cursor-pointer rounded-2xl"
         >
           <div className="w-10 h-10 rounded-full bg-primary/20 border border-primary/30 flex items-center justify-center overflow-hidden shrink-0">
@@ -150,7 +150,7 @@ export default function TripMapPage() {
             onClick={() => setSelectedDayId(d.id)}
             className={`btn btn-sm rounded-2xl whitespace-nowrap shrink-0 ${activeDay?.id === d.id ? "btn-primary shadow-lg" : "btn-ghost glass"}`}
           >
-            Day {d.dayCount}
+            {t("planner.day", { count: d.dayCount })}
             {d.dayDate && ` (${formatDate(d.dayDate)})`}
           </button>
         ))}

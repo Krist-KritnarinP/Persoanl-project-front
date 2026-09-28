@@ -135,7 +135,7 @@ export const useTripActivityStore = create((set, get) => ({
   },
 
   // 4. ดึงข้อมูลพยากรณ์อากาศจาก Gemini
-  getWeatherForecast: async (tripId) => {
+  getWeatherForecast: async (tripId, language = "th") => {
     set({ weatherLoading: true, weatherError: null });
     try {
       let trip = get().trip;
@@ -163,6 +163,7 @@ export const useTripActivityStore = create((set, get) => ({
         ) || [];
 
       const payload = {
+        language,
         tripId: Number(tripId),
         location: trip.destination,
         startDate: trip.startDate,

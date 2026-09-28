@@ -1,15 +1,17 @@
+import { useLang } from "@/i18n";
 import { FiMoon, FiSun } from "react-icons/fi";
 import { useTheme } from "@/theme";
 
 export default function ThemeToggle({ className = "" }) {
+  const { t } = useLang();
   const { isDark, toggle } = useTheme();
 
   return (
     <button
       type="button"
       onClick={toggle}
-      title={isDark ? "Switch to light" : "Switch to dark"}
-      aria-label={isDark ? "Switch to light theme" : "Switch to dark theme"}
+      title={t(isDark ? "ui.light" : "ui.dark")}
+      aria-label={t(isDark ? "ui.light" : "ui.dark")}
       aria-pressed={isDark}
       className={`btn btn-ghost btn-circle shrink-0 ${className}`}
     >

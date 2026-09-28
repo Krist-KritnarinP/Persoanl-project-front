@@ -190,7 +190,7 @@ export default function TripActivity() {
     ? geoPoints.filter((p) => p.dayId === activeDay.id)
     : geoPoints;
   const mapSubtitle = activeDay
-    ? `Day ${activeDay.dayCount}${activeDay.dayDate ? ` · ${formatDate(activeDay.dayDate)}` : ""}`
+    ? `${t("planner.day", { count: activeDay.dayCount })}${activeDay.dayDate ? ` · ${formatDate(activeDay.dayDate)}` : ""}`
     : t("day.overview");
 
   // Helper ดึงข้อความเวลามาแสดงผลโดยตรง (เก็บ wall-time แบบ UTC เพื่อกันเพี้ยน +7)
@@ -370,7 +370,7 @@ export default function TripActivity() {
       <header className="navbar glass rounded-3xl md:rounded-full justify-between px-4 md:px-6 py-3 shadow-lg shrink-0 mb-4 w-full gap-2">
         <button
           onClick={() => navigate("/dashboard")}
-          title="AI LHOUNG — กลับหน้า dashboard"
+          title={t("nav.dashboard")}
           className="flex items-center gap-2 md:gap-3 min-w-0 cursor-pointer rounded-2xl"
         >
           <div className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-primary/20 border border-primary/30 flex items-center justify-center text-primary font-bold overflow-hidden shrink-0">
@@ -467,7 +467,7 @@ export default function TripActivity() {
                     >
                       <div className="flex items-center justify-between gap-2">
                         <span className="font-bold text-sm sm:text-base text-primary">
-                          Day {d.dayCount}
+                          {t("planner.day", { count: d.dayCount })}
                         </span>
                         <span className="text-xs opacity-70 whitespace-nowrap">
                           {formatDate(d.dayDate)}
@@ -553,7 +553,7 @@ export default function TripActivity() {
                         : "btn-ghost glass text-base-content hover:bg-white/30"
                     }`}
                   >
-                    Day {day.dayCount}
+                    {t("planner.day", { count: day.dayCount })}
                     {day.dayDate && ` (${formatDate(day.dayDate)})`}
                   </button>
                 );
@@ -567,7 +567,7 @@ export default function TripActivity() {
                 <div className="min-w-0">
                   <div className="flex items-center gap-3 flex-wrap">
                     <h3 className="text-2xl font-bold">
-                      Day {activeDay.dayCount}
+                      {t("planner.day", { count: activeDay.dayCount })}
                     </h3>
                     <span className="text-sm opacity-70">
                       {formatDate(activeDay.dayDate)}
@@ -681,7 +681,7 @@ export default function TripActivity() {
                       >
                         <div className="min-w-0">
                           <div className="font-bold text-base sm:text-lg">
-                            Day {d.dayCount}
+                            {t("planner.day", { count: d.dayCount })}
                             <span className="ml-2 text-sm font-normal opacity-70">
                               {formatDate(d.dayDate)}
                             </span>

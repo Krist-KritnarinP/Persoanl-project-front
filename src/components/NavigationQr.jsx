@@ -31,7 +31,7 @@ export default function NavigationQr({ value, size }) {
         size={size}
         level="L"
         role="img"
-        aria-label="Google Maps route QR"
+        aria-label={t("ui.qr")}
       />
     </QrBoundary>
   );

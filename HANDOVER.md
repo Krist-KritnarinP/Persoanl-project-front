@@ -1,3 +1,14 @@
+# Handover — ภาษา UI ทุกหน้าและภาษา AI (2026-09-28)
+
+- แก้หน้า AI ให้รองรับ th/en/zh/ko ครบ พร้อม LanguageSwitcher; แก้จุดตกหล่น Dashboard/auth/profile/trip/map/share, tooltip, day labels และ validation
+- Planner/weather รับ language allowlist/default th; cache แยกภาษา; แผนเดิม/ข้อมูลผู้ใช้ไม่ถูกแปลทับเมื่อสลับ UI
+- เช็กทุกหน้าทั้ง desktop/mobile 4 ภาษาและข้อความไทยตกค้าง; browser รวม 18 cases ผ่านหลัง rerun timeout ด้วย 2 workers; Front unit 11, API รวม 31; build/SEO ผ่าน, lint warnings เดิม 9
+- รายละเอียดและข้อจำกัด: [docs/I18N_AUDIT.md](docs/I18N_AUDIT.md)
+- ไม่แก้ schema/dependency/env/ข้อมูล demo และไม่เรียก AI จริงเพิ่ม; commit แยก Front/API ไม่ push/deploy
+
+---
+## บันทึกรอบก่อน
+
 # Handover — ร่างครบในคลิกเดียว + แผน BYOK (2026-09-27)
 
 - AiPlanner ใช้ generateCompletePlan loop ต่อช่วงอัตโนมัติจนจบ; UI สั้นลงเหลือประโยคเดียวพร้อม progress; ลองทำต่อมีเฉพาะเมื่อขัดข้อง

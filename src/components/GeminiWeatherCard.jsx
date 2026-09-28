@@ -32,7 +32,7 @@ export default function GeminiWeatherCard({
   onFetchHistory,
   onDeleteHistory,
 }) {
-  const { t, locale } = useLang();
+  const { t, locale, lang } = useLang();
   const [modalText, setModalText] = useState(null);
 
   useEffect(() => {
@@ -90,7 +90,7 @@ export default function GeminiWeatherCard({
         </div>
 
         <button
-          onClick={() => onGetForecast(tripId)}
+          onClick={() => onGetForecast(tripId, lang)}
           disabled={weatherLoading}
           className="btn btn-warning btn-sm rounded-full gap-1 shadow-md hover:scale-105 transition-all shrink-0"
         >
@@ -114,7 +114,9 @@ export default function GeminiWeatherCard({
           <div className="alert alert-error/20 border border-error/30 text-error text-sm sm:text-base p-3 rounded-2xl flex items-start gap-2">
             <FiAlertCircle className="text-lg shrink-0 mt-0.5" />
             <span>
-              {weatherError === "__QUOTA__" ? t("weather.quota") : weatherError}
+              {weatherError === "__QUOTA__"
+                ? t("weather.quota")
+                : t("ui.aiFailed")}
             </span>
           </div>
         )}

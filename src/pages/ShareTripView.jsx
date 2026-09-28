@@ -75,7 +75,7 @@ export default function ShareTripView() {
     ? geoPoints.filter((p) => p.dayId === activeDay.id)
     : geoPoints;
   const mapSubtitle = activeDay
-    ? `Day ${activeDay.dayCount}`
+    ? t("planner.day", { count: activeDay.dayCount })
     : t("day.overview");
 
   if (loading) {
@@ -143,7 +143,7 @@ export default function ShareTripView() {
                 : "btn-ghost glass"
             }`}
           >
-            Day {day.dayCount}
+            {t("planner.day", { count: day.dayCount })}
             {day.dayDate && ` (${formatDate(day.dayDate)})`}
           </button>
         ))}
@@ -162,7 +162,7 @@ export default function ShareTripView() {
         <div className="glass glass-card p-4 md:p-6 rounded-3xl space-y-4">
           <div className="border-b border-white/20 pb-3">
             <h2 className="text-xl sm:text-2xl font-bold">
-              Day {activeDay.dayCount}
+              {t("planner.day", { count: activeDay.dayCount })}
             </h2>
             <p className="text-sm sm:text-base opacity-70">
               {formatDate(activeDay.dayDate)}
