@@ -62,3 +62,6 @@
 
 ### ปรับโหมดตามผู้ใช้ (2026-09-28)
 Sidebar ปิดแล้วกลับ classic layout เต็ม ไม่ย่อเป็น icon rail: AppLayout เก็บ navigationMode และส่ง sidebarEnabled ผ่าน Outlet context. หน้าลูกแสดง header/ส่วน dashboard เดิมเฉพาะ classic โดยใช้ logic ชุดเดียว. เปิด sidebar กลับด้วยลูกศรเล็กชิดขอบซ้ายบน. Mobile ปุ่ม X ปิด drawer; ปุ่ม “ใช้หน้าตาเดิม” เปลี่ยนโหมดทั้งแอป.
+
+## Trip billing
+`pages/TripBilling.jsx` เป็น workspace ของทริป; `components/billing/BillForm.jsx` จัดการฟอร์ม/preview, `SplitEditor.jsx` เลือกวิธีหารและสมาชิก. APIคำนวณเงินจริงและตรวจสิทธิ์; หน้าเว็บไม่ใช่แหล่งยอดเงินที่เชื่อถือได้. ดู HANDOVER ล่าสุดและคู่มือ API docs/BILLING.md ก่อนแก้สูตร

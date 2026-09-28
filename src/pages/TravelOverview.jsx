@@ -61,7 +61,7 @@ export default function TravelOverview() {
     [FiCreditCard, t("travel.cost"), money(total)],
   ];
   return (
-    <main className="min-h-screen p-4 md:p-8 max-w-7xl mx-auto space-y-6">
+    <main className="min-h-screen p-4 md:p-8 w-full space-y-6">
       {!sidebarEnabled && (
         <header className="flex flex-wrap justify-between items-center gap-3">
           <Link to="/dashboard" className="btn btn-ghost">
@@ -131,6 +131,27 @@ export default function TravelOverview() {
             ))}
           </section>
           <p className="text-sm text-base-content/70">{t("travel.note")}</p>
+          <p className="font-semibold">
+            {t("bill.confirmedTotal")}:{" "}
+            {money(
+              visible.reduce(
+                (sum, trip) => sum + (trip.billing?.total || 0),
+                0,
+              ) / 100,
+            )}{" "}
+            · {t("bill.outstanding")}:{" "}
+            {money(
+              visible.reduce(
+                (sum, trip) =>
+                  sum +
+                  (trip.billing?.debts || []).reduce(
+                    (n, d) => n + d.remaining,
+                    0,
+                  ),
+                0,
+              ) / 100,
+            )}
+          </p>
           <div className="grid lg:grid-cols-[1.5fr_1fr] gap-5 items-start">
             <section className="bg-base-100 rounded-2xl border border-base-content/10 p-4 sm:p-5 space-y-3 min-w-0">
               <h2 className="text-lg font-bold">{t("travel.map")}</h2>
@@ -190,6 +211,10 @@ export default function TravelOverview() {
                   </p>
                   <p className="text-sm">
                     {formatDate(trip.startDate)} – {formatDate(trip.endDate)}
+                  </p>
+                  <p className="text-sm">
+                    {t("bill.confirmedTotal")}:{" "}
+                    {money((trip.billing?.total || 0) / 100)}
                   </p>
                   <div className="border-t border-base-content/10 pt-3 flex flex-wrap justify-between gap-2">
                     <span className="text-sm">{t("travel.cost")}</span>

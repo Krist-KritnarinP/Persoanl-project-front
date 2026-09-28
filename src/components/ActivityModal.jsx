@@ -135,7 +135,7 @@ export default function ActivityModal({
                     className="fixed inset-0 z-10"
                     onClick={() => setTypeOpen(false)}
                   />
-                  <ul className="absolute z-20 mt-1 w-full rounded-2xl border border-base-content/10 bg-base-100 shadow-xl overflow-hidden py-1">
+                  <ul className="menu-surface absolute z-20 mt-1 w-full rounded-2xl overflow-hidden py-1">
                     {TYPE_OPTIONS.map((opt) => {
                       const Icon = opt.icon;
                       const selected = opt.value === current.value;

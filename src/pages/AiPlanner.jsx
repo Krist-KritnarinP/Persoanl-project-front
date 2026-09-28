@@ -127,7 +127,7 @@ export default function AiPlanner() {
 
   return (
     <main className="min-h-screen px-4 py-6 md:py-10 text-base-content">
-      <div className="max-w-4xl mx-auto space-y-6">
+      <div className="w-full space-y-6">
         {!sidebarEnabled && (
           <header className="flex items-center justify-between gap-3">
             <Link to="/dashboard" className="btn btn-ghost rounded-full">

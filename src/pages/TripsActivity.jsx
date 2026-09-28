@@ -420,6 +420,12 @@ export default function TripActivity() {
         </div>
       </div>
 
+      <button
+        className="btn btn-outline"
+        onClick={() => navigate(`/trips/${tripId}/billing`)}
+      >
+        {t("bill.heading")}
+      </button>
       {/* TRIP INFO CARD */}
       <TripInfoCard trip={trip} formatDate={formatDate} />
 

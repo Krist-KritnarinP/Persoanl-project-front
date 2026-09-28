@@ -11,7 +11,7 @@ export default function LanguageSwitcher() {
       <select
         value={lang}
         onChange={(e) => setLang(e.target.value)}
-        className="bg-transparent font-semibold text-sm focus:outline-none cursor-pointer pr-1 max-w-24 [&>option]:text-slate-900"
+        className="bg-transparent font-semibold text-sm focus:outline-none cursor-pointer pr-1 max-w-24"
         aria-label="Language"
       >
         {["th", "en", "zh", "ko"].map((code) => (

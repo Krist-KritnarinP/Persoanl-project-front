@@ -89,7 +89,7 @@ function SidebarContent({ close, settings, signingOut, signOut }) {
           const active =
             pathname === to ||
             (to === "/dashboard" &&
-              /^\/trips(?:\/\d+(?:\/map)?)?$/.test(pathname));
+              /^\/trips(?:\/\d+(?:\/(?:map|billing))?)?$/.test(pathname));
           return (
             <NavLink
               key={to}
@@ -202,10 +202,19 @@ export default function AppLayout() {
       {sidebarEnabled && (
         <aside
           data-testid="desktop-sidebar"
-          className={`hidden lg:flex sticky top-0 h-dvh shrink-0 flex-col p-3 bg-base-100/90 border-r border-base-content/10 w-64`}
+          className={`hidden lg:flex sticky top-0 h-dvh shrink-0 flex-col p-3 bg-base-100/90 border-r border-base-content/10 w-72`}
         >
           <div className={`flex items-center mb-6 justify-between px-2`}>
-            <span className="font-bold text-lg tracking-wide">AI LHOUNG</span>
+            <span className="flex min-w-0 items-center gap-2">
+              <img
+                src="/image/MiniDog.PNG"
+                alt="Minidog"
+                className="h-9 w-9 rounded-full bg-primary/20 border border-primary/30 object-cover shrink-0"
+              />
+              <span className="font-display text-2xl tracking-wider bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent whitespace-nowrap">
+                AI LHOUNG
+              </span>
+            </span>
             <button
               className="grid h-8 w-6 place-items-center rounded-md text-base-content/60 hover:bg-base-content/10 hover:text-base-content focus-visible:outline-2 focus-visible:outline-primary"
               aria-label={t("side.classic")}
@@ -236,7 +245,16 @@ export default function AppLayout() {
             >
               <FiMenu />
             </button>
-            <span className="font-bold">AI LHOUNG</span>
+            <span className="flex min-w-0 items-center gap-2">
+              <img
+                src="/image/MiniDog.PNG"
+                alt="Minidog"
+                className="h-9 w-9 rounded-full bg-primary/20 border border-primary/30 object-cover shrink-0"
+              />
+              <span className="font-display text-2xl tracking-wider bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent whitespace-nowrap">
+                AI LHOUNG
+              </span>
+            </span>
           </header>
         )}
         <Suspense
@@ -264,7 +282,13 @@ export default function AppLayout() {
       )}
       {modal === "menu" && (
         <Modal title={t("side.navigation")} onClose={close} drawer>
-          <button type="button" className="grid h-8 w-6 mb-3 place-items-center rounded-md text-base-content/60 hover:bg-base-content/10 focus-visible:outline-2 focus-visible:outline-primary" aria-label={t("side.classic")} title={t("side.classic")} onClick={toggle}>
+          <button
+            type="button"
+            className="grid h-8 w-6 mb-3 place-items-center rounded-md text-base-content/60 hover:bg-base-content/10 focus-visible:outline-2 focus-visible:outline-primary"
+            aria-label={t("side.classic")}
+            title={t("side.classic")}
+            onClick={toggle}
+          >
             <FiChevronLeft aria-hidden="true" />
           </button>
           <SidebarContent {...content} />

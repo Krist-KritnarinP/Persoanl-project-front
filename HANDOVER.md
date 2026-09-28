@@ -1,3 +1,21 @@
+# Handover — Full-width pages + trip billing (2026-09-29)
+
+- เก็บ UI ตาม feedback: select/option ทุกหน้าและเมนูประเภทกิจกรรมใช้พื้นหลังทึบ พร้อมสีข้อความ light/dark; เอาสี option ที่ขัดกับ dark mode ออกจาก LanguageSwitcher
+- หน้าบิลเพิ่มทางลัดสมาชิก/บิล/คืนเงิน, หัวข้อขั้นตอนในฟอร์ม, ช่องกรอกอ่านง่ายและ focus สำหรับ keyboard
+- ตรวจล่าสุด: unit 13 ผ่าน, browser billing desktop/mobile 2 ผ่าน รวม contrast ของ select/option ทั้งสองธีม, 4 ภาษา และไม่ล้นแนวนอน; build ผ่าน
+- วิธีลอง: เปิดทริป → ค่าใช้จ่าย / หารบิล → เพิ่มสมาชิก → เพิ่มบิล → ตรวจยอดรายคนก่อนยืนยัน → บันทึกคืนเงินบางส่วนได้
+- Sidebar ใช้รูป MiniDog และ font-display/gradient เหมือน Header; AiPlanner/TravelOverview เอา max-width ออก
+- เปิดทริป → ค่าใช้จ่าย / หารบิล → /trips/:tripId/billing; owner-managed THB ไม่มี AI
+- สมาชิกไม่ต้องสมัคร, รายการย่อย, หลายผู้จ่าย, หาร4แบบ, VAT/service/tip, previewรายคน, คืนบางคน/บิล/บางส่วน และ reversal
+- ใช้สูตร backend; previewหมดอายุเมื่อแก้ฟอร์ม, ล็อกฟอร์มระหว่าง request, retryใช้requestIdเดิม, แยกงบกิจกรรม/ยอดบิล/เงินคืน
+- APIเพิ่มตารางและgenerate clientแล้ว ไม่ต้องmigrationซ้ำบนDBเดิม; หากAPIเก่าไม่reloadให้ restart npm run dev
+- Unit13/build ผ่าน; browser billing+sidebar คอม/มือถือผ่าน รวม4ภาษา; lintไม่มีerror warnings8 (7เดิม+asyncload effect)
+- คู่มือเทคนิคหลัก: PersonalProject_API/docs/BILLING.md; แผนเดิมใน docs/SPLIT_BILLS_PLAN.md อัปเดตสถานะแล้ว
+- ใช้ HTTPfixtures ใน browser และ DB smoke แยกตรวจเงิน/สิทธิ์/concurrencyด้วยข้อมูลชั่วคราวที่ลบแล้ว
+- ไม่เรียกAI ไม่โอนเงินจริง ไม่ seedบิลจริง; commitทั้งสองrepo ไม่push
+
+---
+
 # Handover — Small sidebar edge arrow (2026-09-28)
 
 - ตาม feedback ผู้ใช้: เอาปุ่มเปิด Sidebar ใหญ่มุมขวาล่างออก เปลี่ยนเป็นแถบลูกศรเล็กชิดขอบซ้ายบน (left0/top6)

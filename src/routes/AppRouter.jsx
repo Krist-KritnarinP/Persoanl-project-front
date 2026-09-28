@@ -10,6 +10,7 @@ import Landing from "@/pages/Landing";
 import AppLayout from "@/layouts/AppLayout";
 import RouteSeo from "@/components/RouteSeo";
 
+const TripBilling = lazy(() => import("@/pages/TripBilling"));
 const AiPlanner = lazy(() => import("@/pages/AiPlanner"));
 const TravelOverview = lazy(() => import("@/pages/TravelOverview"));
 const Dashboard = lazy(() => import("@/pages/Dashboard"));
@@ -57,6 +58,7 @@ const router = createBrowserRouter([
           { path: "/trips", element: <Trips /> },
           { path: "/trips/:tripId", element: <Trips /> },
           { path: "/trips/:tripId/map", element: <TripMapPage /> },
+          { path: "/trips/:tripId/billing", element: <TripBilling /> },
         ],
       },
       { path: "*", element: <Navigate to="/" replace /> },
