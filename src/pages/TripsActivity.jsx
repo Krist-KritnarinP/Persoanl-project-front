@@ -1,3 +1,6 @@
+import { useOutletContext } from "react-router-dom";
+import LanguageSwitcher from "@/components/LanguageSwitcher";
+import ThemeToggle from "@/components/ThemeToggle";
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import {
@@ -34,6 +37,7 @@ import { useTripCoordinates } from "@/hooks/useTripCoordinates";
 
 /** Own-trip workspace: state and event handlers here; reusable display blocks live in components/trips. */
 export default function TripActivity() {
+  const { sidebarEnabled } = useOutletContext();
   const { tripId } = useParams();
   const navigate = useNavigate();
   const { t, locale } = useLang();
@@ -364,6 +368,35 @@ export default function TripActivity() {
 
   return (
     <div className="min-h-screen w-full px-4 md:px-8 py-4 space-y-6">
+      {!sidebarEnabled && (
+        <header className="navbar glass rounded-3xl md:rounded-full justify-between px-4 md:px-6 py-3 shadow-lg shrink-0 mb-4 w-full gap-2">
+          <button
+            onClick={() => navigate("/dashboard")}
+            title={t("nav.dashboard")}
+            className="flex items-center gap-2 md:gap-3 min-w-0 cursor-pointer rounded-2xl"
+          >
+            <div className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-primary/20 border border-primary/30 flex items-center justify-center text-primary font-bold overflow-hidden shrink-0">
+              <img
+                src="/image/MiniDog.PNG"
+                alt="Minidog"
+                className="w-full h-full object-cover"
+              />
+            </div>
+            <div className="min-w-0 text-left">
+              <span className="font-display text-2xl md:text-3xl tracking-wider bg-linear-to-r from-primary to-accent bg-clip-text text-transparent whitespace-nowrap">
+                AI LHOUNG
+              </span>
+              <span className="hidden sm:block text-xs text-base-content/60 font-medium -mt-1">
+                {t("nav.tagline")}
+              </span>
+            </div>
+          </button>
+          <div className="flex items-center gap-1 shrink-0">
+            <ThemeToggle />
+            <LanguageSwitcher />
+          </div>
+        </header>
+      )}
       {/* NAVBAR */}
 
       {/* HEADER / NAVIGATION — ย้อนกลับทีละสเตป: map → trip → dashboard */}

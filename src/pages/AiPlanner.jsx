@@ -1,6 +1,9 @@
+import { useOutletContext } from "react-router-dom";
+import LanguageSwitcher from "@/components/LanguageSwitcher";
+import ThemeToggle from "@/components/ThemeToggle";
 import { useLang } from "@/i18n";
 import { useEffect, useRef, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { mainApi } from "@/api/mainApi";
 import { generateCompletePlan } from "@/utils/generateCompletePlan";
 
@@ -23,6 +26,7 @@ function requestError(error, saving = false) {
 }
 
 export default function AiPlanner() {
+  const { sidebarEnabled } = useOutletContext();
   const navigate = useNavigate();
   const { t, lang, locale } = useLang();
   const money = (value) =>
@@ -124,6 +128,17 @@ export default function AiPlanner() {
   return (
     <main className="min-h-screen px-4 py-6 md:py-10 text-base-content">
       <div className="max-w-4xl mx-auto space-y-6">
+        {!sidebarEnabled && (
+          <header className="flex items-center justify-between gap-3">
+            <Link to="/dashboard" className="btn btn-ghost rounded-full">
+              {t("planner.back")}
+            </Link>
+            <div className="flex items-center gap-2">
+              <LanguageSwitcher />
+              <ThemeToggle />
+            </div>
+          </header>
+        )}
         <section className="space-y-3">
           <span className="badge badge-outline">{t("planner.badge")}</span>
           <h1 className="text-3xl md:text-4xl font-bold">

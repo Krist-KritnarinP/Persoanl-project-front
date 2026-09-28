@@ -9,7 +9,6 @@ import {
   FiMenu,
   FiX,
   FiChevronsLeft,
-  FiChevronsRight,
   FiSettings,
 } from "react-icons/fi";
 import { useLang } from "@/i18n";
@@ -68,7 +67,7 @@ function Modal({ children, title, onClose, drawer = false }) {
   );
 }
 
-function SidebarContent({ collapsed, close, settings, signingOut, signOut }) {
+function SidebarContent({ close, settings, signingOut, signOut }) {
   const { t } = useLang();
   const user = useUserStore((s) => s.user);
   const { pathname } = useLocation();
@@ -98,10 +97,10 @@ function SidebarContent({ collapsed, close, settings, signingOut, signOut }) {
               title={t(key)}
               aria-label={t(key)}
               aria-current={active ? "page" : undefined}
-              className={`${row} ${active ? "bg-primary text-primary-content font-semibold" : "hover:bg-base-content/10"} ${collapsed ? "justify-center" : ""}`}
+              className={`${row} ${active ? "bg-primary text-primary-content font-semibold" : "hover:bg-base-content/10"}`}
             >
               <Icon className="text-xl shrink-0" />
-              {!collapsed && <span>{t(key)}</span>}
+              <span>{t(key)}</span>
             </NavLink>
           );
         })}
@@ -112,10 +111,10 @@ function SidebarContent({ collapsed, close, settings, signingOut, signOut }) {
           onClick={settings}
           title={t("side.settings")}
           aria-label={t("side.settings")}
-          className={`${row} w-full hover:bg-base-content/10 ${collapsed ? "justify-center" : ""}`}
+          className={`${row} w-full hover:bg-base-content/10`}
         >
           <FiSettings className="text-xl shrink-0" />
-          {!collapsed && t("side.settings")}
+          {t("side.settings")}
         </button>
         <NavLink
           to="/userprofile"
@@ -123,30 +122,28 @@ function SidebarContent({ collapsed, close, settings, signingOut, signOut }) {
           title={t("profile.title")}
           aria-label={t("profile.title")}
           className={({ isActive }) =>
-            `${row} ${isActive ? "bg-primary/15" : "hover:bg-base-content/10"} ${collapsed ? "justify-center" : ""}`
+            `${row} ${isActive ? "bg-primary/15" : "hover:bg-base-content/10"}`
           }
         >
           <FiUser className="text-xl shrink-0" />
-          {!collapsed && (
-            <div className="min-w-0">
-              <p className="font-semibold truncate">
-                {user?.username || t("profile.title")}
-              </p>
-              <p className="text-xs text-base-content/60 truncate">
-                {user?.email}
-              </p>
-            </div>
-          )}
+          <div className="min-w-0">
+            <p className="font-semibold truncate">
+              {user?.username || t("profile.title")}
+            </p>
+            <p className="text-xs text-base-content/60 truncate">
+              {user?.email}
+            </p>
+          </div>
         </NavLink>
         <button
           onClick={signOut}
           disabled={signingOut}
           title={t("nav.logout")}
           aria-label={t("nav.logout")}
-          className={`${row} w-full text-error hover:bg-error/10 ${collapsed ? "justify-center" : ""}`}
+          className={`${row} w-full text-error hover:bg-error/10`}
         >
           <FiLogOut className="text-xl shrink-0" />
-          {!collapsed && t("nav.logout")}
+          {t("nav.logout")}
         </button>
       </footer>
     </>
@@ -157,9 +154,12 @@ export default function AppLayout() {
   const { t } = useLang();
   const { pathname } = useLocation();
   const logout = useUserStore((s) => s.logout);
-  const [collapsed, setCollapsed] = useState(
-    () => localStorage.getItem("sidebarCollapsed") === "true",
-  );
+  const [sidebarEnabled, setSidebarEnabled] = useState(() => {
+    const mode = localStorage.getItem("navigationMode");
+    return mode
+      ? mode === "sidebar"
+      : localStorage.getItem("sidebarCollapsed") !== "true";
+  });
   const [modal, setModal] = useState(null);
   const [signingOut, setSigningOut] = useState(false);
   // Stable callbacks keep the modal and its focus trap mounted while state changes.
@@ -189,53 +189,55 @@ export default function AppLayout() {
     setModal("settings");
   };
   const content = { close, settings, signOut, signingOut };
-  const toggle = () =>
-    setCollapsed((value) => {
-      localStorage.setItem("sidebarCollapsed", String(!value));
+  const toggle = () => {
+    setSidebarEnabled((value) => {
+      localStorage.setItem("navigationMode", value ? "classic" : "sidebar");
       return !value;
     });
+    close();
+  };
   return (
     <div className="min-h-dvh flex">
-      <aside
-        data-testid="desktop-sidebar"
-        className={`hidden lg:flex sticky top-0 h-dvh shrink-0 flex-col p-3 bg-base-100/90 border-r border-base-content/10 ${collapsed ? "w-20" : "w-64"}`}
-      >
-        <div
-          className={`flex items-center mb-6 ${collapsed ? "justify-center" : "justify-between px-2"}`}
+      {sidebarEnabled && (
+        <aside
+          data-testid="desktop-sidebar"
+          className={`hidden lg:flex sticky top-0 h-dvh shrink-0 flex-col p-3 bg-base-100/90 border-r border-base-content/10 w-64`}
         >
-          {!collapsed && (
+          <div className={`flex items-center mb-6 justify-between px-2`}>
             <span className="font-bold text-lg tracking-wide">AI LHOUNG</span>
-          )}
-          <button
-            className="btn btn-ghost btn-circle"
-            aria-label={t(collapsed ? "side.expand" : "side.collapse")}
-            title={t(collapsed ? "side.expand" : "side.collapse")}
-            aria-expanded={!collapsed}
-            onClick={toggle}
-          >
-            {collapsed ? <FiChevronsRight /> : <FiChevronsLeft />}
-          </button>
-        </div>
-        <SidebarContent collapsed={collapsed} {...content} />
-      </aside>
+            <button
+              className="btn btn-ghost btn-circle"
+              aria-label={t("side.classic")}
+              title={t("side.classic")}
+              aria-expanded={sidebarEnabled}
+              onClick={toggle}
+            >
+              <FiChevronsLeft />
+            </button>
+          </div>
+          <SidebarContent {...content} />
+        </aside>
+      )}
       <div className="min-w-0 flex-1">
-        <header className="lg:hidden sticky top-0 z-30 flex items-center gap-3 bg-base-100/95 border-b border-base-content/10 px-4 py-2">
-          <button
-            ref={menuButton}
-            data-testid="sidebar-open"
-            className="btn btn-ghost btn-circle"
-            aria-label={t("side.open")}
-            aria-haspopup="dialog"
-            aria-expanded={modal === "menu"}
-            onClick={(event) => {
-              opener.current = event.currentTarget;
-              setModal("menu");
-            }}
-          >
-            <FiMenu />
-          </button>
-          <span className="font-bold">AI LHOUNG</span>
-        </header>
+        {sidebarEnabled && (
+          <header className="lg:hidden sticky top-0 z-30 flex items-center gap-3 bg-base-100/95 border-b border-base-content/10 px-4 py-2">
+            <button
+              ref={menuButton}
+              data-testid="sidebar-open"
+              className="btn btn-ghost btn-circle"
+              aria-label={t("side.open")}
+              aria-haspopup="dialog"
+              aria-expanded={modal === "menu"}
+              onClick={(event) => {
+                opener.current = event.currentTarget;
+                setModal("menu");
+              }}
+            >
+              <FiMenu />
+            </button>
+            <span className="font-bold">AI LHOUNG</span>
+          </header>
+        )}
         <Suspense
           fallback={
             <div className="p-12 text-center" role="status">
@@ -243,11 +245,24 @@ export default function AppLayout() {
             </div>
           }
         >
-          <Outlet />
+          <Outlet context={{ sidebarEnabled }} />
         </Suspense>
       </div>
+      {!sidebarEnabled && (
+        <button
+          data-testid="enable-sidebar"
+          className="btn btn-primary fixed bottom-5 right-5 z-40 shadow-lg rounded-full"
+          onClick={toggle}
+        >
+          <FiMenu />
+          {t("side.enable")}
+        </button>
+      )}
       {modal === "menu" && (
         <Modal title={t("side.navigation")} onClose={close} drawer>
+          <button className="btn btn-outline mb-4" onClick={toggle}>
+            {t("side.classic")}
+          </button>
           <SidebarContent {...content} />
         </Modal>
       )}

@@ -1,3 +1,16 @@
+# Handover — Sidebar / classic layout switch (2026-09-28)
+
+- แก้ตามผู้ใช้: ปิด Sidebar ต้องซ่อนทั้งแถบและคืน header/ดีไซน์ก่อน sidebar ไม่ใช่ย่อเป็นไอคอน
+- Desktop ปุ่ม “ปิด Sidebar · ใช้หน้าตาเดิม”; mobile มีปุ่มนี้ใน drawer; classic มีปุ่มเปิด Sidebar มุมขวาล่าง
+- navigationMode ใน localStorage จำ classic/sidebar; legacy sidebarCollapsed=true แปลงเป็น classic เมื่อยังไม่มีค่าใหม่
+- Outlet context ส่ง sidebarEnabled ให้หน้าเดิม ใช้ handlers/store ร่วม ไม่ทำสำเนา logic หน้า
+- Classic Dashboard คืน navbar/profile/logout/search, stats, AI และ TravelOverviewCard; หน้าทริป/map/AI/profile/overview คืน header เดิมตามโหมด
+- Sidebar mode คงเมนู/profile/logout ด้านล่าง; public/auth/share ไม่เปลี่ยน
+- Build ผ่าน, unit13 ผ่าน, browserสลับโหมด desktop/mobile2 ผ่าน รวม persist/menu/profile/logout; lint ไม่มี error warnings7 เดิม
+- ไม่แก้ API/DB/env; commit Front เท่านั้น ไม่ push
+
+---
+
 # Handover — Responsive shared sidebar (2026-09-28)
 
 - เพิ่ม layouts/AppLayout.jsx ครอบ protected routes: ภาพรวม / ทริปของฉัน / สร้างทริปด้วย AI

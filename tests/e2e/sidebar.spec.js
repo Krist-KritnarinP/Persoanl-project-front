@@ -43,13 +43,20 @@ test("sidebar navigates, collapses or traps mobile focus, shows account and logs
   });
   await page.goto("/dashboard");
   if (!isMobile) {
-    await page.getByRole("button", { name: "Collapse sidebar" }).click();
-    await expect(page.getByTestId("desktop-sidebar")).toHaveClass(/w-20/);
-    await page.reload();
+    await page
+      .getByRole("button", { name: "Hide sidebar · Classic layout" })
+      .click();
+    await expect(page.getByTestId("desktop-sidebar")).toHaveCount(0);
     await expect(
-      page.getByRole("button", { name: "Expand sidebar" }),
+      page.getByRole("link", { name: "Open travel dashboard" }),
     ).toBeVisible();
-    await page.getByRole("button", { name: "Expand sidebar" }).click();
+    await expect(
+      page.getByRole("combobox", { name: "Language" }),
+    ).toBeVisible();
+    await page.reload();
+    await expect(page.getByTestId("enable-sidebar")).toBeVisible();
+    await expect(page.getByTestId("desktop-sidebar")).toHaveCount(0);
+    await page.getByTestId("enable-sidebar").click();
   } else {
     await openNavigation(page);
     const dialog = page.getByRole("dialog", { name: "Main navigation" });
@@ -66,6 +73,16 @@ test("sidebar navigates, collapses or traps mobile focus, shows account and logs
     await openNavigation(page);
     await page.mouse.click(370, 400);
     await expect(dialog).toHaveCount(0);
+    await openNavigation(page);
+    await page
+      .getByRole("button", { name: "Hide sidebar · Classic layout" })
+      .filter({ visible: true })
+      .click();
+    await expect(page.getByTestId("sidebar-open")).toHaveCount(0);
+    await expect(
+      page.getByRole("combobox", { name: "Language" }),
+    ).toBeVisible();
+    await page.getByTestId("enable-sidebar").click();
   }
   for (const [name, url] of [
     ["Overview", "/travel-overview"],

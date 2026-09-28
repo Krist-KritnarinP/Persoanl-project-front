@@ -1,5 +1,7 @@
 export const additions = {
   th: {
+    "side.classic": "ปิด Sidebar · ใช้หน้าตาเดิม",
+    "side.enable": "เปิด Sidebar",
     "side.overview": "ภาพรวม",
     "side.trips": "ทริปของฉัน",
     "side.ai": "สร้างทริปด้วย AI",
@@ -117,6 +119,8 @@ export const additions = {
       "กิจกรรมมีรายละเอียดมากเกินการวิเคราะห์ครั้งเดียว กรุณาลดข้อมูลที่ซ้ำแล้วลองใหม่",
   },
   en: {
+    "side.classic": "Hide sidebar · Classic layout",
+    "side.enable": "Enable sidebar",
     "side.overview": "Overview",
     "side.trips": "My trips",
     "side.ai": "Plan with AI",
@@ -233,6 +237,8 @@ export const additions = {
       "This itinerary is too large for one analysis. Remove duplicate details and try again.",
   },
   zh: {
+    "side.classic": "隐藏侧栏 · 经典布局",
+    "side.enable": "开启侧栏",
     "side.overview": "总览",
     "side.trips": "我的旅行",
     "side.ai": "AI 规划旅行",
@@ -341,6 +347,8 @@ export const additions = {
     "weather.sizeLimit": "行程内容过多，无法一次分析。请减少重复信息后重试。",
   },
   ko: {
+    "side.classic": "사이드바 숨기기 · 기존 화면",
+    "side.enable": "사이드바 켜기",
     "side.overview": "개요",
     "side.trips": "내 여행",
     "side.ai": "AI 여행 계획",
