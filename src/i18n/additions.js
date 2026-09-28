@@ -74,6 +74,11 @@ export const additions = {
     "validation.confirm": "กรุณายืนยันรหัสผ่าน",
     "validation.passwordBytes": "รหัสผ่านต้องไม่เกิน 72 ไบต์ UTF-8",
     "ui.aiFailed": "AI ยังตอบไม่ได้ กรุณาลองใหม่อีกครั้ง",
+    "weather.estimateNote":
+      "แนวโน้มตามฤดูกาล ไม่ใช่พยากรณ์สด ควรตรวจอากาศจริงใกล้วันเดินทาง",
+    "weather.readHistory": "เปิดอ่านประวัติ",
+    "weather.sizeLimit":
+      "กิจกรรมมีรายละเอียดมากเกินการวิเคราะห์ครั้งเดียว กรุณาลดข้อมูลที่ซ้ำแล้วลองใหม่",
   },
   en: {
     "planner.typeAttraction": "Attraction",
@@ -149,6 +154,11 @@ export const additions = {
     "validation.confirm": "Confirm password is required",
     "validation.passwordBytes": "Password must not exceed 72 UTF-8 bytes",
     "ui.aiFailed": "AI is unavailable. Please try again.",
+    "weather.estimateNote":
+      "Seasonal guidance, not a live forecast. Check actual forecasts closer to travel.",
+    "weather.readHistory": "Read saved report",
+    "weather.sizeLimit":
+      "This itinerary is too large for one analysis. Remove duplicate details and try again.",
   },
   zh: {
     "planner.typeAttraction": "景点",
@@ -218,6 +228,10 @@ export const additions = {
     "validation.confirm": "请确认密码",
     "validation.passwordBytes": "密码不得超过 72 个 UTF-8 字节",
     "ui.aiFailed": "AI 暂时无法响应，请重试。",
+    "weather.estimateNote":
+      "季节性参考，并非实时预报。请在出行前查看实际天气预报。",
+    "weather.readHistory": "阅读历史报告",
+    "weather.sizeLimit": "行程内容过多，无法一次分析。请减少重复信息后重试。",
   },
   ko: {
     "planner.typeAttraction": "관광지",
@@ -294,5 +308,10 @@ export const additions = {
     "validation.passwordBytes":
       "비밀번호는 UTF-8 기준 72바이트 이하여야 합니다",
     "ui.aiFailed": "AI가 응답하지 못했습니다. 다시 시도해 주세요.",
+    "weather.estimateNote":
+      "계절적 경향이며 실시간 예보가 아닙니다. 출발 전에 실제 예보를 확인하세요.",
+    "weather.readHistory": "저장된 분석 읽기",
+    "weather.sizeLimit":
+      "한 번에 분석하기에는 일정이 너무 큽니다. 중복 내용을 줄이고 다시 시도하세요.",
   },
 };

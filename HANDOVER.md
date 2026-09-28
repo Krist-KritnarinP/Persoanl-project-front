@@ -1,3 +1,15 @@
+# Handover — AI Weather รายช่วงเวลา + Modal (2026-09-28)
+
+- เพิ่มแนวโน้มอากาศตามพื้นที่กิจกรรม เช้า/กลางวัน/เย็น พร้อมผลต่อแผนและการเตรียมตัว รองรับ 4 ภาษา
+- กล่องขนาดคงที่ scroll ภายใน; เปิดคำตอบเต็ม/ประวัติเก่าใน Modal ที่รองรับมือถือและ Escape
+- Prompt ใช้สถานที่ไม่ซ้ำและตารางย่อ; Front ส่ง tripId/language เท่านั้น API อ่านข้อมูลที่ตรวจเจ้าของแล้ว
+- ระบุชัดว่า seasonal estimate ไม่ใช่พยากรณ์สด; cache v3, ป้องกัน input ใหญ่/คำตอบถูกตัด และเก็บ history เต็มแทนตัด 8k
+- ตรวจ API 33, Front unit 11, browser weather 2 ผ่าน; build ผ่าน lint ไม่มี error (7 warnings อื่น)
+- รายละเอียด ขีดจำกัด และสิ่งที่ยังไม่ได้ทดสอบ: [docs/WEATHER_AI.md](docs/WEATHER_AI.md)
+- ไม่เรียก Gemini จริง ไม่แก้ schema/env/demo data; commit แยก Front/API ไม่ push/deploy
+
+---
+
 # Handover — ภาษา UI ทุกหน้าและภาษา AI (2026-09-28)
 
 - แก้หน้า AI ให้รองรับ th/en/zh/ko ครบ พร้อม LanguageSwitcher; แก้จุดตกหล่น Dashboard/auth/profile/trip/map/share, tooltip, day labels และ validation

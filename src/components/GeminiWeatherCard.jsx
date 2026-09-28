@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import {
   FiSun,
   FiRefreshCw,
@@ -10,16 +11,80 @@ import {
 } from "react-icons/fi";
 import { useLang } from "@/i18n";
 
-// แยก "สรุปไฮไลต์" กับ "รายละเอียดรายวัน" ออกจากกันด้วย marker ---DETAILS---
-function splitForecast(text) {
-  const parts = String(text || "").split(/\n---DETAILS---\n/);
-  if (parts.length >= 2) {
-    return {
-      highlights: parts[0].trim(),
-      details: parts.slice(1).join("\n---DETAILS---\n").trim(),
-    };
-  }
-  return { highlights: String(text || "").trim(), details: "" };
+function readable(text) {
+  return String(text || "").replace(/\s*---DETAILS---\s*/g, "\n\n");
+}
+
+function ForecastModal({ entry, onClose, t }) {
+  const dialog = useRef(null);
+  useEffect(() => {
+    const trigger = document.activeElement;
+    dialog.current?.showModal();
+    return () => trigger?.focus?.();
+  }, []);
+  const sections = readable(entry.text).split(/\n(?=D\d+\b)/);
+  return createPortal(
+    <dialog
+      ref={dialog}
+      onClose={onClose}
+      onCancel={onClose}
+      onClick={(event) => {
+        if (event.target === event.currentTarget) onClose();
+      }}
+      className="modal p-4"
+      aria-labelledby="weather-reader-title"
+    >
+      <div className="modal-box w-full max-w-3xl max-h-[85dvh] p-0 flex flex-col overflow-hidden">
+        <header className="flex justify-between items-start gap-3 p-5 border-b border-base-content/10 shrink-0">
+          <div>
+            <h2 id="weather-reader-title" className="text-xl font-bold">
+              {t("weather.fullDetails")}
+            </h2>
+            {entry.date && (
+              <p className="text-sm text-base-content/70">{entry.date}</p>
+            )}
+          </div>
+          <button
+            type="button"
+            autoFocus
+            className="btn btn-ghost btn-sm btn-circle"
+            aria-label={t("common.close")}
+            onClick={onClose}
+          >
+            <FiX />
+          </button>
+        </header>
+        <div
+          className="min-h-0 overflow-y-auto p-5 space-y-4"
+          data-testid="weather-reader-scroll"
+          tabIndex={0}
+        >
+          <p className="text-sm text-base-content/70">
+            {t("weather.estimateNote")}
+          </p>
+          {sections.map((section, i) => (
+            <section
+              key={i}
+              className="rounded-xl border border-base-content/15 p-4 whitespace-pre-wrap break-words leading-relaxed text-base"
+            >
+              {section.split("\n").map((line, j) =>
+                /^D\d+\b/.test(line) ? (
+                  <h3 key={j} className="text-lg font-bold mb-2">
+                    {line}
+                  </h3>
+                ) : (
+                  <p key={j} className="mb-2">
+                    {line}
+                  </p>
+                ),
+              )}
+            </section>
+          ))}
+        </div>
+      </div>
+    </dialog>,
+    document.body,
+  );
 }
 
 export default function GeminiWeatherCard({
@@ -33,167 +98,152 @@ export default function GeminiWeatherCard({
   onDeleteHistory,
 }) {
   const { t, locale, lang } = useLang();
-  const [modalText, setModalText] = useState(null);
-
+  const [selected, setSelected] = useState(null);
   useEffect(() => {
     if (tripId && onFetchHistory) onFetchHistory(tripId);
-  }, [tripId]);
-
+  }, [tripId, onFetchHistory]);
   const fmtDateTime = (iso) => {
-    if (!iso) return "";
     const d = new Date(iso);
-    if (isNaN(d.getTime())) return "";
-    return d.toLocaleString(locale, {
-      day: "numeric",
-      month: "short",
-      hour: "2-digit",
-      minute: "2-digit",
-    });
+    return Number.isFinite(d.getTime())
+      ? d.toLocaleString(locale, {
+          year: "numeric",
+          month: "short",
+          day: "numeric",
+          hour: "2-digit",
+          minute: "2-digit",
+        })
+      : "";
   };
-
-  // กล่องสรุปขนาดคงที่ + scroll (ไม่ขยายตามตัวอักษร) + ปุ่มเปิด modal รายละเอียด
-  const ForecastBox = ({ text }) => {
-    const { highlights, details } = splitForecast(text);
-    return (
-      <div className="space-y-2">
-        <div className="rounded-2xl bg-white/10 border border-white/10 p-3 max-h-44 overflow-y-auto custom-scrollbar">
-          <p className="text-sm sm:text-base whitespace-pre-line leading-relaxed">
-            {highlights}
-          </p>
-        </div>
-        {details && (
-          <button
-            onClick={() => setModalText(details)}
-            className="btn btn-ghost btn-sm rounded-full gap-1.5 w-full glass"
-          >
-            <FiMaximize2 /> {t("weather.fullDetails")}
-          </button>
-        )}
-      </div>
-    );
-  };
-
   return (
-    <div className="glass glass-card p-5 rounded-3xl flex flex-col h-full max-h-[calc(100vh-2rem)] space-y-4 shadow-xl border border-white/20 overflow-hidden">
-      {/* Header */}
-      <div className="flex items-center justify-between border-b border-white/10 pb-3 shrink-0">
+    <div
+      className="glass glass-card p-5 rounded-3xl flex flex-col h-[32rem] max-h-[calc(100dvh-2rem)] shrink-0 space-y-4 shadow-xl border border-white/20 overflow-hidden"
+      data-testid="weather-card"
+    >
+      <header className="flex items-center justify-between gap-2 border-b border-white/10 pb-3 shrink-0">
         <div className="flex items-center gap-2 min-w-0">
-          <div className="p-2 rounded-xl bg-warning/20 text-warning shrink-0">
-            <FiSun className="text-xl animate-spin-slow" />
-          </div>
+          <FiSun className="text-xl text-warning shrink-0" />
           <div className="min-w-0">
-            <h3 className="font-bold text-base leading-tight truncate">
+            <h3 className="font-bold text-base leading-tight">
               {t("weather.title")}
             </h3>
             <span className="text-xs text-base-content/60">Gemini AI</span>
           </div>
         </div>
-
         <button
+          type="button"
           onClick={() => onGetForecast(tripId, lang)}
           disabled={weatherLoading}
-          className="btn btn-warning btn-sm rounded-full gap-1 shadow-md hover:scale-105 transition-all shrink-0"
+          className="btn btn-warning btn-sm rounded-full gap-1 shrink-0"
         >
           <FiRefreshCw className={weatherLoading ? "animate-spin" : ""} />
           {weatherPrediction ? t("weather.update") : t("weather.predict")}
         </button>
-      </div>
-
-      {/* Body Content */}
-      <div className="flex-1 overflow-y-auto pr-1 space-y-3 custom-scrollbar text-sm sm:text-base">
+      </header>
+      <div
+        className="flex-1 min-h-0 overflow-y-auto pr-1 space-y-3 text-sm sm:text-base"
+        data-testid="weather-card-scroll"
+        tabIndex={0}
+      >
+        <p className="text-xs text-base-content/70">
+          {t("weather.estimateNote")}
+        </p>
         {weatherLoading && (
-          <div className="flex flex-col items-center justify-center py-10 space-y-3">
-            <span className="loading loading-dots loading-md text-warning"></span>
-            <p className="text-sm text-base-content/70 animate-pulse text-center px-2">
-              {t("weather.analyzing")}
-            </p>
+          <div role="status" className="text-center py-8">
+            <span className="loading loading-dots" />
+            <p>{t("weather.analyzing")}</p>
           </div>
         )}
-
         {weatherError && !weatherLoading && (
-          <div className="alert alert-error/20 border border-error/30 text-error text-sm sm:text-base p-3 rounded-2xl flex items-start gap-2">
-            <FiAlertCircle className="text-lg shrink-0 mt-0.5" />
+          <div role="alert" className="alert alert-error">
+            <FiAlertCircle />
             <span>
-              {weatherError === "__QUOTA__"
-                ? t("weather.quota")
-                : t("ui.aiFailed")}
+              {t(
+                weatherError === "__QUOTA__"
+                  ? "weather.quota"
+                  : weatherError === "__SIZE__"
+                    ? "weather.sizeLimit"
+                    : "ui.aiFailed",
+              )}
             </span>
           </div>
         )}
-
         {weatherPrediction && !weatherLoading && (
-          <ForecastBox text={weatherPrediction} />
+          <div className="space-y-2">
+            <div
+              className="rounded-2xl bg-base-100/30 border border-base-content/10 p-3 h-44 overflow-y-auto whitespace-pre-wrap break-words leading-relaxed"
+              data-testid="weather-preview-scroll"
+              tabIndex={0}
+            >
+              {readable(weatherPrediction)}
+            </div>
+            <button
+              type="button"
+              onClick={() => setSelected({ tripId, text: weatherPrediction })}
+              className="btn btn-ghost btn-sm w-full"
+            >
+              <FiMaximize2 />
+              {t("weather.fullDetails")}
+            </button>
+          </div>
         )}
-
         {!weatherPrediction &&
           !weatherLoading &&
           !weatherError &&
-          weatherHistory.length === 0 && (
-            <div className="text-center py-8 opacity-60 space-y-2">
-              <FiSun className="text-4xl mx-auto text-warning/50" />
-              <p className="text-sm px-2">{t("weather.empty")}</p>
-            </div>
+          !weatherHistory.length && (
+            <p className="text-center py-8">{t("weather.empty")}</p>
           )}
-
-        {/* History */}
         {weatherHistory.length > 0 && (
-          <div className="space-y-2 pt-2 border-t border-white/10">
-            <h4 className="font-bold text-sm flex items-center gap-1.5">
-              <FiClock className="text-warning" /> {t("weather.history")}
+          <section className="space-y-2 pt-2 border-t border-base-content/10">
+            <h4 className="font-bold text-sm flex items-center gap-2">
+              <FiClock />
+              {t("weather.history")}
             </h4>
-            {weatherHistory.map((m) => (
+            {weatherHistory.map((entry) => (
               <div
-                key={m.id}
-                className="rounded-2xl bg-white/10 border border-white/10 p-3 space-y-1.5"
+                key={entry.id}
+                className="border border-base-content/10 rounded-xl p-3 flex gap-2 items-start"
               >
-                <div className="flex items-center justify-between gap-2">
-                  <span className="text-xs text-base-content/60">
-                    {fmtDateTime(m.createdAt)}
+                <button
+                  type="button"
+                  onClick={() =>
+                    setSelected({
+                      tripId,
+                      text: entry.content,
+                      date: fmtDateTime(entry.createdAt),
+                    })
+                  }
+                  className="text-left min-w-0 flex-1 space-y-1"
+                  aria-label={`${t("weather.readHistory")} ${fmtDateTime(entry.createdAt)}`}
+                >
+                  <span className="block text-xs text-base-content/60">
+                    {fmtDateTime(entry.createdAt)}
                   </span>
-                  <button
-                    onClick={() => onDeleteHistory && onDeleteHistory(m.id)}
-                    title={t("weather.delHist")}
-                    className="btn btn-ghost btn-xs btn-circle text-error/70 hover:text-error hover:bg-error/10 shrink-0"
-                  >
-                    <FiTrash2 className="text-sm" />
-                  </button>
-                </div>
-                <ForecastBox text={m.content} />
+                  <span className="block line-clamp-3 break-words whitespace-pre-line">
+                    {readable(entry.content)}
+                  </span>
+                  <span className="block font-semibold underline text-sm">
+                    {t("weather.readHistory")}
+                  </span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => onDeleteHistory?.(entry.id)}
+                  aria-label={t("weather.delHist")}
+                  className="btn btn-ghost btn-xs btn-circle text-error shrink-0"
+                >
+                  <FiTrash2 />
+                </button>
               </div>
             ))}
-          </div>
+          </section>
         )}
       </div>
-
-      {/* Details modal */}
-      {modalText && (
-        <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm px-4"
-          onClick={() => setModalText(null)}
-        >
-          <div
-            className="rounded-3xl bg-base-100 text-base-content border border-base-content/10 shadow-2xl w-full max-w-lg max-h-[85vh] flex flex-col overflow-hidden"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className="flex items-center justify-between p-5 pb-3 shrink-0">
-              <h3 className="font-bold text-xl flex items-center gap-2">
-                <FiSun className="text-warning" /> {t("weather.title")}
-              </h3>
-              <button
-                onClick={() => setModalText(null)}
-                className="btn btn-ghost btn-sm btn-circle"
-                aria-label={t("common.close")}
-              >
-                <FiX />
-              </button>
-            </div>
-            <div className="px-5 pb-5 overflow-y-auto custom-scrollbar">
-              <p className="text-sm sm:text-base whitespace-pre-line leading-relaxed">
-                {modalText}
-              </p>
-            </div>
-          </div>
-        </div>
+      {selected && selected.tripId === tripId && (
+        <ForecastModal
+          entry={selected}
+          onClose={() => setSelected(null)}
+          t={t}
+        />
       )}
     </div>
   );

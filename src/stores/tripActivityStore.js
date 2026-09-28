@@ -138,53 +138,8 @@ export const useTripActivityStore = create((set, get) => ({
   getWeatherForecast: async (tripId, language = "th") => {
     set({ weatherLoading: true, weatherError: null });
     try {
-      let trip = get().trip;
-
-      // ถ้าย้อนกลับมาใช้หรือไม่มี trip ใน state ให้ดึงข้อมูล trip ใหม่ก่อน
-      if (!trip || trip.id !== Number(tripId)) {
-        const response = await mainApi.get(`/trips/${tripId}`);
-        trip = response.data.data || response.data;
-      }
-
-      if (!trip) {
-        throw new Error("ไม่พบข้อมูลทริปสำหรับประเมินสภาพอากาศ");
-      }
-
-      // ดึงรายการสถานที่ เวลา และวันที่จาก days & activities
-      const activitiesData =
-        trip?.days?.flatMap(
-          (day) =>
-            day.activities?.map((act) => ({
-              date: day.dayDate,
-              time: act.activityTime,
-              location: act.locationName,
-              type: act.activityType,
-            })) || [],
-        ) || [];
-
-      const payload = {
-        language,
-        tripId: Number(tripId),
-        location: trip.destination,
-        startDate: trip.startDate,
-        endDate: trip.endDate,
-        activities: activitiesData,
-      };
-
-      // AI ใช้เวลาตอบ ~20 วินาที: ขยาย timeout เฉพาะเส้นนี้ (default 15s ไม่พอ)
-      // Log payload ที่ส่งออก (ดูใน console ของ browser)
-      console.log(
-        "[AI weather] request payload:",
-        JSON.stringify({
-          tripId: payload.tripId,
-          location: payload.location,
-          startDate: payload.startDate,
-          endDate: payload.endDate,
-          activities: Array.isArray(payload.activities)
-            ? payload.activities.length
-            : 0,
-        }),
-      );
+      // The API reads the owned itinerary; no duplicate activity payload or client log.
+      const payload = { tripId: Number(tripId), language };
       const res = await mainApi.post("/weather/predict-weather", payload, {
         timeout: 120000,
       });
@@ -201,11 +156,13 @@ export const useTripActivityStore = create((set, get) => ({
       // "__QUOTA__" เป็น marker ให้ component แปลเป็นภาษาปัจจุบันเอง (store เรียก useLang ไม่ได้)
       const msg = isTimeout
         ? "AI ตอบช้าเกินกำหนด กรุณากดใหม่อีกครั้ง"
-        : status === 429
-          ? "__QUOTA__"
-          : error.response?.data?.message ||
-            error.message ||
-            "ไม่สามารถดึงข้อมูลสภาพอากาศได้";
+        : status === 413
+          ? "__SIZE__"
+          : status === 429
+            ? "__QUOTA__"
+            : error.response?.data?.message ||
+              error.message ||
+              "ไม่สามารถดึงข้อมูลสภาพอากาศได้";
       set({ weatherError: msg, weatherLoading: false });
     }
   },
