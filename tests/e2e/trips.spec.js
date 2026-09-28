@@ -88,6 +88,9 @@ test("owner trip keeps totals, sharing, day edits, saved pins and theme when ope
     page.getByText("Refactor regression trip", { exact: true }),
   ).toBeVisible();
   await expect(
+    page.getByRole("button", { name: /Split trip expenses/i }),
+  ).toBeVisible();
+  await expect(
     page.getByText("1,250.5", { exact: false }).first(),
   ).toBeVisible();
   await page.getByRole("button", { name: "Share", exact: true }).click();

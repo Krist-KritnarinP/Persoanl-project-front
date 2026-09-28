@@ -1,5 +1,9 @@
 export const additions = {
   th: {
+    "bill.featureTitle": "หารค่าใช้จ่ายในทริป",
+    "bill.featureDescription":
+      "เพิ่มบิล แชร์ยอดกับเพื่อน และดูว่าใครยังค้างเท่าไร",
+    "bill.featureAction": "เปิดบัญชีทริป",
     "bill.quickNav": "ไปยังส่วนของบัญชีทริป",
     "bill.stepItems": "1. รายการและคนที่ร่วม",
     "bill.stepCharges": "2. ส่วนเพิ่ม (ไม่บังคับ)",
@@ -220,6 +224,10 @@ export const additions = {
       "กิจกรรมมีรายละเอียดมากเกินการวิเคราะห์ครั้งเดียว กรุณาลดข้อมูลที่ซ้ำแล้วลองใหม่",
   },
   en: {
+    "bill.featureTitle": "Split trip expenses",
+    "bill.featureDescription":
+      "Add bills, split costs with friends, and see who still owes what.",
+    "bill.featureAction": "Open trip bills",
     "bill.quickNav": "Billing sections",
     "bill.stepItems": "1. Items & participants",
     "bill.stepCharges": "2. Optional charges",
@@ -440,6 +448,9 @@ export const additions = {
       "This itinerary is too large for one analysis. Remove duplicate details and try again.",
   },
   zh: {
+    "bill.featureTitle": "分摊旅行费用",
+    "bill.featureDescription": "添加账单、与朋友分摊，并查看每个人的未结金额。",
+    "bill.featureAction": "打开旅行账本",
     "bill.quickNav": "账目导航",
     "bill.stepItems": "1. 项目与参与者",
     "bill.stepCharges": "2. 可选附加费用",
@@ -647,6 +658,10 @@ export const additions = {
     "weather.sizeLimit": "行程内容过多，无法一次分析。请减少重复信息后重试。",
   },
   ko: {
+    "bill.featureTitle": "여행 경비 나누기",
+    "bill.featureDescription":
+      "청구서를 추가하고 친구와 나누며 남은 정산 금액을 확인하세요.",
+    "bill.featureAction": "여행 장부 열기",
     "bill.quickNav": "정산 메뉴",
     "bill.stepItems": "1. 항목 및 참여자",
     "bill.stepCharges": "2. 추가 비용 (선택)",

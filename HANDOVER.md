@@ -1,3 +1,11 @@
+# Handover — Trip billing entry (2026-09-29)
+
+- หน้าเจ้าของทริปเปลี่ยนปุ่ม outline เล็กเป็นการ์ดสีอุ่นใต้ข้อมูลทริป ทั้งการ์ดกดเข้า `/trips/:tripId/billing` ได้
+- การ์ดบอกชัดว่าหารค่าใช้จ่าย เพิ่มบิลและติดตามยอดค้าง พร้อม CTA ที่เด่นบน desktop และลูกศรบนมือถือ; ข้อความครบ TH/EN/ZH/KO
+- ตรวจหน้าทริปด้วย browser test, build และ i18n keys; ไม่เปลี่ยน logic บิลหรือ API
+
+---
+
 # Handover — Full-width pages + trip billing (2026-09-29)
 
 - เก็บ UI ตาม feedback: select/option ทุกหน้าและเมนูประเภทกิจกรรมใช้พื้นหลังทึบ พร้อมสีข้อความ light/dark; เอาสี option ที่ขัดกับ dark mode ออกจาก LanguageSwitcher

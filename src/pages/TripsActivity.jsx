@@ -420,14 +420,35 @@ export default function TripActivity() {
         </div>
       </div>
 
-      <button
-        className="btn btn-outline"
-        onClick={() => navigate(`/trips/${tripId}/billing`)}
-      >
-        {t("bill.heading")}
-      </button>
       {/* TRIP INFO CARD */}
       <TripInfoCard trip={trip} formatDate={formatDate} />
+
+      <button
+        type="button"
+        onClick={() => navigate(`/trips/${tripId}/billing`)}
+        className="group relative flex w-full items-center gap-4 overflow-hidden rounded-3xl border border-[#e8bd72] bg-linear-to-r from-[#fff7e8] via-[#fff0ce] to-[#e8f5ee] p-5 text-left text-[#24251f] shadow-[0_12px_32px_rgba(75,53,19,0.14)] transition-transform hover:-translate-y-0.5 hover:shadow-[0_16px_36px_rgba(75,53,19,0.2)] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary sm:p-6"
+        aria-label={`${t("bill.featureTitle")}. ${t("bill.featureDescription")}`}
+      >
+        <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-[#173e34] text-[#fff4d8] shadow-md sm:h-16 sm:w-16">
+          <FiDollarSign aria-hidden="true" className="text-3xl" />
+        </span>
+        <span className="min-w-0 flex-1">
+          <span className="block text-lg font-extrabold leading-tight sm:text-2xl">
+            {t("bill.featureTitle")}
+          </span>
+          <span className="mt-1 block text-sm leading-relaxed text-[#484a40] sm:text-base">
+            {t("bill.featureDescription")}
+          </span>
+        </span>
+        <span className="hidden shrink-0 items-center gap-2 rounded-full bg-[#173e34] px-4 py-2.5 text-sm font-bold text-white shadow-sm transition-transform group-hover:translate-x-1 sm:inline-flex">
+          {t("bill.featureAction")}
+          <FiChevronRight aria-hidden="true" />
+        </span>
+        <FiChevronRight
+          aria-hidden="true"
+          className="shrink-0 text-xl sm:hidden"
+        />
+      </button>
 
       {/* TRIP OVERVIEW STATS — horizontal scroll strip on all screens */}
       <TripOverviewStats
