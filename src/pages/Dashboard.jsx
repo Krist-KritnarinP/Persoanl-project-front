@@ -1,3 +1,4 @@
+import TravelOverviewCard from "@/components/travel/TravelOverviewCard";
 import React, { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import {
@@ -482,6 +483,7 @@ function Dashboard() {
                 {t("planner.subtitle")}
               </p>
             </div>
+            <TravelOverviewCard />
           </aside>
         </div>
 

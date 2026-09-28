@@ -49,3 +49,6 @@
 
 ## AI Trip Planner
 ร่างแผนจากข้อความและปฏิทินที่ `/trips/ai`; ดู [AI_PLANNER.md](AI_PLANNER.md) สำหรับ flow, API, ข้อจำกัด และวิธีทดสอบ
+
+## Travel overview
+แดชบอร์ดแผนที่/ปฏิทิน/ค่าใช้จ่ายที่ `/travel-overview`; ดู [TRAVEL_OVERVIEW.md](TRAVEL_OVERVIEW.md) สำหรับ data flow และความหมายของสถานะ/ยอดเงิน

@@ -1,3 +1,15 @@
+# Handover — Travel overview dashboard (2026-09-28)
+
+- เพิ่มกล่องแผนที่ใต้ AI Trip Assistant เปิด /travel-overview: ปฏิทินช่วงทริป ตัวกรองวัน/สถานะ ค่าใช้จ่ายรายทริป/รวม และหมุดตามวันที่กิจกรรม
+- สถานะตามแผน ไม่ใช่ check-in; ยอดรวม Activity.price เป็น THB อาจรวมประมาณการ ไม่ใช่ยอดชำระยืนยัน
+- GET /api/trips/overview ใช้ auth + owner query + whitelist + pagination; ไม่มี geocode/AI เพิ่ม ไม่แก้ schema/env/ข้อมูลจริง
+- รองรับ 4 ภาษาและมือถือ โหลดแผนที่แบบ lazy พร้อม loading/retry/empty
+- Front unit 13, API unit 35, browser desktop/mobile 4 ผ่าน; build ผ่าน, lint 7 warnings เดิม ไม่มี error
+- คู่มือไฟล์/พฤติกรรม/ข้อจำกัดพิกัด: [docs/TRAVEL_OVERVIEW.md](docs/TRAVEL_OVERVIEW.md)
+- Commit แยก Front/API ไม่ push/deploy; ต้องรัน API เวอร์ชันใหม่เพื่อให้ endpoint overview ใช้งานได้
+
+---
+
 # Handover — Weather development logs (2026-09-28)
 
 - Front dev Console แสดง [Weather → API] พร้อม tripId/language

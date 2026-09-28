@@ -10,6 +10,7 @@ import Landing from "@/pages/Landing";
 import RouteSeo from "@/components/RouteSeo";
 
 const AiPlanner = lazy(() => import("@/pages/AiPlanner"));
+const TravelOverview = lazy(() => import("@/pages/TravelOverview"));
 const Dashboard = lazy(() => import("@/pages/Dashboard"));
 const Login = lazy(() => import("@/pages/Login"));
 const Trips = lazy(() => import("@/pages/TripsActivity"));
@@ -49,6 +50,7 @@ const router = createBrowserRouter([
         element: <ProtectRoute />,
         children: [
           { path: "/dashboard", element: <Dashboard /> },
+          { path: "/travel-overview", element: <TravelOverview /> },
           { path: "/trips/ai", element: <AiPlanner /> },
           { path: "/userprofile", element: <Userprofile /> },
           { path: "/trips", element: <Trips /> },
