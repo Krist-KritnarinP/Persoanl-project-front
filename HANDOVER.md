@@ -1,9 +1,9 @@
-# สถานะล่าสุด — Frontend / Trip collaboration (2026-09-29)
+# สถานะล่าสุด — Frontend / Trip collaboration (2026-09-30)
 
 - เริ่มฟีเจอร์ร่วมทริป: เจ้าของเชิญบัญชีเดิมเป็น viewer/editor, ผู้รับยอมรับ/ปฏิเสธจาก Dashboard, ผู้ร่วมออกจากทริปได้ และเจ้าของถอนสิทธิ์ได้
 - Viewer อ่านแผนและ ledger; editor แก้แผนและ ledger; ปุ่มแก้ไข/ลบทริป/แชร์ public ซ่อนตาม role โดย API เป็นตัวบังคับสิทธิ์จริง
 - หน้า Trip มีจัดการผู้ร่วมและคำเชิญครบ TH/EN/ZH/KO; Build ผ่าน, lint ไม่มี error (8 warnings เดิม)
-- เชื่อม API repo คู่กัน; ต้องติดตั้ง migration `npm run migrate:collaboration` ก่อนเปิด API ที่ใช้ DB จริง; ยังไม่ได้ apply migration หรือทดสอบ integration
+- เชื่อม API repo คู่กัน; migration collaboration ถูก apply กับฐานข้อมูลที่ตั้งใน environment นี้แล้ว และยืนยันว่าทริปเดิม 5 รายการยังอยู่; environment อื่นต้อง apply migration ก่อนใช้ API รุ่นนี้
 - `ROADMAP.md` มีการแก้ไขอื่นค้างอยู่ใน working tree และคงไว้โดยไม่ stage ใน commit ฟีเจอร์นี้
 - GitHub Actions run [36524216696](https://github.com/Krist-KritnarinP/Persoanl-project-front/actions/runs/36524216696) ผ่านตามสถานะที่ผู้ใช้ยืนยัน
 - งานล่าสุดทำ browser tests ให้ใช้ได้บน GitHub Actions โดยไม่เปลี่ยน production logic
