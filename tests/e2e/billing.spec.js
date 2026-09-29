@@ -153,6 +153,11 @@ test("billing imports activity, previews charges, records a partial repayment an
     });
   });
   await page.goto("/trips/71/billing");
+  expect(
+    await page.locator("main.billing-workspace").evaluate((main) =>
+      Math.abs(window.innerWidth - main.getBoundingClientRect().right),
+    ),
+  ).toBeLessThan(3);
   for (const name of ["Alice", "Bob"]) {
     await page
       .getByRole("textbox", { name: "Member name", exact: true })

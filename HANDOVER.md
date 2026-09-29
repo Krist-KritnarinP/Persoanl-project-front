@@ -1,3 +1,11 @@
+# Handover — Billing full-width correction (2026-09-29)
+
+- แก้หน้า `/trips/:tripId/billing` ที่เผลอใส่ `max-w-[1500px] mx-auto` ระหว่างปรับ UI ทำให้จอกว้างเหลือขอบว่าง; ตอนนี้ใช้ความกว้างทั้งหมดของพื้นที่ด้านขวา sidebar
+- เหลือ gutter ภายใน 16px มือถือ/24px desktop เพื่อไม่ให้ข้อความติดขอบจอ; ไม่จำกัดความกว้างหน้าอีกแล้ว
+- เพิ่ม browser assertion ตรวจว่าขอบขวาของ main ไปถึงขอบ viewport ทั้ง desktop/mobile; ไม่เปลี่ยน logic บิล/API/DB
+
+---
+
 # Handover — Billing UX refresh (2026-09-29)
 
 - หน้า `/trips/:tripId/billing` เปลี่ยนจากฟอร์มยาวน้ำหนักเท่ากันเป็น hero + ปุ่มเพิ่มบิล, การ์ดยอดยืนยัน/ยอดค้าง, ทางลัด, section สมาชิก/บิล/คืนเงินที่แยกชัด

@@ -142,7 +142,7 @@ function BillingWorkspace({ tripId }) {
   const hasMembers = data.members.some((m) => m.active);
   const canAddBill = hasMembers && !editing;
   return (
-    <main className="billing-workspace mx-auto w-full max-w-[1500px] space-y-7 p-4 pb-16 md:p-8">
+    <main className="billing-workspace w-full space-y-7 px-4 pt-4 pb-16 md:px-6 md:pt-8">
       {!sidebarEnabled && (
         <div className="flex justify-end gap-2">
           <LanguageSwitcher />
