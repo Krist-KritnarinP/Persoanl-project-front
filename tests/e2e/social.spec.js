@@ -45,6 +45,9 @@ test("friends chat, location request and consented timed sharing",async({page})=
   await page.getByRole("textbox",{name:"Write a message…"}).fill("Meet at the station");
   await page.getByRole("button",{name:"Send"}).click();
   await expect(page.getByText("Meet at the station")).toBeVisible();
+  const pageMain = await page.locator("main.social-ui").boundingBox();
+  expect(Math.abs(pageMain.x + pageMain.width - page.viewportSize().width)).toBeLessThanOrEqual(2);
+  await page.screenshot({path:test.info().outputPath("chat-ui.png"),fullPage:true});
   await page.getByRole("button",{name:"Delete chat"}).click();
   const chatConfirm=page.getByRole("alertdialog");
   await expect(chatConfirm).toContainText("Remove this chat from your list?");

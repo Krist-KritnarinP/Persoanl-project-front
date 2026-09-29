@@ -72,3 +72,10 @@ Sidebar ปิดแล้วกลับ classic layout เต็ม ไม่�
 
 ## ผู้ร่วมทริป
 เจ้าของเชิญบัญชีที่มีอยู่และเลือก viewer/editor ในหน้า Trip; ผู้รับตอบรับจาก Dashboard. รายละเอียด API, สิทธิ์ และ migration อยู่ใน API `docs/TRIP_COLLABORATION_PLAN.md`.
+
+## Trip sidebar sizing and social UI (2026-09-30)
+- `TripsActivity.jsx` ใช้ `.trip-side-column`: ลูกต้อง `flex-shrink: 0` เพราะคอลัมน์จำกัดความสูงและเลื่อนแนวตั้ง; อย่าแก้เฉพาะ wrapping/radius เพราะ `.glass` จะตัดเนื้อหาที่สูงเกินการ์ด
+- `TripNavCard.jsx` แยก QR/คำอธิบายกลางการ์ดจากปุ่มเต็มแถว เพื่อรองรับ right column แคบ; ยังใช้ NavigationQr fallback และ URL logic เดิม
+- `.social-ui`, `.social-surface`, `.social-hero`, `.chat-messages`, `.notification-row` ใน `src/index.css` จัดสี/ระยะห่างตาม theme เฉพาะหน้า Chat, Notifications และ ChatDock; ไม่ย้าย bell จาก header เดิม
+- `trips.spec.js` ตรวจขอบล่างพร้อมขอบซ้าย/ขวาของเนื้อหาที่ 390/1024/1280px; social/notification specs เก็บ screenshots ใน Playwright output เพื่อ review UI
+- Chat/Notifications ใช้เต็มความกว้างพื้นที่ content (`w-full`); อย่าเพิ่ม `max-w-* mx-auto` ให้ main เพราะผู้ใช้ต้องการเต็มจอ มีแค่ padding ภายใน

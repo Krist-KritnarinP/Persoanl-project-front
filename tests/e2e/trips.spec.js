@@ -110,12 +110,13 @@ test("owner trip keeps totals, sharing, day edits, saved pins and theme when ope
     const cardRect = card.getBoundingClientRect();
     return [...card.querySelectorAll("h1,h2,h3,p,a,button,span")].filter((el) => el.textContent.trim() && !el.closest(".leaflet-container")).map((el) => {
       const rect = el.getBoundingClientRect();
-      return { text: el.textContent.trim(), left: rect.left, right: rect.right, cardLeft: cardRect.left, cardRight: cardRect.right };
+      return { text: el.textContent.trim(), left: rect.left, right: rect.right, cardLeft: cardRect.left, cardRight: cardRect.right, bottom: rect.bottom, cardBottom: cardRect.bottom };
     });
   }));
   for (const item of cardTextBounds.flat()) {
     expect(item.left, item.text).toBeGreaterThanOrEqual(item.cardLeft - 1);
     expect(item.right, item.text).toBeLessThanOrEqual(item.cardRight + 1);
+    expect(item.bottom, item.text).toBeLessThanOrEqual(item.cardBottom - 8);
   }
   for (const card of await compactCards.all()) {
     await expect(card).toHaveCSS("border-radius", "16px");
@@ -124,6 +125,24 @@ test("owner trip keeps totals, sharing, day edits, saved pins and theme when ope
     "overflow",
     "visible",
   );
+  // Check actual content, including QR and map canvas, at narrow desktop and mobile widths.
+  const originalViewport = page.viewportSize();
+  for (const width of [390, 1024, 1280]) {
+    await page.setViewportSize({ width, height: 720 });
+    const overflow = await compactCards.evaluateAll((cards) => cards.flatMap((card) => {
+      const box = card.getBoundingClientRect();
+      return [...card.querySelectorAll("h3,p,a.btn,button.btn,svg[role=img],.leaflet-container")]
+        .filter((el) => !el.parentElement.closest(".leaflet-container"))
+        .flatMap((el) => {
+          const rect = el.getBoundingClientRect();
+          return rect.right > box.right - 7 || rect.left < box.left + 7 || rect.bottom > box.bottom - 7
+            ? [el.textContent || el.getAttribute("aria-label") || el.className] : [];
+        });
+    }));
+    expect(overflow, `Card content must fit at ${width}px`).toEqual([]);
+  }
+  await page.setViewportSize(originalViewport);
+  await compactCards.nth(1).screenshot({ path: test.info().outputPath("navigation-card.png") });
   await expect(
     page.getByRole("button", { name: /Split trip expenses/i }),
   ).toBeVisible();

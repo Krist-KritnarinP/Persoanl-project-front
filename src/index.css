@@ -990,3 +990,30 @@ select {
   color: #f0f9f1;
   border-color: #4d8968;
 }
+
+/* The scrollable trip column must scroll whole cards, never compress their content. */
+.trip-side-column > * { flex-shrink: 0; }
+
+/* Shared social surfaces follow the active liquid-glass theme without clipping content. */
+.social-surface {
+  border: 1px solid color-mix(in srgb, var(--color-base-content) 10%, transparent);
+  background: color-mix(in srgb, var(--color-base-100) 94%, transparent);
+  border-radius: 24px;
+  box-shadow: 0 8px 28px color-mix(in srgb, var(--color-base-content) 5%, transparent);
+}
+.social-hero {
+  border-radius: 24px;
+  border: 1px solid color-mix(in srgb, var(--color-primary) 12%, transparent);
+  background: linear-gradient(120deg, color-mix(in srgb, var(--color-primary) 9%, var(--color-base-100)), var(--color-base-100));
+  padding: 20px;
+}
+.social-ui .btn, .social-ui .input, .social-ui .select { border-radius: 12px; }
+.social-ui .btn { flex-shrink: 0; }
+.social-ui .btn:focus-visible { outline: 2px solid var(--color-primary); outline-offset: 3px; }
+.chat-messages { background: color-mix(in srgb, var(--color-primary) 3%, var(--color-base-100)); }
+.chat-message { overflow-wrap: anywhere; }
+.notification-row { display: grid; grid-template-columns: 44px minmax(0, 1fr) auto; }
+@media (max-width: 540px) {
+  .notification-row { grid-template-columns: 40px minmax(0, 1fr); }
+  .notification-row > :last-child { grid-column: 2; justify-self: start; }
+}

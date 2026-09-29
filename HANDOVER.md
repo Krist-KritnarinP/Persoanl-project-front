@@ -1,5 +1,15 @@
 # สถานะล่าสุด — Frontend / Social + Trip collaboration (2026-09-30)
 
+## Navigate + QR sizing and social UI refresh (2026-09-30)
+
+- พบสาเหตุที่แก้ wrapping แล้วยังล้น: right column เป็น flex แนวตั้งที่จำกัด max-height แต่ children ยอม shrink; `.glass` clip เนื้อหาที่เลยขอบล่าง ตรวจซ้ำก่อนแก้ด้วย browser assertion แล้วล้มที่ Trip map
+- เพิ่ม `.trip-side-column > * { flex-shrink: 0 }` ให้ scroll ทั้งการ์ดตามความสูงจริง; QR จัดกลางพร้อมคำอธิบายและปุ่มเต็มแถว แยกจากกันแทนการเบียดข้าง QR
+- ปรับหน้าแชท, floating chat และ notification inbox ด้วย social surfaces/hero ตาม theme tokens, bubble ข้อความ, spacing, unread dot/ring และปุ่มรับเพื่อนใต้ข้อความบนมือถือ; คง handlers/API/polling/consent/drag และตำแหน่งกระดิ่งใน Dashboard header เดิม
+- Localhost browser tests ใช้ API mocks: social/notifications/trips ผ่าน 10/10 desktop/mobile; ตรวจเนื้อหาด้านข้างและด้านล่างของการ์ดที่ 390/1024/1280px และดู screenshots navigation/chat/notifications; build, unit 13/13 ผ่าน, lint มี 8 warnings เดิม
+- แก้ตาม feedback เรื่องพื้นที่ว่าง: Chat/Notifications ใช้ `w-full` ไม่จำกัด max-width และไม่จัดกลาง; browser ตรวจ main ชิดขอบขวาของ viewport โดยเหลือ padding ภายใน; รัน social/notifications ซ้ำผ่าน 4/4 และ build ผ่าน
+- งานรอบนี้ Front UI เท่านั้น ไม่แก้ API/DB และไม่ push/deploy; รายการ mobile roadmap ของผู้ใช้ที่ค้างอยู่ยังคงไว้และไม่รวม commit
+- สถานะ migration ที่ถูกต้องให้อ้างอิง API HANDOVER ล่าสุด: notifications migration apply แล้วกับ DB ที่ API localhost ใช้; ข้อความเก่าในประวัติด้านล่างที่ระบุว่ายังไม่ได้ apply เป็นสถานะก่อนหน้า
+
 ## Header, trip cards, and draggable chat dock
 
 - วาง notification bell ใน Dashboard header แถวเดียวกับ language switcher, ชื่อผู้ใช้ และ logout; เอาออกจาก sidebar brand และ app bar แยก

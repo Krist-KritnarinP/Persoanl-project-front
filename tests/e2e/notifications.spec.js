@@ -39,6 +39,10 @@ test("notification inbox accepts friend requests and opens new messages",async({
   await headerBell.click();
   await expect(page).toHaveURL(/\/notifications$/);
   await expect(page.getByText("Friend sent you a friend request")).toBeVisible();
+  const pageMain = await page.locator("main.social-ui").boundingBox();
+  expect(Math.abs(pageMain.x + pageMain.width - page.viewportSize().width)).toBeLessThanOrEqual(2);
+  await page.screenshot({path:test.info().outputPath("notifications-ui.png"),fullPage:true});
+  expect(await page.evaluate(()=>document.documentElement.scrollWidth <= innerWidth)).toBe(true);
   await page.getByRole("button",{name:"Accept friend"}).click();
   await expect.poll(()=>accepted).toBe(true);
   await page.getByRole("button",{name:"Open chat",exact:true}).first().click();

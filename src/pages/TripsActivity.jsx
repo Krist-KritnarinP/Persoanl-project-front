@@ -813,7 +813,7 @@ export default function TripActivity() {
         </div>
 
         {/* RIGHT COLUMN: สภาพอากาศ + แผนที่เล็ก + นำทาง/QR */}
-        <div className="order-3 lg:col-span-3 lg:sticky lg:top-4 lg:max-h-[calc(100vh-2rem)] lg:overflow-y-auto custom-scrollbar flex min-w-0 flex-col gap-4">
+        <div className="trip-side-column order-3 lg:col-span-3 lg:sticky lg:top-4 lg:max-h-[calc(100vh-2rem)] lg:overflow-y-auto custom-scrollbar flex min-w-0 flex-col gap-4">
           <GeminiWeatherCard
             tripId={tripId}
             weatherPrediction={weatherPrediction}

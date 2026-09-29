@@ -76,33 +76,33 @@ export default function Notifications() {
   };
 
   return (
-    <main className="mx-auto min-h-dvh w-full max-w-4xl space-y-5 p-4 md:p-7">
-      <header className="flex items-center justify-between gap-3">
-        <div className="flex items-center gap-3">
-          <span className="grid h-12 w-12 place-items-center rounded-2xl bg-primary/10 text-primary"><FiBell className="text-2xl" /></span>
-          <div><h1 className="text-2xl font-bold md:text-3xl">{c.title}</h1><p className="text-sm text-base-content/60">{c.intro}</p></div>
+    <main className="social-ui min-h-dvh w-full space-y-5 p-4 md:p-7">
+      <header className="social-hero flex flex-wrap items-center justify-between gap-4">
+        <div className="flex min-w-0 items-center gap-3">
+          <span className="grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-primary/10 text-primary"><FiBell className="text-2xl" /></span>
+          <div><h1 className="text-2xl font-bold md:text-3xl">{c.title}</h1><p className="mt-2 text-sm leading-relaxed text-base-content/70">{c.intro}</p></div>
         </div>
         {items.some((item) => !item.readAt) && <button className="btn btn-ghost btn-sm gap-2" onClick={markAll}><FiCheck />{c.all}</button>}
       </header>
       {notice && <p className="alert py-2" role="status">{notice}</p>}
-      <section className="overflow-hidden rounded-2xl border border-base-content/10 bg-base-100 shadow-sm" aria-label={c.title}>
+      <section className="space-y-3" aria-label={c.title}>
         {items.length === 0 ? (
-          <div className="grid min-h-56 place-items-center p-8 text-center text-base-content/55"><div><FiBell className="mx-auto mb-3 text-3xl" /><p>{c.empty}</p></div></div>
+          <div className="social-surface grid min-h-56 place-items-center p-8 text-center text-base-content/55"><div><FiBell className="mx-auto mb-3 text-3xl" /><p>{c.empty}</p></div></div>
         ) : items.map((item) => {
           const friendRequest = item.type === "friend_request";
           const title = (friendRequest ? c.friend : c.message).replace("{name}", item.actorName || "Friend");
           return (
-            <article key={item.id} className={`flex flex-wrap items-center gap-3 border-b border-base-content/10 p-4 last:border-0 ${item.readAt ? "" : "bg-primary/[0.04]"}`}>
+            <article key={item.id} className={`social-surface notification-row items-center gap-3 p-4 sm:p-5 ${item.readAt ? "" : "ring-1 ring-primary/25"}`}>
               <span className={`grid h-10 w-10 shrink-0 place-items-center rounded-full ${friendRequest ? "bg-success/10 text-success" : "bg-primary/10 text-primary"}`}>{friendRequest ? <FiUserPlus /> : <FiMessageCircle />}</span>
               <div className="min-w-0 flex-1">
-                <p className="font-medium">{title}</p>
-                {!friendRequest && item.payload?.excerpt && <p className="truncate text-sm text-base-content/60">{item.payload.excerpt}</p>}
-                <time className="text-xs text-base-content/45" dateTime={item.createdAt}>{new Date(item.createdAt).toLocaleString()}</time>
+                <p className="font-semibold leading-relaxed [overflow-wrap:anywhere]">{!item.readAt && <span aria-hidden="true" className="mr-2 inline-block h-2 w-2 rounded-full bg-primary" />}{title}</p>
+                {!friendRequest && item.payload?.excerpt && <p className="mt-1 line-clamp-2 text-sm leading-relaxed text-base-content/70 [overflow-wrap:anywhere]">{item.payload.excerpt}</p>}
+                <time className="mt-2 block text-xs text-base-content/60" dateTime={item.createdAt}>{new Date(item.createdAt).toLocaleString()}</time>
               </div>
               {friendRequest ? item.payload?.accepted ? (
                 <span className="badge badge-success badge-outline">{c.accepted}</span>
               ) : (
-                <button className="btn btn-success btn-sm" disabled={busyId === item.id} onClick={() => acceptFriend(item)}>{c.accept}</button>
+                <button className="btn btn-primary btn-sm" disabled={busyId === item.id} onClick={() => acceptFriend(item)}>{c.accept}</button>
               ) : (
                 <button className="btn btn-primary btn-sm" disabled={busyId === item.id} onClick={() => openMessage(item)}>{c.open}</button>
               )}

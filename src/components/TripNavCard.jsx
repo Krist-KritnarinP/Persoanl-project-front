@@ -33,37 +33,29 @@ export default function TripNavCard({ points = [], label, mapHref = null }) {
         <FiNavigation className="text-primary shrink-0" /> <span className="min-w-0 break-words">{t("map.navTitle")}</span>
       </h3>
       {label && (
-        <p className="text-sm text-base-content/60 -mt-2 truncate">{label}</p>
+        <p className="text-sm leading-relaxed text-base-content/60 break-words">{label}</p>
       )}
 
       {dirUrl ? (
-        <div className="flex items-start sm:items-center gap-3 min-w-0">
-          <div className="bg-white p-2 rounded-xl shrink-0">
-            <NavigationQr value={dirUrl} size={88} />
-          </div>
-          <div className="min-w-0 flex-1 space-y-2">
-            <p className="min-w-0 text-xs text-base-content/70 flex items-start gap-1.5 leading-relaxed">
-              <FiSmartphone className="mt-0.5 shrink-0 text-primary" />
-              <span className="min-w-0 break-words">{t("map.qrHint")}</span>
-            </p>
-            <div className="flex flex-wrap gap-1.5">
-              <a
-                href={dirUrl}
-                target="_blank"
-                rel="noreferrer"
-                className="btn btn-primary btn-xs h-auto min-h-7 min-w-0 max-w-full whitespace-normal rounded-lg px-2 py-1 text-left leading-tight gap-1"
-              >
-                <FiExternalLink className="shrink-0" /> <span className="min-w-0 break-words">{t("map.openGmaps")}</span>
-              </a>
-              {mapHref && (
-                <Link
-                  to={mapHref}
-                  className="btn btn-ghost glass btn-xs h-auto min-h-7 min-w-0 max-w-full whitespace-normal rounded-lg px-2 py-1 text-left leading-tight gap-1"
-                >
-                  <FiMaximize2 className="shrink-0" /> <span className="min-w-0 break-words">{t("map.customRoute")}</span>
-                </Link>
-              )}
+        <div className="space-y-3 min-w-0">
+          <div className="flex min-w-0 flex-col items-center gap-3 rounded-xl border border-base-content/10 bg-base-100/60 p-3">
+            <div className="rounded-xl bg-white p-3 shadow-sm">
+              <NavigationQr value={dirUrl} size={112} />
             </div>
+            <p className="min-w-0 text-center text-xs leading-relaxed text-base-content/70">
+              <FiSmartphone className="mr-1 inline text-primary" />{t("map.qrHint")}
+            </p>
+          </div>
+          <div className="grid min-w-0 gap-2">
+            <a href={dirUrl} target="_blank" rel="noreferrer"
+              className="btn btn-primary h-auto min-h-11 w-full gap-2 px-3 py-2 text-sm leading-relaxed">
+              <FiExternalLink className="shrink-0" /><span className="min-w-0">{t("map.openGmaps")}</span>
+            </a>
+            {mapHref && (
+              <Link to={mapHref} className="btn btn-ghost h-auto min-h-11 w-full gap-2 border border-base-content/10 px-3 py-2 text-sm leading-relaxed">
+                <FiMaximize2 className="shrink-0" /><span className="min-w-0">{t("map.customRoute")}</span>
+              </Link>
+            )}
           </div>
         </div>
       ) : null}

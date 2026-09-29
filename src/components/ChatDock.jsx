@@ -120,22 +120,22 @@ export default function ChatDock() {
     <div className="fixed z-50" style={{ left: position.x, top: position.y }} data-testid="chat-dock-position">
       {open && (
         <section
-          className="fixed flex h-[min(70dvh,560px)] w-[min(94vw,380px)] flex-col overflow-hidden rounded-2xl border border-base-content/15 bg-base-100 shadow-2xl"
+          className="social-ui social-surface fixed flex h-[min(70dvh,560px)] w-[min(94vw,380px)] flex-col overflow-hidden rounded-2xl border border-base-content/15 bg-base-100 shadow-2xl"
           style={{ left: panelLeft, top: panelTop }}
           aria-label={text.chat}
         >
-          <header className="flex items-center gap-2 border-b border-base-content/10 p-3">
-            <strong className="flex-1">{text.chat}</strong>
+          <header className="flex shrink-0 items-center gap-2 border-b border-base-content/10 bg-primary/5 p-3">
+            <FiMessageCircle className="text-primary text-xl"/><strong className="flex-1">{text.chat}</strong>
             <Link className="btn btn-ghost btn-xs" to="/chat">{text.full}</Link>
             <button className="btn btn-ghost btn-circle btn-xs" onClick={() => setOpen(false)} aria-label={text.open}><FiX /></button>
           </header>
-          <div className="flex gap-1 overflow-x-auto border-b border-base-content/10 p-2">
-            {threads.map((thread) => <button key={thread.id} className={`btn btn-xs whitespace-nowrap ${thread.id === selected ? "btn-primary" : "btn-ghost"}`} onClick={() => setSelected(thread.id)}>{thread.name || thread.participants?.map((p) => p.username).join(", ") || text.chat}</button>)}
+          <div className="flex shrink-0 gap-2 overflow-x-auto border-b border-base-content/10 p-2">
+            {threads.map((thread) => <button key={thread.id} aria-pressed={thread.id === selected} className={`btn btn-xs whitespace-nowrap ${thread.id === selected ? "btn-primary" : "btn-ghost"}`} onClick={() => setSelected(thread.id)}>{thread.name || thread.participants?.map((p) => p.username).join(", ") || text.chat}</button>)}
           </div>
           <Suspense fallback={<div className="grid flex-1 place-items-center"><span className="loading loading-spinner" /></div>}>
             <ConversationPanel key={selected || "none"} conversationId={selected} compact />
           </Suspense>
-          <button className="btn btn-sm m-2" onClick={refresh}>{text.open}</button>
+          <button className="btn btn-ghost btn-sm m-2 shrink-0" onClick={refresh}>{text.open}</button>
         </section>
       )}
       <button
