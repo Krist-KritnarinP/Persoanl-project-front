@@ -13,6 +13,7 @@
 | /trips, /trips/:tripId | TripsActivity.jsx | จัดวัน กิจกรรม งบ แผนที่ย่อ แชร์ และ AI อากาศ |
 | /trips/:tripId/map | TripMapPage.jsx | แผนที่เต็ม เลือกพิกัดและลิงก์นำทาง/QR |
 | /chat | Chat.jsx | เพื่อน แชทส่วนตัว/กลุ่ม และแชร์ตำแหน่งแบบกำหนดเวลา |
+| /notifications | Notifications.jsx | คำขอเป็นเพื่อน/ข้อความใหม่; รับเพื่อนหรือเปิด conversation จาก inbox |
 | /share/:token | ShareTripView.jsx | อ่านทริปที่แชร์โดยไม่ login; ใช้ public API |
 | /userprofile | Userprofile.jsx | ข้อมูลบัญชี รหัสผ่าน export/delete |
 
@@ -33,6 +34,7 @@
 | stores/tripActivityStore.js | รายละเอียดทริป CRUD วัน/กิจกรรม และ weather/share |
 | stores/userStore.js | login/logout และ session ที่ persist |
 | components/ChatDock.jsx + services/locationTracking.js | floating chat และอัปเดตตำแหน่งที่ผู้ใช้อนุญาตจนหมดเวลา/หยุดแชร์ |
+| layouts/AppLayout.jsx | sidebar notification unread count poll; หน้า Notifications เป็นแหล่ง action หลัก |
 | api/mainApi.js | Axios, access token และ single-flight refresh |
 | hooks/useTripCoordinates.js + utils/geocode.js | พิกัด DB → cache → ค้นหาอัตโนมัติ; progressive render |
 | utils/gmaps.js | สร้าง URL นำทาง Google Maps |

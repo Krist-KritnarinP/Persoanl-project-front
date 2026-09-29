@@ -22,7 +22,7 @@ test("friends chat, location request and consented timed sharing",async({page})=
     else if(path.endsWith("/messages")&&request.method()==="POST"){
       const body=request.postDataJSON().body;const row={id:String(nextId++),kind:"text",body,senderId:1,senderName:"Traveler",createdAt:new Date().toISOString()};messages.push(row);data=row;
     }else if(path.endsWith("/location-requests")&&request.method()==="POST")data={id:"9",kind:"location_request"};
-    else if(path.endsWith("/locations"))data=[];
+    else if(path.endsWith("/locations"))data=[{userId:2,username:"Friend",latitude:35.68,longitude:139.76,updatedAt:new Date().toISOString(),expiresAt:new Date(Date.now()+3600000).toISOString()}];
     else if(path.endsWith("/location-shares")&&request.method()==="GET")data=null;
     else if(path.endsWith("/location-shares")&&request.method()==="POST"){
       sharingMinutes=request.postDataJSON().minutes;data={expiresAt:new Date(Date.now()+sharingMinutes*60000).toISOString()};
@@ -32,6 +32,8 @@ test("friends chat, location request and consented timed sharing",async({page})=
   });
   await page.goto("/chat");
   await expect(page.getByRole("heading",{name:"Friends & chat"})).toBeVisible();
+  await expect(page.getByTitle("Friend · Open map")).toBeVisible();
+  await expect(page.getByRole("link",{name:/Open map/}).first()).toHaveAttribute("href",/google\.com\/maps/);
   await expect(page.getByText("Location requested · sharing is always your choice")).toBeVisible();
   await page.getByRole("button",{name:"Share location",exact:true}).first().click();
   await expect.poll(()=>sharingMinutes).toBe(60);

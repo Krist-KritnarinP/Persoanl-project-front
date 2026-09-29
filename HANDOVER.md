@@ -1,5 +1,13 @@
 # สถานะล่าสุด — Frontend / Social + Trip collaboration (2026-09-30)
 
+## Notification inbox, chat map, and collaborator panel
+
+- เพิ่ม route `/notifications` และ sidebar unread badge; หน้าแจ้งเตือนรับคำขอเป็นเพื่อนได้ตรงนั้น และกดข้อความเพื่อเปิด conversation ที่ถูกต้อง
+- API บันทึก `friend_request`/`new_message` เป็น notification event; หน้าแชทมี OSM map preview สำหรับ location shares และปุ่มเปิด Google Maps
+- จัดการ์ดผู้ร่วมทริปใหม่เป็น header/count, ฟอร์มเชิญสองแถว และรายการเพื่อนพร้อมสถานะ/role/remove action; ย่อ gap ใน side column
+- Test บน localhost ด้วย API mocks; browser social/notifications/trips รวม 10/10 desktop/mobile; build/lint/unit ผ่าน
+- API ต้อง apply `npm run migrate:notifications` บน DB environment ก่อนใช้จริง; migration ยังไม่ได้ apply กับ DB ที่ตั้งค่าไว้ เพราะ connection URL ชี้ไปฐานข้อมูลนอกเครื่อง
+
 ## ตรวจซ้ำหลัง UI ไม่เปลี่ยนตามที่คาด
 
 - สาเหตุ: `.glass-card` ใน `src/index.css` กำหนด radius แบบ global มีลำดับเหนือ rounded utilities; `.btn` กำหนด `overflow: hidden` จึงตัด label ที่ wrap

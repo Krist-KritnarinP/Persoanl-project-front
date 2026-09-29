@@ -12,12 +12,14 @@ import {
   FiChevronRight,
   FiSettings,
   FiMessageCircle,
+  FiBell,
 } from "react-icons/fi";
 import { useLang } from "@/i18n";
 import useUserStore from "@/stores/userStore";
 import ThemeToggle from "@/components/ThemeToggle";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
 import ChatDock from "@/components/ChatDock";
+import { mainApi } from "@/api/mainApi";
 
 function Modal({ children, title, onClose, drawer = false }) {
   const ref = useRef(null);
@@ -74,11 +76,22 @@ function SidebarContent({ close, settings, signingOut, signOut }) {
   const { t } = useLang();
   const user = useUserStore((s) => s.user);
   const { pathname } = useLocation();
+  const [unreadNotifications, setUnreadNotifications] = useState(0);
+  useEffect(() => {
+    let active = true;
+    const load = () => mainApi.get("/social/notifications/unread-count")
+      .then(({ data }) => { if (active) setUnreadNotifications(data.data); })
+      .catch(() => {});
+    const initial = setTimeout(load, 0);
+    const timer = setInterval(load, 15000);
+    return () => { active = false; clearTimeout(initial); clearInterval(timer); };
+  }, []);
   const links = [
     ["/travel-overview", FiMap, "side.overview"],
     ["/dashboard", FiBriefcase, "side.trips"],
     ["/trips/ai", FiCompass, "side.ai"],
     ["/chat", FiMessageCircle, "side.chat"],
+    ["/notifications", FiBell, "side.notifications"],
   ];
   const row =
     "flex items-center gap-3 rounded-xl px-3 py-3 min-h-12 transition-colors";
@@ -104,7 +117,12 @@ function SidebarContent({ close, settings, signingOut, signOut }) {
               className={`${row} ${active ? "bg-primary text-primary-content font-semibold" : "hover:bg-base-content/10"}`}
             >
               <Icon className="text-xl shrink-0" />
-              <span>{t(key)}</span>
+              <span className="min-w-0 flex-1">{t(key)}</span>
+              {to === "/notifications" && unreadNotifications > 0 && (
+                <span className="badge badge-error badge-sm text-error-content" aria-label={`${unreadNotifications} unread`}>
+                  {unreadNotifications > 99 ? "99+" : unreadNotifications}
+                </span>
+              )}
             </NavLink>
           );
         })}

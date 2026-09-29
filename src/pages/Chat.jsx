@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import { FiArrowLeft, FiMapPin, FiMessageCircle, FiPlus, FiSend, FiUsers } from "react-icons/fi";
 import { mainApi } from "@/api/mainApi";
 import useUserStore from "@/stores/userStore";
@@ -35,7 +35,7 @@ export function ConversationPanel({ conversationId, compact=false }) {
         mainApi.get(`/social/conversations/${conversationId}/messages`,{params:{after}}),
         mainApi.get(`/social/conversations/${conversationId}/locations`),
       ]);
-      if(m.data.data.length){lastMessageId.current=m.data.data.at(-1).id;setMessages((old)=>after==="0"?m.data.data:[...old,...m.data.data]);}
+      if(m.data.data.length){lastMessageId.current=m.data.data.at(-1).id;setMessages((old)=>after==="0"?m.data.data:[...old,...m.data.data]);mainApi.patch(`/social/notifications/conversations/${conversationId}/read`).catch(()=>{});}
       setLocations(l.data.data);
     } catch { /* a transient poll failure should not clear a conversation */ }
   },[conversationId]);
@@ -69,7 +69,15 @@ export function ConversationPanel({ conversationId, compact=false }) {
       {sharing ? <button className="btn btn-error btn-sm" onClick={stop}>{c.stop}</button> : <><select className="select select-bordered select-sm" value={duration} onChange={(e)=>setDuration(Number(e.target.value))} aria-label={c.duration}>{durations.map(n=><option key={n} value={n}>{durationLabel(n,lang)}</option>)}</select><button className="btn btn-primary btn-sm" onClick={startShare}><FiMapPin/> {c.share}</button></>}
       {notice&&<span className="text-xs" role="status">{notice}</span>}
     </div>
-    {!!locations.length&&<div className="flex flex-wrap gap-2 border-b border-base-content/10 p-2">{locations.map((loc)=><a key={loc.userId} className="badge badge-success gap-1" target="_blank" rel="noreferrer" href={`https://maps.google.com/?q=${loc.latitude},${loc.longitude}`}><FiMapPin/>{loc.username} · {c.map}</a>)}</div>}
+    {!!locations.length&&<section className="grid gap-2 border-b border-base-content/10 p-3 sm:grid-cols-2" aria-label={c.map}>{locations.map((loc)=>{
+      const lat=Number(loc.latitude);const lng=Number(loc.longitude);const pad=0.008;
+      const mapSrc=`https://www.openstreetmap.org/export/embed.html?bbox=${lng-pad}%2C${lat-pad}%2C${lng+pad}%2C${lat+pad}&layer=mapnik&marker=${lat}%2C${lng}`;
+      const googleUrl=`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${lat},${lng}`)}`;
+      return <article key={loc.userId} className="overflow-hidden rounded-xl border border-base-content/10 bg-base-100">
+        <iframe title={`${loc.username} · ${c.map}`} src={mapSrc} loading="lazy" referrerPolicy="no-referrer" className="block h-36 w-full border-0" />
+        <div className="flex items-center justify-between gap-2 p-2"><div className="min-w-0"><p className="truncate text-sm font-semibold">{loc.username}</p><p className="text-xs opacity-60">{new Date(loc.updatedAt).toLocaleTimeString()}</p></div><a className="btn btn-primary btn-xs shrink-0 gap-1" href={googleUrl} target="_blank" rel="noreferrer"><FiMapPin/>{c.map}</a></div>
+      </article>;
+    })}</section>}
     <div className="flex-1 space-y-2 overflow-y-auto p-3" aria-live="polite">{messages.map((m)=><div key={m.id} className={`max-w-[85%] rounded-2xl px-3 py-2 ${m.senderId===userId?"ml-auto bg-primary text-primary-content":"bg-base-200"}`}>
       {m.kind==="location_request"?<><p className="text-sm">{m.senderId===userId?c.locationRequest:`${m.senderName||"Friend"} ${c.locationRequest}`}</p>{m.senderId!==userId&&<div className="mt-2 flex flex-wrap gap-2"><select className="select select-bordered select-xs text-base-content" value={duration} onChange={(e)=>setDuration(Number(e.target.value))}>{durations.map(n=><option key={n} value={n}>{durationLabel(n,lang)}</option>)}</select><button className="btn btn-xs btn-success" onClick={startShare}>{c.share}</button></div>}</>:<><p className="whitespace-pre-wrap break-words">{m.body}</p><p className="mt-1 text-[10px] opacity-60">{m.senderName||c.place} · {new Date(m.createdAt).toLocaleTimeString()}</p></>}
     </div>)}</div>
@@ -78,9 +86,11 @@ export function ConversationPanel({ conversationId, compact=false }) {
 }
 
 export default function Chat(){
+  const [searchParams] = useSearchParams();
+  const requestedConversation = searchParams.get("conversationId");
   const {lang}=useLang(); const c=copy[lang]||copy.en; const userId=useUserStore((s)=>s.user?.id);
   const [friends,setFriends]=useState([]);const [threads,setThreads]=useState([]);const [selected,setSelected]=useState(null);const [email,setEmail]=useState("");const [groupName,setGroupName]=useState("");const [picked,setPicked]=useState([]);const [notice,setNotice]=useState("");const [busy,setBusy]=useState(false);
-  const refresh=useCallback(async()=>{try{const [f,t]=await Promise.all([mainApi.get("/social/friends"),mainApi.get("/social/conversations")]);setFriends(f.data.data);setThreads(t.data.data);setSelected((cur)=>cur??t.data.data[0]?.id??null)}catch{setNotice(c.fail)}},[c.fail]);
+  const refresh=useCallback(async()=>{try{const [f,t]=await Promise.all([mainApi.get("/social/friends"),mainApi.get("/social/conversations")]);setFriends(f.data.data);setThreads(t.data.data);setSelected((cur)=>{const requested=t.data.data.find((thread)=>String(thread.id)===requestedConversation);return requested?.id??(cur&&t.data.data.some((thread)=>thread.id===cur)?cur:t.data.data[0]?.id??null)})}catch{setNotice(c.fail)}},[c.fail,requestedConversation]);
   useEffect(()=>{const initial=setTimeout(refresh,0);const timer=setInterval(refresh,12000);return()=>{clearTimeout(initial);clearInterval(timer)}},[refresh]);
   const accepted=friends.filter((f)=>f.status==="accepted");const incoming=friends.filter((f)=>f.status==="pending"&&f.requestedBy!==userId);
   const active=useMemo(()=>threads.find((t)=>t.id===selected),[threads,selected]);

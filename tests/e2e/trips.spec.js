@@ -66,8 +66,9 @@ test("owner trip keeps totals, sharing, day edits, saved pins and theme when ope
       method = req.method();
     if (method === "OPTIONS") return route.fulfill({ status: 204, headers });
     let data;
-    if (path === "/api/trips/71" && method === "GET") data = trip;
-    else if (path === "/api/collaboration/trips/71/collaborators") data = [];
+    if (path === "/api/social/notifications/unread-count") data = 0;
+    else if (path === "/api/trips/71" && method === "GET") data = trip;
+    else if (path === "/api/collaboration/trips/71/collaborators") data = [{ userId: 2, role: "editor", status: "accepted", user: { username: "Trip friend" } }];
     else if (path.includes("/weather/")) data = [];
     else if (path === "/api/trips/71/share" && method === "POST") {
       mutations.push(method + path);
@@ -92,6 +93,7 @@ test("owner trip keeps totals, sharing, day edits, saved pins and theme when ope
   ).toBeVisible();
   const compactCards = page.locator(".trip-layout-card.glass-card");
   await expect(compactCards).toHaveCount(3);
+  await expect(page.getByText("Trip friend", { exact: true })).toBeVisible();
   for (const card of await compactCards.all()) {
     await expect(card).toHaveCSS("border-radius", "16px");
   }

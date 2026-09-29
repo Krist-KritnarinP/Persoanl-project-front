@@ -16,6 +16,8 @@ import {
   FiShare2,
   FiChevronRight,
   FiEye,
+  FiUsers,
+  FiUserPlus,
 } from "react-icons/fi";
 import { useTripActivityStore } from "@/stores/tripActivityStore";
 import useUserStore from "@/stores/userStore";
@@ -809,7 +811,7 @@ export default function TripActivity() {
         </div>
 
         {/* RIGHT COLUMN: สภาพอากาศ + แผนที่เล็ก + นำทาง/QR */}
-        <div className="order-3 lg:col-span-3 lg:sticky lg:top-4 lg:max-h-[calc(100vh-2rem)] lg:overflow-y-auto custom-scrollbar flex flex-col gap-6 min-w-0">
+        <div className="order-3 lg:col-span-3 lg:sticky lg:top-4 lg:max-h-[calc(100vh-2rem)] lg:overflow-y-auto custom-scrollbar flex min-w-0 flex-col gap-4">
           <GeminiWeatherCard
             tripId={tripId}
             weatherPrediction={weatherPrediction}
@@ -834,29 +836,36 @@ export default function TripActivity() {
             mapHref={`/trips/${tripId}/map`}
           />
           {isTripOwner && (
-            <section className="glass glass-card trip-layout-card box-border w-full min-w-0 rounded-2xl p-3 md:p-4 space-y-3" aria-labelledby="collaboration-heading">
-              <div>
-                <h2 id="collaboration-heading" className="font-bold">{t("collab.title")}</h2>
-                <p className="text-xs opacity-70">{t("collab.description")}</p>
+            <section className="glass glass-card trip-layout-card box-border w-full min-w-0 space-y-4 rounded-2xl p-4" aria-labelledby="collaboration-heading">
+              <div className="flex items-center gap-3">
+                <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-primary/10 text-primary"><FiUsers className="text-lg" /></span>
+                <div className="min-w-0 flex-1">
+                  <h2 id="collaboration-heading" className="font-bold leading-tight">{t("collab.title")}</h2>
+                  <p className="mt-1 text-xs text-base-content/60">{t("collab.description")}</p>
+                </div>
+                <span className="badge badge-ghost">{collaborators.length}</span>
               </div>
-              <form onSubmit={submitInvite} className="flex min-w-0 flex-wrap gap-2">
-                <input className="input input-bordered input-sm box-border min-w-0 max-w-full flex-1" type="email" required maxLength={100} value={inviteEmail} onChange={(e) => setInviteEmail(e.target.value)} placeholder={t("collab.email")} aria-label={t("collab.email")} />
-                <select className="select select-bordered select-sm box-border min-w-0 max-w-full flex-1 sm:flex-none" value={inviteRole} onChange={(e) => setInviteRole(e.target.value)} aria-label={t("collab.role")}>
-                  <option value="editor">{t("collab.editor")}</option>
-                  <option value="viewer">{t("collab.viewer")}</option>
-                </select>
-                <button className="btn btn-primary btn-sm h-auto min-h-8 max-w-full whitespace-normal rounded-lg px-3 py-1 leading-tight" type="submit" disabled={collaborationBusy || !inviteEmail.trim()}>{t("collab.invite")}</button>
+              <form onSubmit={submitInvite} className="min-w-0 space-y-2">
+                <input className="input input-bordered input-sm box-border w-full min-w-0" type="email" required maxLength={100} value={inviteEmail} onChange={(e) => setInviteEmail(e.target.value)} placeholder={t("collab.email")} aria-label={t("collab.email")} />
+                <div className="grid min-w-0 grid-cols-[minmax(0,1fr)_auto] gap-2">
+                  <select className="select select-bordered select-sm box-border w-full min-w-0" value={inviteRole} onChange={(e) => setInviteRole(e.target.value)} aria-label={t("collab.role")}>
+                    <option value="editor">{t("collab.editor")}</option>
+                    <option value="viewer">{t("collab.viewer")}</option>
+                  </select>
+                  <button className="btn btn-primary btn-sm gap-2" type="submit" disabled={collaborationBusy || !inviteEmail.trim()}><FiUserPlus />{t("collab.invite")}</button>
+                </div>
               </form>
-              <p className="text-xs opacity-60">{t("collab.accountHint")}</p>
-              {collaborationMessage && <p role="status" className="text-sm">{collaborationMessage}</p>}
-              <ul className="divide-y divide-base-content/10">
+              {collaborationMessage && <p role="status" className="rounded-lg bg-success/10 px-3 py-2 text-sm text-success">{collaborationMessage}</p>}
+              {collaborators.length > 0 && <ul className="divide-y divide-base-content/10 rounded-xl border border-base-content/10 px-3">
                 {collaborators.map((row) => (
-                  <li key={row.userId} className="flex items-center justify-between gap-2 py-1.5">
-                    <span className="min-w-0"><span className="block truncate text-sm font-medium">{row.user.username}</span><span className="block truncate text-xs opacity-60">{t(`collab.status.${row.status}`)} · {t(`collab.role.${row.role}`)}</span></span>
-                    <button type="button" className="btn btn-ghost btn-xs text-error" disabled={collaborationBusy} onClick={() => removeCollaborator(row.userId)}>{t("collab.remove")}</button>
+                  <li key={row.userId} className="flex min-w-0 items-center gap-3 py-3">
+                    <span className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-secondary/15 font-semibold text-secondary">{row.user.username?.slice(0, 1)?.toUpperCase() || "?"}</span>
+                    <span className="min-w-0 flex-1"><span className="block truncate text-sm font-semibold">{row.user.username}</span><span className="mt-0.5 flex flex-wrap gap-1.5 text-xs text-base-content/60"><span>{t(`collab.status.${row.status}`)}</span><span aria-hidden="true">·</span><span>{t(`collab.role.${row.role}`)}</span></span></span>
+                    <button type="button" className="btn btn-ghost btn-circle btn-sm text-error" disabled={collaborationBusy} onClick={() => removeCollaborator(row.userId)} aria-label={`${t("collab.remove")} ${row.user.username}`} title={t("collab.remove")}><FiTrash2 /></button>
                   </li>
                 ))}
-              </ul>
+              </ul>}
+              <p className="text-xs leading-relaxed text-base-content/50">{t("collab.accountHint")}</p>
             </section>
           )}
         </div>
