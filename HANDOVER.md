@@ -1,11 +1,18 @@
 # สถานะล่าสุด — Frontend / Social + Trip collaboration (2026-09-30)
 
+## ตรวจซ้ำหลัง UI ไม่เปลี่ยนตามที่คาด
+
+- สาเหตุ: `.glass-card` ใน `src/index.css` กำหนด radius แบบ global มีลำดับเหนือ rounded utilities; `.btn` กำหนด `overflow: hidden` จึงตัด label ที่ wrap
+- เพิ่ม `.trip-layout-card` override เฉพาะ trip map/nav/collaborator cards: radius 16px และปุ่มไม่ clip พร้อม radius 10px
+- เพิ่ม browser assertions ตรวจ computed styles และลาก/จำตำแหน่ง chat dock; `trips.spec.js` + `social.spec.js` ผ่านรวม 8/8 ทั้ง desktop/mobile, build ผ่าน
+- Commit ก่อนหน้าที่มีเฉพาะ component classes ยังไม่ push จึงไม่มีผลบนเว็บที่ deploy; commit แก้ cascade รอบนี้ก็ยังต้อง push/deploy จึงจะเห็นบนเว็บ
+
 ## ปรับการ์ดแผนที่/นำทาง/ผู้ร่วมทริป
 
 - จัดความกว้างและ padding ของการ์ดแผนที่, QR นำทาง และผู้ร่วมทริปให้ตรงกันตามคอลัมน์
 - ลดมุมโค้งของการ์ดและปุ่ม ปรับปุ่มให้สูงตามข้อความหลายภาษา ลดอาการตัวอักษรถูกเบียด/ตัด; ฟอร์มผู้ร่วมทริปย่อ-ขยายได้ในจอแคบ
 - Chat bubble ลากไปยังมุมใดมุมหนึ่งของจอได้และจำตำแหน่งไว้; แผงแชทเปิดเข้าด้านในจอ
-- คง logic/API เดิม; build, lint, unit 13/13, browser `trips.spec.js` 6/6 และ `social.spec.js` 2/2 (desktop/mobile) ผ่าน
+- คง logic/API เดิม; build, lint, unit 13/13, browser `trips.spec.js` + `social.spec.js` รวม 8/8 (desktop/mobile) ผ่าน
 
 ## Friends, group chat, timed location
 

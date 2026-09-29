@@ -90,6 +90,15 @@ test("owner trip keeps totals, sharing, day edits, saved pins and theme when ope
   await expect(
     page.getByText("Refactor regression trip", { exact: true }),
   ).toBeVisible();
+  const compactCards = page.locator(".trip-layout-card.glass-card");
+  await expect(compactCards).toHaveCount(3);
+  for (const card of await compactCards.all()) {
+    await expect(card).toHaveCSS("border-radius", "16px");
+  }
+  await expect(page.locator(".trip-layout-card .btn").first()).toHaveCSS(
+    "overflow",
+    "visible",
+  );
   await expect(
     page.getByRole("button", { name: /Split trip expenses/i }),
   ).toBeVisible();

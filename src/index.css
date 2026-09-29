@@ -289,6 +289,16 @@ body {
   border-radius: 1.75rem;
 }
 
+/* Compact trip sidebar cards override the global glass-card radius and button clipping. */
+.trip-layout-card.glass-card {
+  border-radius: 16px;
+}
+
+.trip-layout-card .btn {
+  overflow: visible;
+  border-radius: 10px;
+}
+
 /* =========================================================
    SCROLL FIX — .glass อยู่แบบ unlayered จึงชนะ overflow-*
    utilities ของ Tailwind (layered) เสมอ ต้อง opt-out ตรงนี้

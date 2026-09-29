@@ -834,7 +834,7 @@ export default function TripActivity() {
             mapHref={`/trips/${tripId}/map`}
           />
           {isTripOwner && (
-            <section className="glass glass-card box-border w-full min-w-0 rounded-2xl p-3 md:p-4 space-y-3" aria-labelledby="collaboration-heading">
+            <section className="glass glass-card trip-layout-card box-border w-full min-w-0 rounded-2xl p-3 md:p-4 space-y-3" aria-labelledby="collaboration-heading">
               <div>
                 <h2 id="collaboration-heading" className="font-bold">{t("collab.title")}</h2>
                 <p className="text-xs opacity-70">{t("collab.description")}</p>

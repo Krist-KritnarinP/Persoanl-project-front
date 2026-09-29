@@ -28,7 +28,7 @@ export default function TripNavCard({ points = [], label, mapHref = null }) {
   if (pinned.length === 0) return null;
 
   return (
-    <div className="glass glass-card box-border w-full min-w-0 p-3 md:p-4 rounded-2xl space-y-3">
+    <div className="glass glass-card trip-layout-card box-border w-full min-w-0 p-3 md:p-4 rounded-2xl space-y-3">
       <h3 className="font-bold flex items-center gap-2 min-w-0">
         <FiNavigation className="text-primary shrink-0" /> <span className="min-w-0 break-words">{t("map.navTitle")}</span>
       </h3>
@@ -51,7 +51,7 @@ export default function TripNavCard({ points = [], label, mapHref = null }) {
                 href={dirUrl}
                 target="_blank"
                 rel="noreferrer"
-              className="btn btn-primary btn-xs h-auto min-h-7 max-w-full whitespace-normal rounded-lg px-2 py-1 leading-tight gap-1"
+                className="btn btn-primary btn-xs h-auto min-h-7 max-w-full whitespace-normal rounded-lg px-2 py-1 leading-tight gap-1"
               >
                 <FiExternalLink /> {t("map.openGmaps")}
               </a>
