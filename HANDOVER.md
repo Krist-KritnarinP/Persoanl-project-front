@@ -1,5 +1,11 @@
 # สถานะล่าสุด — Frontend / Social + Trip collaboration (2026-09-30)
 
+## Chat send SQL regression — API fix (2026-09-30)
+
+- User reported sending messages fails. Confirmed API notification `jsonb_build_object` parameters caused PostgreSQL 42P18 and rolled back the message transaction after notifications migration.
+- API commit `87aedd5` adds explicit text casts; real PostgreSQL read-only EXPLAIN of the production INSERT passes. API unit 45 passed; opt-in SQL suite 6/6 passed. No real chat messages were sent for verification and no DB data/schema changed.
+- Front chat handlers unchanged; API localhost watcher has loaded the fix. No push/deploy. See API HANDOVER and docs/CODE_GUIDE for read-only SQL regression command; earlier mock browser tests could not detect SQL type inference failures.
+
 ## Trip invitation discovery (2026-09-30)
 
 - สาเหตุ: TripInvitations เคยแสดงเฉพาะ Dashboard และ fetch ครั้งเดียว; notification inbox/badge ยังไม่รวม pending trip invitations
