@@ -206,10 +206,10 @@ export default function TripMap({
   );
 
   const expandBtnClass =
-    "btn btn-sm btn-ghost glass rounded-full gap-1 shrink-0";
+    "btn btn-sm btn-ghost glass h-auto min-h-8 max-w-[45%] whitespace-normal rounded-lg px-2 py-1 leading-tight gap-1 shrink-0";
 
   return (
-    <section className="glass glass-card p-4 md:p-5 rounded-3xl space-y-3">
+    <section className="glass glass-card box-border w-full min-w-0 p-3 md:p-4 rounded-2xl space-y-3">
       <div className="flex items-start justify-between gap-2">
         <div className="min-w-0">
           <h3 className="text-lg md:text-xl font-bold flex items-center gap-2">

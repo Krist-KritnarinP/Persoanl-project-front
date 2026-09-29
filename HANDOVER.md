@@ -1,11 +1,19 @@
 # สถานะล่าสุด — Frontend / Social + Trip collaboration (2026-09-30)
 
+## ปรับการ์ดแผนที่/นำทาง/ผู้ร่วมทริป
+
+- จัดความกว้างและ padding ของการ์ดแผนที่, QR นำทาง และผู้ร่วมทริปให้ตรงกันตามคอลัมน์
+- ลดมุมโค้งของการ์ดและปุ่ม ปรับปุ่มให้สูงตามข้อความหลายภาษา ลดอาการตัวอักษรถูกเบียด/ตัด; ฟอร์มผู้ร่วมทริปย่อ-ขยายได้ในจอแคบ
+- Chat bubble ลากไปยังมุมใดมุมหนึ่งของจอได้และจำตำแหน่งไว้; แผงแชทเปิดเข้าด้านในจอ
+- คง logic/API เดิม; build, lint, unit 13/13, browser `trips.spec.js` 6/6 และ `social.spec.js` 2/2 (desktop/mobile) ผ่าน
+
 ## Friends, group chat, timed location
 
 - เพิ่มหน้า `/chat` สำหรับเพิ่ม/ตอบรับเพื่อน, เริ่มแชทส่วนตัว, สร้างกลุ่ม, ส่งข้อความ และส่งคำขอแชร์พิกัด
 - Floating chat dock เปิดแชทด่วนจากหน้า protected; ข้อความ/ตำแหน่ง refresh ทุก 4 วินาทีขณะเปิดแชท
 - แชร์ location ต้องกดเองและอนุญาต browser geolocation; ตั้งเวลา 5 นาที/15 นาที/1 ชม./8 ชม./24 ชม. หรือหยุดก่อนเวลาได้
 - ย้าย/ย่อการเชิญผู้ร่วมทริปไปใต้แผนที่ด้านขวา
+- ปุ่ม Message dock ย้ายมุมด้วยการลาก และบันทึกมุมที่เลือกไว้ใน localStorage
 - API migration `npm run migrate:social` apply แล้วกับ DB ที่ตั้งใน environment นี้; ตรวจ trips=5 และ tables social ยังว่าง ต้อง apply แยก DB environment อื่นก่อน deploy ที่นั่น ดู API `docs/SOCIAL_CHAT_PLAN.md`
 - ตรวจ Front build/lint/unit และ browser suite 34/34 (2 workers); API unit 40/40
 - commits ในเครื่องยังไม่ได้ push/deploy; social migration apply เฉพาะ DB ที่ตั้งใน environment นี้

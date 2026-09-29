@@ -28,20 +28,20 @@ export default function TripNavCard({ points = [], label, mapHref = null }) {
   if (pinned.length === 0) return null;
 
   return (
-    <div className="glass glass-card p-4 md:p-5 rounded-3xl space-y-3">
-      <h3 className="font-bold flex items-center gap-2">
-        <FiNavigation className="text-primary" /> {t("map.navTitle")}
+    <div className="glass glass-card box-border w-full min-w-0 p-3 md:p-4 rounded-2xl space-y-3">
+      <h3 className="font-bold flex items-center gap-2 min-w-0">
+        <FiNavigation className="text-primary shrink-0" /> <span className="min-w-0 break-words">{t("map.navTitle")}</span>
       </h3>
       {label && (
         <p className="text-sm text-base-content/60 -mt-2 truncate">{label}</p>
       )}
 
       {dirUrl ? (
-        <div className="flex items-center gap-3">
-          <div className="bg-white p-2 rounded-2xl shrink-0">
+        <div className="flex items-start sm:items-center gap-3 min-w-0">
+          <div className="bg-white p-2 rounded-xl shrink-0">
             <NavigationQr value={dirUrl} size={88} />
           </div>
-          <div className="min-w-0 space-y-1.5">
+          <div className="min-w-0 flex-1 space-y-2">
             <p className="text-xs text-base-content/70 flex items-start gap-1.5 leading-relaxed">
               <FiSmartphone className="mt-0.5 shrink-0 text-primary" />
               {t("map.qrHint")}
@@ -51,14 +51,14 @@ export default function TripNavCard({ points = [], label, mapHref = null }) {
                 href={dirUrl}
                 target="_blank"
                 rel="noreferrer"
-                className="btn btn-primary btn-xs rounded-full gap-1"
+              className="btn btn-primary btn-xs h-auto min-h-7 max-w-full whitespace-normal rounded-lg px-2 py-1 leading-tight gap-1"
               >
                 <FiExternalLink /> {t("map.openGmaps")}
               </a>
               {mapHref && (
                 <Link
                   to={mapHref}
-                  className="btn btn-ghost glass btn-xs rounded-full gap-1"
+                  className="btn btn-ghost glass btn-xs h-auto min-h-7 max-w-full whitespace-normal rounded-lg px-2 py-1 leading-tight gap-1"
                 >
                   <FiMaximize2 /> {t("map.customRoute")}
                 </Link>

@@ -834,18 +834,18 @@ export default function TripActivity() {
             mapHref={`/trips/${tripId}/map`}
           />
           {isTripOwner && (
-            <section className="glass glass-card rounded-2xl p-3 space-y-3" aria-labelledby="collaboration-heading">
+            <section className="glass glass-card box-border w-full min-w-0 rounded-2xl p-3 md:p-4 space-y-3" aria-labelledby="collaboration-heading">
               <div>
                 <h2 id="collaboration-heading" className="font-bold">{t("collab.title")}</h2>
                 <p className="text-xs opacity-70">{t("collab.description")}</p>
               </div>
-              <form onSubmit={submitInvite} className="flex flex-wrap gap-2">
-                <input className="input input-bordered input-sm min-w-0 flex-1" type="email" required maxLength={100} value={inviteEmail} onChange={(e) => setInviteEmail(e.target.value)} placeholder={t("collab.email")} aria-label={t("collab.email")} />
-                <select className="select select-bordered select-sm" value={inviteRole} onChange={(e) => setInviteRole(e.target.value)} aria-label={t("collab.role")}>
+              <form onSubmit={submitInvite} className="flex min-w-0 flex-wrap gap-2">
+                <input className="input input-bordered input-sm box-border min-w-0 max-w-full flex-1" type="email" required maxLength={100} value={inviteEmail} onChange={(e) => setInviteEmail(e.target.value)} placeholder={t("collab.email")} aria-label={t("collab.email")} />
+                <select className="select select-bordered select-sm box-border min-w-0 max-w-full flex-1 sm:flex-none" value={inviteRole} onChange={(e) => setInviteRole(e.target.value)} aria-label={t("collab.role")}>
                   <option value="editor">{t("collab.editor")}</option>
                   <option value="viewer">{t("collab.viewer")}</option>
                 </select>
-                <button className="btn btn-primary btn-sm" type="submit" disabled={collaborationBusy || !inviteEmail.trim()}>{t("collab.invite")}</button>
+                <button className="btn btn-primary btn-sm h-auto min-h-8 max-w-full whitespace-normal rounded-lg px-3 py-1 leading-tight" type="submit" disabled={collaborationBusy || !inviteEmail.trim()}>{t("collab.invite")}</button>
               </form>
               <p className="text-xs opacity-60">{t("collab.accountHint")}</p>
               {collaborationMessage && <p role="status" className="text-sm">{collaborationMessage}</p>}
