@@ -1,5 +1,14 @@
 # สถานะล่าสุด — Frontend / Social + Trip collaboration (2026-09-30)
 
+## Trip invitation discovery (2026-09-30)
+
+- สาเหตุ: TripInvitations เคยแสดงเฉพาะ Dashboard และ fetch ครั้งเดียว; notification inbox/badge ยังไม่รวม pending trip invitations
+- นำ component เดิมมาใช้ใน Notifications พร้อมรับ/ปฏิเสธ; ดึงรายการจาก `/collaboration/invitations` จึงรองรับคำเชิญที่ส่งไว้แล้ว ไม่ต้องส่งใหม่หรือ migrate DB
+- Dashboard/Notifications refresh คำเชิญทุก 10 วินาทีและเมื่อ focus; แสดง error เมื่อโหลดล้มเหลว, ไม่ล้างรายการเดิมเมื่อ poll fail; invalidate request เก่าหลังตอบรับ/ปิด component
+- Bell/sidebar count รวม unread social + จำนวนคำเชิญ pending; event หลังตอบคำเชิญ refresh badge ทันที; Mark all read มีผลต่อ social notifications เท่านั้น คำเชิญค้างจนผู้รับ accept/decline หรือ owner ถอน
+- Accept ใช้ PUT endpoint เดิมและเปิดทริป; permission logic และข้อมูล DB เดิมคงไว้
+- ตรวจ localhost ด้วย mocks: notifications/trips 10/10 desktop/mobile, unit 13/13, build ผ่าน; lint 8 warnings เดิม; ไม่ push/deploy
+
 ## Navigate + QR sizing and social UI refresh (2026-09-30)
 
 - พบสาเหตุที่แก้ wrapping แล้วยังล้น: right column เป็น flex แนวตั้งที่จำกัด max-height แต่ children ยอม shrink; `.glass` clip เนื้อหาที่เลยขอบล่าง ตรวจซ้ำก่อนแก้ด้วย browser assertion แล้วล้มที่ Trip map

@@ -1,20 +1,22 @@
 import { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { FiBell, FiCheck, FiMessageCircle, FiUserPlus } from "react-icons/fi";
+import TripInvitations from "@/components/TripInvitations";
 import { mainApi } from "@/api/mainApi";
 import { useLang } from "@/i18n";
 
 const words = {
-  th: { title:"การแจ้งเตือน", intro:"คำขอเป็นเพื่อนและข้อความใหม่", empty:"ยังไม่มีการแจ้งเตือน", friend:"{name} ส่งคำขอเป็นเพื่อน", message:"{name} ส่งข้อความมา", accept:"ยอมรับเพื่อน", accepted:"เป็นเพื่อนแล้ว", open:"เปิดแชท", all:"อ่านทั้งหมด", failed:"โหลดการแจ้งเตือนไม่สำเร็จ" },
-  en: { title:"Notifications", intro:"Friend requests and new messages", empty:"You're all caught up", friend:"{name} sent you a friend request", message:"{name} sent a message", accept:"Accept friend", accepted:"Friends", open:"Open chat", all:"Mark all read", failed:"Could not load notifications" },
-  zh: { title:"通知", intro:"好友请求和新消息", empty:"暂无通知", friend:"{name}向你发送了好友请求", message:"{name}发来一条消息", accept:"接受好友请求", accepted:"已成为好友", open:"打开聊天", all:"全部标为已读", failed:"无法加载通知" },
-  ko: { title:"알림", intro:"친구 요청 및 새 메시지", empty:"새 알림이 없습니다", friend:"{name}님이 친구 요청을 보냈습니다", message:"{name}님이 메시지를 보냈습니다", accept:"친구 수락", accepted:"친구가 되었습니다", open:"채팅 열기", all:"모두 읽음", failed:"알림을 불러오지 못했습니다" },
+  th: { title:"การแจ้งเตือน", intro:"คำเชิญร่วมทริป คำขอเป็นเพื่อน และข้อความใหม่", empty:"ยังไม่มีการแจ้งเตือน", friend:"{name} ส่งคำขอเป็นเพื่อน", message:"{name} ส่งข้อความมา", accept:"ยอมรับเพื่อน", accepted:"เป็นเพื่อนแล้ว", open:"เปิดแชท", all:"อ่านทั้งหมด", failed:"โหลดการแจ้งเตือนไม่สำเร็จ" },
+  en: { title:"Notifications", intro:"Trip invitations, friend requests and new messages", empty:"You're all caught up", friend:"{name} sent you a friend request", message:"{name} sent a message", accept:"Accept friend", accepted:"Friends", open:"Open chat", all:"Mark all read", failed:"Could not load notifications" },
+  zh: { title:"通知", intro:"行程邀请、好友请求和新消息", empty:"暂无通知", friend:"{name}向你发送了好友请求", message:"{name}发来一条消息", accept:"接受好友请求", accepted:"已成为好友", open:"打开聊天", all:"全部标为已读", failed:"无法加载通知" },
+  ko: { title:"알림", intro:"여행 초대, 친구 요청 및 새 메시지", empty:"새 알림이 없습니다", friend:"{name}님이 친구 요청을 보냈습니다", message:"{name}님이 메시지를 보냈습니다", accept:"친구 수락", accepted:"친구가 되었습니다", open:"채팅 열기", all:"모두 읽음", failed:"알림을 불러오지 못했습니다" },
 };
 
 export default function Notifications() {
-  const { lang } = useLang();
+  const { lang, t } = useLang();
   const c = words[lang] || words.en;
   const navigate = useNavigate();
+  const [invitationCount, setInvitationCount] = useState(null);
   const [items, setItems] = useState([]);
   const [busyId, setBusyId] = useState(null);
   const [notice, setNotice] = useState("");
@@ -85,10 +87,11 @@ export default function Notifications() {
         {items.some((item) => !item.readAt) && <button className="btn btn-ghost btn-sm gap-2" onClick={markAll}><FiCheck />{c.all}</button>}
       </header>
       {notice && <p className="alert py-2" role="status">{notice}</p>}
+      <TripInvitations t={t} onCountChange={setInvitationCount} onAccepted={(tripId) => navigate(`/trips/${tripId}`)} />
       <section className="space-y-3" aria-label={c.title}>
-        {items.length === 0 ? (
+        {items.length === 0 ? invitationCount === 0 ? (
           <div className="social-surface grid min-h-56 place-items-center p-8 text-center text-base-content/55"><div><FiBell className="mx-auto mb-3 text-3xl" /><p>{c.empty}</p></div></div>
-        ) : items.map((item) => {
+        ) : null : items.map((item) => {
           const friendRequest = item.type === "friend_request";
           const title = (friendRequest ? c.friend : c.message).replace("{name}", item.actorName || "Friend");
           return (

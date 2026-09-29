@@ -49,3 +49,47 @@ test("notification inbox accepts friend requests and opens new messages",async({
   await expect(page).toHaveURL(/\/chat\?conversationId=7/);
   await expect(page.getByText("Meet at the station")).toBeVisible();
 });
+
+test("existing trip invitations appear in the bell and inbox; accept, decline and refresh", async ({page}) => {
+  await page.addInitScript(() => {
+    localStorage.setItem("lang", "en");
+    localStorage.setItem("navigationMode", "classic");
+    localStorage.setItem("authState", JSON.stringify({state:{user:{id:2,username:"Guest"},token:"test"},version:0}));
+  });
+  const invitation = (tripId) => ({tripId,role:"editor",trip:{tripName:`Shared trip ${tripId}`,destination:"Bangkok",user:{username:"Owner"}}});
+  let pending = [invitation(71), invitation(72)];
+  const responses = [];
+  await page.route("http://127.0.0.1:8899/api/**", async (route) => {
+    const req = route.request(), path = new URL(req.url()).pathname;
+    if(req.method()==="OPTIONS") return route.fulfill({status:204,headers});
+    let data = [];
+    if(path === "/api/collaboration/invitations") data = pending;
+    else if(path.startsWith("/api/collaboration/invitations/") && req.method()==="PUT") {
+      const id=Number(path.split("/").at(-1));
+      responses.push({id,...req.postDataJSON()});
+      pending=pending.filter(row=>row.tripId!==id);
+      data={tripId:id,status:req.postDataJSON().accepted?"accepted":"declined"};
+    } else if(path === "/api/social/notifications/unread-count") data=0;
+    else if(path === "/api/social/notifications") data={items:[],unreadCount:0};
+    else if(path === "/api/trips/71") data={id:71,tripName:"Shared trip 71",destination:"Bangkok",accessRole:"editor",days:[]};
+    await route.fulfill({headers,json:{data}});
+  });
+  await page.goto("/dashboard");
+  await expect(page.getByTestId("header-notifications")).toContainText("2");
+  await page.getByTestId("header-notifications").click();
+  const invitations=page.locator('section[aria-labelledby="trip-invitations-heading"]');
+  await expect(invitations.getByText("Shared trip 71")).toBeVisible();
+  await expect(page.getByText("You're all caught up")).toHaveCount(0);
+  await invitations.locator("article").filter({hasText:"Shared trip 72"}).getByRole("button",{name:"Decline",exact:true}).click();
+  await expect.poll(()=>responses).toContainEqual({id:72,accepted:false});
+  await expect(invitations.getByText("Shared trip 72")).toHaveCount(0);
+  await invitations.getByRole("button",{name:"Accept",exact:true}).click();
+  await expect(page).toHaveURL(/\/trips\/71$/);
+  expect(responses).toContainEqual({id:71,accepted:true});
+  await page.goto("/dashboard");
+  await expect(page.getByTestId("header-notifications")).not.toContainText("2");
+  pending=[invitation(73)];
+  await page.evaluate(()=>window.dispatchEvent(new Event("focus")));
+  await expect(page.getByText("Shared trip 73")).toBeVisible();
+  await expect(page.getByTestId("header-notifications")).toContainText("1");
+});

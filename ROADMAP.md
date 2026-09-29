@@ -38,6 +38,7 @@
   - [ ] Apply migration แยก DB environment อื่นก่อน deploy ที่นั่น และตรวจ privacy/expiry/leave-group บน PostgreSQL ชั่วคราว
   - [ ] Push notifications, read receipts, media, offline chat และ native background location ยังเป็นงานต่อยอด
 - [x] **In-app notifications + friend management:** notification inbox และ unread badge ใน Dashboard header แถวเดียวกับ language switcher/ชื่อ/logout; รับ friend requests/เปิดแชทข้อความใหม่; ลบเพื่อน และนำแชทออกจากรายการของตัวเองโดยเก็บประวัติของสมาชิกคนอื่น; location มี map preview + Google Maps link (2026-09-30; apply `migrate:notifications` แล้วกับ DB Supabase ที่ API ใน workspace ใช้; environment อื่นต้อง apply แยก)
+- [x] **Trip invitation inbox (2026-09-30):** คำเชิญร่วมทริปเดิม/ใหม่แสดงในหน้าแจ้งเตือน พร้อมรับ/ปฏิเสธและ badge จำนวน pending; Dashboard/inbox refresh ทุก 10 วินาทีและเมื่อกลับเข้าเว็บ; ใช้ collaboration API เดิม ไม่ migrate DB
 - [x] **Theme-aware dialogs:** ใช้ dialog กลางแทน browser-native confirm/prompt สำหรับ destructive actions, share revoke, bill confirmation และแก้ชื่อสมาชิก; TH/EN/ZH/KO (2026-09-30)
 - [x] ปรับ UI Trip map/Navigate+QR ให้ข้อความไม่ล้นกรอบ; chat dock ลากไปตำแหน่งใดก็ได้บนขอบจอและจำพิกัด; confirm/alert/prompt ใช้ dialog ตาม theme (2026-09-30)
 - [x] **QR/sidebar sizing + social UX polish (2026-09-30):** แก้ flex column บีบความสูงการ์ด; QR อยู่กลางพร้อมปุ่มเต็มแถว; chat/notification เต็มความกว้างพื้นที่หน้าจอ ใช้สีตามธีมและ unread indicator ชัดเจน; localhost browser tests 10/10 และตรวจกรอบเนื้อหาที่ 390/1024/1280px

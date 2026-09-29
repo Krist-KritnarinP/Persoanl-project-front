@@ -79,3 +79,6 @@ Sidebar ปิดแล้วกลับ classic layout เต็ม ไม่�
 - `.social-ui`, `.social-surface`, `.social-hero`, `.chat-messages`, `.notification-row` ใน `src/index.css` จัดสี/ระยะห่างตาม theme เฉพาะหน้า Chat, Notifications และ ChatDock; ไม่ย้าย bell จาก header เดิม
 - `trips.spec.js` ตรวจขอบล่างพร้อมขอบซ้าย/ขวาของเนื้อหาที่ 390/1024/1280px; social/notification specs เก็บ screenshots ใน Playwright output เพื่อ review UI
 - Chat/Notifications ใช้เต็มความกว้างพื้นที่ content (`w-full`); อย่าเพิ่ม `max-w-* mx-auto` ให้ main เพราะผู้ใช้ต้องการเต็มจอ มีแค่ padding ภายใน
+
+## Trip invitations in notifications (2026-09-30)
+`TripInvitations.jsx` ใช้ร่วม Dashboard/Notifications และ poll/focus refresh pending invitations จาก collaboration API เดิม. AppLayout รวมจำนวน pending กับ social unread count และฟัง `trip-invitations-changed` เพื่อ refresh badge หลัง accept/decline. รายการนี้ไม่ใช่ notification rows จึงไม่หายเมื่อกดอ่านทั้งหมด; ไม่ต้อง backfill หรือ migration. Accept/decline ยังคงใช้ PUT `/collaboration/invitations/:tripId` และ API ตรวจ recipient/status เดิม.

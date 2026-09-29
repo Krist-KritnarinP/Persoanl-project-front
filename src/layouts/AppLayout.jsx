@@ -177,18 +177,25 @@ export default function AppLayout() {
   const [signingOut, setSigningOut] = useState(false);
   const [unreadNotifications, setUnreadNotifications] = useState(0);
   const loadUnreadNotifications = useCallback(() => {
-    mainApi.get("/social/notifications/unread-count")
-      .then(({ data }) => setUnreadNotifications(Number(data.data) || 0))
-      .catch(() => {});
+    Promise.allSettled([
+      mainApi.get("/social/notifications/unread-count"),
+      mainApi.get("/collaboration/invitations"),
+    ]).then(([notifications, invitations]) => {
+      const unread = notifications.status === "fulfilled" ? Number(notifications.value.data.data) || 0 : 0;
+      const pending = invitations.status === "fulfilled" && Array.isArray(invitations.value.data.data) ? invitations.value.data.data.length : 0;
+      setUnreadNotifications(unread + pending);
+    });
   }, []);
   useEffect(() => {
     loadUnreadNotifications();
     const timer = setInterval(loadUnreadNotifications, 10000);
     window.addEventListener("focus", loadUnreadNotifications);
+    window.addEventListener("trip-invitations-changed", loadUnreadNotifications);
     document.addEventListener("visibilitychange", loadUnreadNotifications);
     return () => {
       clearInterval(timer);
       window.removeEventListener("focus", loadUnreadNotifications);
+      window.removeEventListener("trip-invitations-changed", loadUnreadNotifications);
       document.removeEventListener("visibilitychange", loadUnreadNotifications);
     };
   }, [loadUnreadNotifications, pathname]);

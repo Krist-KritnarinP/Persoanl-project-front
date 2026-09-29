@@ -65,7 +65,8 @@ test("owner trip keeps totals, sharing, day edits, saved pins and theme when ope
       method = req.method();
     if (method === "OPTIONS") return route.fulfill({ status: 204, headers });
     let data;
-    if (path === "/api/social/notifications/unread-count") data = 0;
+    if (path === "/api/collaboration/invitations") data = [];
+    else if (path === "/api/social/notifications/unread-count") data = 0;
     else if (path === "/api/trips/71" && method === "GET") data = trip;
     else if (path === "/api/collaboration/trips/71/collaborators") data = [{ userId: 2, role: "editor", status: "accepted", user: { username: "Trip friend" } }];
     else if (path.includes("/weather/")) data = [];
