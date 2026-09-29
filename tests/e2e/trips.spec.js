@@ -94,6 +94,19 @@ test("owner trip keeps totals, sharing, day edits, saved pins and theme when ope
   const compactCards = page.locator(".trip-layout-card.glass-card");
   await expect(compactCards).toHaveCount(3);
   await expect(page.getByText("Trip friend", { exact: true })).toBeVisible();
+  const sideRect = await compactCards.first().evaluate((el) => {
+    const { x, right, width } = el.parentElement.getBoundingClientRect();
+    return { x, right, width };
+  });
+  const cardRects = await compactCards.evaluateAll((els) => els.map((el) => {
+    const { x, right, width } = el.getBoundingClientRect();
+    return { x, right, width };
+  }));
+  for (const rect of cardRects) {
+    expect(rect.x).toBeGreaterThanOrEqual(sideRect.x - 1);
+    expect(rect.right).toBeLessThanOrEqual(sideRect.right + 1);
+    expect(rect.width).toBeLessThanOrEqual(sideRect.width + 1);
+  }
   for (const card of await compactCards.all()) {
     await expect(card).toHaveCSS("border-radius", "16px");
   }
