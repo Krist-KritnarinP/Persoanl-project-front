@@ -1,3 +1,12 @@
+# Handover — Frontend CI repair (2026-09-29)
+
+- GitHub Actions run 36521327905 ของ commit 52cc4de: npm ci/unit/build/SEO/Chromium install ผ่าน; browser tests ล้ม 8 (6 screenshot path `/private/tmp` ใช้ได้บน Mac แต่ไม่มีบน Ubuntu, 2 planner test กดปุ่ม dashboard ที่ถูกย้ายไป `/trips/ai` แล้ว)
+- เปลี่ยน screenshot test เป็น `test.info().outputPath(...)` ของ Playwright และให้ planner test เปิด route จริงโดยตรง; ไม่แก้ production logic
+- รัน browser suite ครบ 32 desktop/mobile ผ่านบนเครื่อง; รอ GitHub Actions ของ commit แก้เพื่อยืนยันบน Linux
+- Log: https://github.com/Krist-KritnarinP/Persoanl-project-front/actions/runs/36521327905
+
+---
+
 # Handover — Billing full-width correction (2026-09-29)
 
 - แก้หน้า `/trips/:tripId/billing` ที่เผลอใส่ `max-w-[1500px] mx-auto` ระหว่างปรับ UI ทำให้จอกว้างเหลือขอบว่าง; ตอนนี้ใช้ความกว้างทั้งหมดของพื้นที่ด้านขวา sidebar

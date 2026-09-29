@@ -124,7 +124,7 @@ test("travel card opens overview, filters map/calendar/costs and supports four l
     ),
   ).toBe(true);
   await page.screenshot({
-    path: `/private/tmp/travel-overview-${test.info().project.name}.png`,
+    path: test.info().outputPath("travel-overview.png"),
     fullPage: true,
   });
   expect(errors).toEqual([]);

@@ -96,8 +96,7 @@ test("planner calendar, generation failure, editable preview and lost-save retry
       return route.fulfill({ headers, json: { data: [] } });
     throw Error(`Unexpected request ${req.method()} ${path}`);
   });
-  await page.goto("/dashboard");
-  await page.getByRole("button", { name: "✨ ให้ AI ช่วยวางแผน" }).click();
+  await page.goto("/trips/ai");
   await page
     .getByLabel("อยากเที่ยวแบบไหน?")
     .fill("เชียงใหม่ 2 คน ชอบเที่ยวในเมือง");

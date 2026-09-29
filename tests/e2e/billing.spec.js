@@ -286,7 +286,7 @@ test("billing imports activity, previews charges, records a partial repayment an
     ),
   ).toBe(true);
   await page.screenshot({
-    path: `/private/tmp/billing-${test.info().project.name}.png`,
+    path: test.info().outputPath("billing.png"),
     fullPage: true,
   });
 });

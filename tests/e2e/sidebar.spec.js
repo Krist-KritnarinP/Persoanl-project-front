@@ -121,7 +121,7 @@ test("sidebar navigates, collapses or traps mobile focus, shows account and logs
     ),
   ).toBe(true);
   await page.screenshot({
-    path: `/private/tmp/sidebar-${test.info().project.name}.png`,
+    path: test.info().outputPath("sidebar.png"),
     fullPage: true,
   });
   await openNavigation(page);
