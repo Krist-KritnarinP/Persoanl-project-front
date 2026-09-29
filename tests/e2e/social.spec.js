@@ -8,14 +8,16 @@ test("friends chat, location request and consented timed sharing",async({page})=
     localStorage.setItem("authState",JSON.stringify({state:{user:{id:1,username:"Traveler",email:"traveler@example.com"},token:"test"},version:0}));
     Object.defineProperty(navigator,"geolocation",{value:{getCurrentPosition:callback=>callback({coords:{latitude:35.68,longitude:139.76,accuracy:12}}),watchPosition:()=>1,clearWatch:()=>{}}});
   });
-  let sharingMinutes=null;let nextId=2;
+  page.on("dialog",(dialog)=>dialog.accept());
+  let sharingMinutes=null;let nextId=2;let friendRemoved=false;
   const messages=[{id:"1",kind:"location_request",body:"Location requested",senderId:2,senderName:"Friend",createdAt:new Date().toISOString()}];
   const threads=[{id:7,name:"Japan trip",participants:[{id:2,username:"Friend"}],lastMessage:null}];
   await page.route("http://127.0.0.1:8899/api/**",async(route)=>{
     const request=route.request();if(request.method()==="OPTIONS")return route.fulfill({status:204,headers});
     const url=new URL(request.url());const path=url.pathname;
     let data=[];
-    if(path.endsWith("/social/friends"))data=[{id:2,username:"Friend",requestedBy:1,status:"accepted"}];
+    if(path.endsWith("/social/friends/2")&&request.method()==="DELETE"){friendRemoved=true;data={removed:true};}
+    else if(path.endsWith("/social/friends"))data=friendRemoved?[]:[{id:2,username:"Friend",requestedBy:1,status:"accepted"}];
     else if(path.endsWith("/social/conversations")&&request.method()==="GET")data=threads;
     else if(path.endsWith("/social/conversations")&&request.method()==="POST")data={id:7,name:"Japan trip"};
     else if(path.endsWith("/messages")&&request.method()==="GET")data=url.searchParams.get("after")==="0"?messages:messages.filter(m=>BigInt(m.id)>BigInt(url.searchParams.get("after")||"0"));
@@ -43,6 +45,9 @@ test("friends chat, location request and consented timed sharing",async({page})=
   await page.getByRole("textbox",{name:"Write a message…"}).fill("Meet at the station");
   await page.getByRole("button",{name:"Send"}).click();
   await expect(page.getByText("Meet at the station")).toBeVisible();
+  await page.getByRole("button",{name:"Remove friend Friend"}).click();
+  await expect.poll(()=>friendRemoved).toBe(true);
+  await expect(page.getByText("No accepted friends yet")).toBeVisible();
   await page.goto("/dashboard");
   const dock=page.getByRole("button",{name:"Open chat"});
   const start=await dock.boundingBox();

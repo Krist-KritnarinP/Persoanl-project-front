@@ -1,5 +1,12 @@
 # สถานะล่าสุด — Frontend / Social + Trip collaboration (2026-09-30)
 
+## Chat regression and friend removal
+
+- Root cause: social API wrote notifications in the message/friendship transaction; configured DB has no notifications table yet, so those transactions rolled back.
+- API now checks table availability and keeps existing chat/request/accept flows working while notification migration is pending; notification rows are skipped until the additive migration is applied.
+- Added confirmed Remove friend action in Friends list using existing DELETE endpoint; relationship is removed while old conversation history remains.
+- Verified API 45/45, Front build/lint/unit 13/13, social browser 2/2 (desktop/mobile); only browser run needed localhost bind permission.
+
 ## Notification inbox, chat map, and collaborator panel
 
 - เพิ่ม route `/notifications` และ sidebar unread badge; หน้าแจ้งเตือนรับคำขอเป็นเพื่อนได้ตรงนั้น และกดข้อความเพื่อเปิด conversation ที่ถูกต้อง

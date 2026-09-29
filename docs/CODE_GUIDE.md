@@ -12,7 +12,7 @@
 | /dashboard | Dashboard.jsx | รายการทริปและจัดการทริป |
 | /trips, /trips/:tripId | TripsActivity.jsx | จัดวัน กิจกรรม งบ แผนที่ย่อ แชร์ และ AI อากาศ |
 | /trips/:tripId/map | TripMapPage.jsx | แผนที่เต็ม เลือกพิกัดและลิงก์นำทาง/QR |
-| /chat | Chat.jsx | เพื่อน แชทส่วนตัว/กลุ่ม และแชร์ตำแหน่งแบบกำหนดเวลา |
+| /chat | Chat.jsx | เพื่อน แชทส่วนตัว/กลุ่ม แชร์ตำแหน่ง และลบความสัมพันธ์เพื่อน |
 | /notifications | Notifications.jsx | คำขอเป็นเพื่อน/ข้อความใหม่; รับเพื่อนหรือเปิด conversation จาก inbox |
 | /share/:token | ShareTripView.jsx | อ่านทริปที่แชร์โดยไม่ login; ใช้ public API |
 | /userprofile | Userprofile.jsx | ข้อมูลบัญชี รหัสผ่าน export/delete |
