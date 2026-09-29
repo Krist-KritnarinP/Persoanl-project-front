@@ -24,9 +24,11 @@ import { useLang } from "@/i18n";
 import useTripStore from "@/stores/tripStore";
 import useUserStore from "@/stores/userStore";
 import TripInvitations from "@/components/TripInvitations";
+import { useAppDialog } from "@/components/AppDialogContext";
 
 function Dashboard() {
   const { t, locale } = useLang();
+  const { confirm } = useAppDialog();
   const { sidebarEnabled } = useOutletContext();
   const [viewMode, setViewMode] = useState("grid");
   const [searchTerm, setSearchTerm] = useState("");
@@ -96,7 +98,7 @@ function Dashboard() {
   // Handler: ลบทริป
   const handleDeleteTrip = async (e, tripId) => {
     e.stopPropagation(); // ป้องกันการคลิกซ้อนทับการ์ด
-    if (window.confirm(t("dash.confirmDelTrip"))) {
+    if (await confirm(t("dash.confirmDelTrip"), { variant: "danger", confirmLabel: t("common.delete") })) {
       try {
         await deleteTrip(tripId);
       } catch (err) {

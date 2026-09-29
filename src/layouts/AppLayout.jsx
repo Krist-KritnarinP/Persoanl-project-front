@@ -19,6 +19,7 @@ import useUserStore from "@/stores/userStore";
 import ThemeToggle from "@/components/ThemeToggle";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
 import ChatDock from "@/components/ChatDock";
+import { AppDialogProvider } from "@/components/AppDialog";
 import { mainApi } from "@/api/mainApi";
 
 function Modal({ children, title, onClose, drawer = false }) {
@@ -242,25 +243,27 @@ export default function AppLayout() {
     close();
   };
   return (
+    <AppDialogProvider>
     <div className="min-h-dvh flex">
       {sidebarEnabled && (
         <aside
           data-testid="desktop-sidebar"
           className={`hidden lg:flex sticky top-0 h-dvh shrink-0 flex-col p-3 bg-base-100/90 border-r border-base-content/10 w-72`}
         >
-          <div className={`flex items-center mb-6 justify-between px-2`}>
+          <div className={`flex items-center mb-6 gap-1 px-2`}>
             <span className="flex min-w-0 items-center gap-2">
               <img
                 src="/image/MiniDog.PNG"
                 alt="Minidog"
                 className="h-9 w-9 rounded-full bg-primary/20 border border-primary/30 object-cover shrink-0"
               />
-              <span className="font-display text-2xl tracking-wider bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent whitespace-nowrap">
+              <span className="min-w-0 truncate font-display text-2xl tracking-wider bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent whitespace-nowrap">
                 AI LHOUNG
               </span>
             </span>
+            {notificationLink}
             <button
-              className="grid h-8 w-6 place-items-center rounded-md text-base-content/60 hover:bg-base-content/10 hover:text-base-content focus-visible:outline-2 focus-visible:outline-primary"
+              className="grid h-8 w-6 shrink-0 place-items-center rounded-md text-base-content/60 hover:bg-base-content/10 hover:text-base-content focus-visible:outline-2 focus-visible:outline-primary"
               aria-label={t("side.classic")}
               title={t("side.classic")}
               aria-expanded={sidebarEnabled}
@@ -289,7 +292,8 @@ export default function AppLayout() {
             >
               <FiMenu />
             </button>
-            <span className="flex min-w-0 items-center gap-2">
+            </>}
+            {!sidebarEnabled && <span className="flex min-w-0 items-center gap-2">
               <img
                 src="/image/MiniDog.PNG"
                 alt="Minidog"
@@ -298,13 +302,13 @@ export default function AppLayout() {
               <span className="font-display text-2xl tracking-wider bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent whitespace-nowrap">
                 AI LHOUNG
               </span>
-            </span>
-            </>}
+            </span>}
             <span className="ml-auto">{notificationLink}</span>
         </header>
-        <header className="hidden lg:flex sticky top-0 z-30 h-14 items-center justify-end border-b border-base-content/10 bg-base-100/95 px-5" data-testid="desktop-app-header">
-          {notificationLink}
-        </header>
+        {!sidebarEnabled && <header className="hidden lg:flex sticky top-0 z-30 h-14 items-center gap-3 border-b border-base-content/10 bg-base-100/95 px-5">
+          <span className="font-display text-xl tracking-wider bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">AI LHOUNG</span>
+          <span className="ml-auto">{notificationLink}</span>
+        </header>}
         <Suspense
           fallback={
             <div className="p-12 text-center" role="status">
@@ -352,5 +356,6 @@ export default function AppLayout() {
       )}
       <ChatDock />
     </div>
+    </AppDialogProvider>
   );
 }

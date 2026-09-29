@@ -1,5 +1,19 @@
 # สถานะล่าสุด — Frontend / Social + Trip collaboration (2026-09-30)
 
+## Header, trip cards, and draggable chat dock
+
+- ย้าย notification bell ไปอยู่ header เดียวกับ app brand บน sidebar/mobile header; ไม่มีแถบ notification เปล่าเหนือเนื้อหา
+- ป้องกันข้อความ Trip map/Navigate+QR ล้นด้วย min-width/word wrapping ใน flex children และปุ่ม; browser ตรวจกรอบข้อความเทียบการ์ดจริง
+- Chat dock ลากตาม pointer ไปตำแหน่งใดก็ได้ตามขอบจอ, clamp ไม่ให้ออกจาก viewport และบันทึกพิกัด; panel เปิดภายใน viewport
+- ตรวจ browser `social.spec.js`, `trips.spec.js`, `billing.spec.js` ผ่าน 10/10 desktop/mobile รวมธีม popup, ยกเลิก/ยืนยัน, prompt เปลี่ยนชื่อ, drag และกรอบการ์ด
+
+## Theme-aware confirmation and input dialogs
+
+- แทนที่ browser-native `confirm`/`prompt` สำหรับลบทริป/วัน/กิจกรรม/ประวัติอากาศ/เพื่อน/แชท, ยกเลิก public share, ยืนยันคำสั่งบิล และเปลี่ยนชื่อสมาชิก ด้วย AppDialog ที่ใช้สีจาก active theme
+- Dialog รองรับ confirm/cancel, alert และ prompt, ปิดด้วย Escape/backdrop, focus input, Enter ส่งค่า และแสดงปุ่มอันตรายแยกสี; ข้อความทั่วไปครบ TH/EN/ZH/KO
+- ไม่พบ `window.alert` ใน source; error ปัจจุบันใช้ inline status/toast ที่มี theme อยู่แล้ว
+- Browser tests กดยกเลิกและยืนยันจริง, เปลี่ยนชื่อผ่าน prompt, ตรวจ revoke และผ่าน desktop/mobile
+
 ## Header notifications and chat removal
 
 - เพิ่มปุ่มกระดิ่งบนแถบด้านบนทั้ง desktop/mobile/classic layout พร้อม unread badge; รีเฟรชตอนเข้า route, กลับมา focus และทุก 10 วินาที

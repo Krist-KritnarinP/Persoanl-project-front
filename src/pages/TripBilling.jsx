@@ -15,6 +15,7 @@ import {
   FiFileText,
   FiRepeat,
 } from "react-icons/fi";
+import { useAppDialog } from "@/components/AppDialogContext";
 export default function TripBilling() {
   const { tripId } = useParams();
   return <BillingWorkspace key={tripId} tripId={tripId} />;
@@ -22,6 +23,7 @@ export default function TripBilling() {
 function BillingWorkspace({ tripId }) {
   const { sidebarEnabled } = useOutletContext();
   const { t, locale } = useLang();
+  const { confirm, prompt } = useAppDialog();
   const [data, setData] = useState(null),
     [trip, setTrip] = useState(null),
     [error, setError] = useState(""),
@@ -94,10 +96,8 @@ function BillingWorkspace({ tripId }) {
       setBusy(false);
     }
   };
-  const confirmed = (payload) =>
-    window.confirm(t("bill.confirmAction"))
-      ? command(payload)
-      : Promise.resolve(false);
+  const confirmed = async (payload) =>
+    (await confirm(t("bill.confirmAction"))) ? command(payload) : false;
   if (!data)
     return (
       <main className="p-6">
@@ -325,8 +325,13 @@ function BillingWorkspace({ tripId }) {
                 <button
                   className="btn btn-xs btn-ghost"
                   disabled={busy}
-                  onClick={() => {
-                    const next = window.prompt(t("bill.memberName"), m.name);
+                  onClick={async () => {
+                    const next = await prompt(t("bill.memberName"), {
+                      title: t("bill.edit"),
+                      inputLabel: t("bill.memberName"),
+                      defaultValue: m.name,
+                      maxLength: 80,
+                    });
                     if (next?.trim())
                       command({
                         action: "member.update",

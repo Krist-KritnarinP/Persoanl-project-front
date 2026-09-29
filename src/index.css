@@ -292,11 +292,16 @@ body {
 /* Compact trip sidebar cards override the global glass-card radius and button clipping. */
 .trip-layout-card.glass-card {
   border-radius: 16px;
+  overflow-wrap: anywhere;
 }
 
 .trip-layout-card .btn {
+  min-width: 0;
+  max-width: 100%;
   overflow: visible;
   border-radius: 10px;
+  white-space: normal;
+  overflow-wrap: anywhere;
 }
 
 /* =========================================================

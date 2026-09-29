@@ -5,6 +5,7 @@ import { mainApi } from "@/api/mainApi";
 import useUserStore from "@/stores/userStore";
 import { useLang } from "@/i18n";
 import { startLocationTracking, stopLocationTracking } from "@/services/locationTracking";
+import { useAppDialog } from "@/components/AppDialogContext";
 
 const copy = {
   th: { title:"เพื่อนและแชท", intro:"คุยกับเพื่อน วางแผนเป็นกลุ่ม และแชร์พิกัดเมื่อคุณอนุญาต", friends:"เพื่อน", add:"เพิ่มเพื่อนด้วยอีเมล", pending:"คำขอเป็นเพื่อน", accept:"ยอมรับ", removeFriend:"ลบเพื่อน", confirmRemove:"ยืนยันการลบเพื่อนคนนี้หรือไม่", removed:"ลบเพื่อนแล้ว", create:"เริ่มแชท / สร้างกลุ่ม", name:"ชื่อกลุ่ม (เว้นว่างสำหรับแชทส่วนตัว)", choose:"เลือกเพื่อน", start:"สร้างแชท", inbox:"ข้อความ", empty:"เลือกแชทหรือเริ่มคุยกับเพื่อน", write:"พิมพ์ข้อความ…", send:"ส่ง", request:"ขอพิกัด", share:"แชร์พิกัด", duration:"แชร์นานแค่ไหน", stop:"หยุดแชร์", active:"กำลังแชร์พิกัด", noFriends:"ยังไม่มีเพื่อนที่ตอบรับ", locationRequest:"ขอพิกัดแล้ว · แชร์ได้เมื่อคุณยินยอม", map:"เปิดแผนที่", addOk:"ส่งคำขอเป็นเพื่อนแล้ว", groupOk:"สร้างกลุ่มแล้ว", fail:"ทำรายการไม่สำเร็จ ลองอีกครั้ง", place:"ข้อความของคุณ", newFriend:"อีเมลบัญชีเพื่อน", deleteChat:"ลบแชท", confirmDeleteChat:"ลบแชทนี้ออกจากรายการของคุณหรือไม่? ประวัติของสมาชิกคนอื่นจะยังอยู่", chatDeleted:"ลบแชทออกจากรายการแล้ว" },
@@ -89,6 +90,7 @@ export default function Chat(){
   const [searchParams] = useSearchParams();
   const requestedConversation = searchParams.get("conversationId");
   const {lang}=useLang(); const c=copy[lang]||copy.en; const userId=useUserStore((s)=>s.user?.id);
+  const {confirm}=useAppDialog();
   const [friends,setFriends]=useState([]);const [threads,setThreads]=useState([]);const [selected,setSelected]=useState(null);const [email,setEmail]=useState("");const [groupName,setGroupName]=useState("");const [picked,setPicked]=useState([]);const [notice,setNotice]=useState("");const [busy,setBusy]=useState(false);
   const refresh=useCallback(async()=>{try{const [f,t]=await Promise.all([mainApi.get("/social/friends"),mainApi.get("/social/conversations")]);setFriends(f.data.data);setThreads(t.data.data);setSelected((cur)=>{const requested=t.data.data.find((thread)=>String(thread.id)===requestedConversation);return requested?.id??(cur&&t.data.data.some((thread)=>thread.id===cur)?cur:t.data.data[0]?.id??null)})}catch{setNotice(c.fail)}},[c.fail,requestedConversation]);
   useEffect(()=>{const initial=setTimeout(refresh,0);const timer=setInterval(refresh,12000);return()=>{clearTimeout(initial);clearInterval(timer)}},[refresh]);
@@ -96,10 +98,10 @@ export default function Chat(){
   const active=useMemo(()=>threads.find((t)=>t.id===selected),[threads,selected]);
   const add=async(e)=>{e.preventDefault();setBusy(true);try{await mainApi.post("/social/friends",{email});setEmail("");setNotice(c.addOk);await refresh()}catch{setNotice(c.fail)}finally{setBusy(false)}};
   const accept=async(id)=>{try{await mainApi.post(`/social/friends/${id}/accept`);await refresh()}catch{setNotice(c.fail)}};
-  const remove=async(id)=>{if(!window.confirm(c.confirmRemove))return;setBusy(true);try{await mainApi.delete(`/social/friends/${id}`);setNotice(c.removed);await refresh()}catch{setNotice(c.fail)}finally{setBusy(false)}};
+  const remove=async(id)=>{if(!await confirm(c.confirmRemove,{variant:"danger",confirmLabel:c.removeFriend}))return;setBusy(true);try{await mainApi.delete(`/social/friends/${id}`);setNotice(c.removed);await refresh()}catch{setNotice(c.fail)}finally{setBusy(false)}};
   const create=async(e)=>{e.preventDefault();setBusy(true);try{const {data}=await mainApi.post("/social/conversations",{name:groupName,memberIds:picked});await refresh();setSelected(data.data.id);setGroupName("");setPicked([]);setNotice(c.groupOk)}catch{setNotice(c.fail)}finally{setBusy(false)}};
   const direct=async(id)=>{setBusy(true);try{const {data}=await mainApi.post("/social/conversations",{memberIds:[id]});await refresh();setSelected(data.data.id)}catch{setNotice(c.fail)}finally{setBusy(false)}};
-  const deleteChat=async()=>{if(!active||!window.confirm(c.confirmDeleteChat))return;setBusy(true);try{await mainApi.delete(`/social/conversations/${active.id}/membership`);setSelected(null);await refresh();setNotice(c.chatDeleted)}catch{setNotice(c.fail)}finally{setBusy(false)}};
+  const deleteChat=async()=>{if(!active||!await confirm(c.confirmDeleteChat,{variant:"danger",confirmLabel:c.deleteChat}))return;setBusy(true);try{await mainApi.delete(`/social/conversations/${active.id}/membership`);setSelected(null);await refresh();setNotice(c.chatDeleted)}catch{setNotice(c.fail)}finally{setBusy(false)}};
   return <main className="min-h-dvh p-4 md:p-7 space-y-5">
     <header className="flex items-start gap-3"><Link to="/dashboard" className="btn btn-ghost btn-circle" aria-label="Back"><FiArrowLeft/></Link><div><h1 className="text-3xl font-bold">{c.title}</h1><p className="opacity-70">{c.intro}</p></div></header>
     {notice&&<p className="alert py-2" role="status">{notice}</p>}

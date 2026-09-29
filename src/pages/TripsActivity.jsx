@@ -38,10 +38,12 @@ import TripMap from "@/components/TripMap";
 import TripNavCard from "@/components/TripNavCard";
 import { useTripCoordinates } from "@/hooks/useTripCoordinates";
 import mainApi from "@/api/mainApi";
+import { useAppDialog } from "@/components/AppDialogContext";
 
 /** Own-trip workspace: state and event handlers here; reusable display blocks live in components/trips. */
 export default function TripActivity() {
   const { sidebarEnabled } = useOutletContext();
+  const { confirm } = useAppDialog();
   const { tripId } = useParams();
   const navigate = useNavigate();
   const { t, locale } = useLang();
@@ -139,7 +141,7 @@ export default function TripActivity() {
   };
 
   const handleRevokeShare = async () => {
-    if (!window.confirm(t("share.revoke") + "?")) return;
+    if (!(await confirm(t("share.revoke") + "?", { variant: "danger", confirmLabel: t("share.revoke") }))) return;
     try {
       await revokeShareLink(tripId);
       setShareToken(null);
@@ -315,7 +317,7 @@ export default function TripActivity() {
   };
 
   const handleDeleteDay = async (dayId) => {
-    if (window.confirm(t("day.confirmDelDay"))) {
+    if (await confirm(t("day.confirmDelDay"), { variant: "danger", confirmLabel: t("common.delete") })) {
       try {
         await deleteDay(dayId, tripId);
         if (selectedDayId === dayId) setSelectedDayId(null);
@@ -409,13 +411,13 @@ export default function TripActivity() {
   };
 
   const handleDeleteActivity = async (actId) => {
-    if (window.confirm(t("act.confirmDel"))) {
+    if (await confirm(t("act.confirmDel"), { variant: "danger", confirmLabel: t("common.delete") })) {
       await deleteActivity(tripId, actId);
     }
   };
 
   const handleDeleteHistory = async (messageId) => {
-    if (window.confirm(t("weather.delHist"))) {
+    if (await confirm(t("weather.delHist"), { variant: "danger", confirmLabel: t("common.delete") })) {
       try {
         await deleteWeatherHistory(tripId, messageId);
       } catch {

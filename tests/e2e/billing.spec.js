@@ -21,7 +21,6 @@ test("billing imports activity, previews charges, records a partial repayment an
       JSON.stringify({ state: { user: { id: 1 }, token: "test" }, version: 0 }),
     );
   });
-  page.on("dialog", (dialog) => dialog.accept());
   const errors = [];
   page.on("pageerror", (e) => errors.push(e.message));
   const members = [],
@@ -95,6 +94,10 @@ test("billing imports activity, previews charges, records a partial repayment an
         expect(c.requestId).toMatch(/^[a-f0-9-]{36}$/);
         if (c.action === "member.add")
           members.push({ id: ids[members.length], version: 1, ...c.member });
+        if (c.action === "member.update") {
+          const member = members.find((item) => item.id === c.id);
+          Object.assign(member, c.member, { version: member.version + 1 });
+        }
         if (c.action === "bill.save") {
           expect(c.bill.payments[0].amount).toBe("1227.00");
           bills.push({
@@ -167,6 +170,12 @@ test("billing imports activity, previews charges, records a partial repayment an
       page.getByRole("heading", { name, exact: true }),
     ).toBeVisible();
   }
+  await page.getByRole("button", { name: "Edit", exact: true }).first().click();
+  const renameDialog = page.getByRole("dialog", { name: "Edit" });
+  await expect(renameDialog.getByRole("textbox", { name: "Member name" })).toHaveValue("Alice");
+  await renameDialog.getByRole("textbox", { name: "Member name" }).fill("Alicia");
+  await renameDialog.getByRole("button", { name: "Save", exact: true }).click();
+  await expect(page.getByRole("heading", { name: "Alicia", exact: true })).toBeVisible();
   await expect(
     page.getByRole("button", { name: "Next: add a bill" }),
   ).toBeVisible();
@@ -198,7 +207,7 @@ test("billing imports activity, previews charges, records a partial repayment an
         .getByLabel("Split method / participants")
         .selectOption("equal");
       await section
-        .getByRole("checkbox", { name: "Alice", exact: true })
+        .getByRole("checkbox", { name: "Alicia", exact: true })
         .check();
     }
   }
@@ -215,6 +224,7 @@ test("billing imports activity, previews charges, records a partial repayment an
     .getByRole("button", { name: "Preview calculation", exact: true })
     .click();
   await form.getByRole("button", { name: "Confirm bill", exact: true }).click();
+  await page.getByRole("alertdialog").getByRole("button", { name: "Confirm" }).click();
   await expect(
     page.getByText("Dinner · ฿1227.00", { exact: false }),
   ).toBeVisible();
@@ -234,8 +244,9 @@ test("billing imports activity, previews charges, records a partial repayment an
   await page
     .getByRole("button", { name: "Record repayment", exact: true })
     .click();
+  await page.getByRole("alertdialog").getByRole("button", { name: "Confirm" }).click();
   await expect(
-    page.getByText("Bob → Alice · ฿200.00", { exact: false }),
+    page.getByText("Bob → Alicia · ฿200.00", { exact: false }),
   ).toBeVisible();
   await page
     .locator("summary")
@@ -247,6 +258,7 @@ test("billing imports activity, previews charges, records a partial repayment an
   await page
     .getByRole("button", { name: "Reverse repayment", exact: true })
     .click();
+  await page.getByRole("alertdialog").getByRole("button", { name: "Confirm" }).click();
   await expect(
     page.getByRole("button", { name: "Void bill", exact: true }),
   ).toBeEnabled();

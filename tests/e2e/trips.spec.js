@@ -42,7 +42,6 @@ const fixture = () => ({
 test("owner trip keeps totals, sharing, day edits, saved pins and theme when opening map", async ({
   page,
 }) => {
-  page.on("dialog", (dialog) => dialog.accept());
   const errors = [];
   page.on("pageerror", (e) => errors.push(e.message));
   await page.addInitScript(() => {
@@ -107,6 +106,17 @@ test("owner trip keeps totals, sharing, day edits, saved pins and theme when ope
     expect(rect.right).toBeLessThanOrEqual(sideRect.right + 1);
     expect(rect.width).toBeLessThanOrEqual(sideRect.width + 1);
   }
+  const cardTextBounds = await compactCards.evaluateAll((cards) => cards.map((card) => {
+    const cardRect = card.getBoundingClientRect();
+    return [...card.querySelectorAll("h1,h2,h3,p,a,button,span")].filter((el) => el.textContent.trim() && !el.closest(".leaflet-container")).map((el) => {
+      const rect = el.getBoundingClientRect();
+      return { text: el.textContent.trim(), left: rect.left, right: rect.right, cardLeft: cardRect.left, cardRight: cardRect.right };
+    });
+  }));
+  for (const item of cardTextBounds.flat()) {
+    expect(item.left, item.text).toBeGreaterThanOrEqual(item.cardLeft - 1);
+    expect(item.right, item.text).toBeLessThanOrEqual(item.cardRight + 1);
+  }
   for (const card of await compactCards.all()) {
     await expect(card).toHaveCSS("border-radius", "16px");
   }
@@ -127,6 +137,9 @@ test("owner trip keeps totals, sharing, day edits, saved pins and theme when ope
   await page
     .getByRole("button", { name: /revoke|disable|stop sharing/i })
     .click();
+  const revokeDialog = page.getByRole("alertdialog");
+  await expect(revokeDialog).toContainText("Revoke share?");
+  await revokeDialog.getByRole("button", { name: "Revoke share" }).click();
   await expect.poll(() => mutations).toContain("DELETE/api/trips/71/share");
   await openSettings(page);
   await page.getByRole("button", { name: "Switch to dark theme" }).click();

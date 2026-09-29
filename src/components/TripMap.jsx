@@ -206,7 +206,7 @@ export default function TripMap({
   );
 
   const expandBtnClass =
-    "btn btn-sm btn-ghost glass h-auto min-h-8 max-w-[45%] whitespace-normal rounded-lg px-2 py-1 leading-tight gap-1 shrink-0";
+    "btn btn-sm btn-ghost glass h-auto min-h-8 min-w-0 max-w-[45%] whitespace-normal rounded-lg px-2 py-1 leading-tight gap-1 shrink";
 
   return (
     <section className="glass glass-card trip-layout-card box-border w-full min-w-0 p-3 md:p-4 rounded-2xl space-y-3">
@@ -225,11 +225,11 @@ export default function TripMap({
         {pinned.length > 0 &&
           (expandHref ? (
             <Link to={expandHref} className={expandBtnClass}>
-              <FiMaximize2 /> {t("map.full")}
+              <FiMaximize2 className="shrink-0" /> <span className="min-w-0 break-words">{t("map.full")}</span>
             </Link>
           ) : (
             <button onClick={() => setFull(true)} className={expandBtnClass}>
-              <FiMaximize2 /> {t("map.full")}
+              <FiMaximize2 className="shrink-0" /> <span className="min-w-0 break-words">{t("map.full")}</span>
             </button>
           ))}
       </div>

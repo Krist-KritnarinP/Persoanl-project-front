@@ -1,5 +1,8 @@
 export const additions = {
   th: {
+    "common.dialogTitle": "ยืนยันรายการ",
+    "common.confirm": "ยืนยัน",
+    "common.ok": "ตกลง",
     "bill.overview": "ภาพรวมบัญชีทริป",
     "bill.workspaceIntro":
       "เพิ่มบิล หารกับเพื่อน และดูยอดที่ต้องเคลียร์ในที่เดียว",
@@ -260,6 +263,9 @@ export const additions = {
     "collab.decline": "ปฏิเสธ",
   },
   en: {
+    "common.dialogTitle": "Confirm action",
+    "common.confirm": "Confirm",
+    "common.ok": "OK",
     "bill.overview": "Trip bill overview",
     "bill.workspaceIntro":
       "Add bills, split with friends, and keep track of what is still owed.",
@@ -520,6 +526,9 @@ export const additions = {
     "collab.decline": "Decline",
   },
   zh: {
+    "common.dialogTitle": "确认操作",
+    "common.confirm": "确认",
+    "common.ok": "知道了",
     "bill.overview": "旅行账目概览",
     "bill.workspaceIntro": "添加账单、与朋友分摊，并随时查看未结金额。",
     "bill.membersIntro": "输入朋友的名字即可，无需注册。",
@@ -764,6 +773,9 @@ export const additions = {
     "collab.decline": "拒绝",
   },
   ko: {
+    "common.dialogTitle": "작업 확인",
+    "common.confirm": "확인",
+    "common.ok": "확인",
     "bill.overview": "여행 장부 요약",
     "bill.workspaceIntro":
       "청구서를 추가하고 친구와 나누며 남은 정산 금액을 확인하세요.",
