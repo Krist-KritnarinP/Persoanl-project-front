@@ -5,6 +5,7 @@ const headers={"access-control-allow-origin":"http://127.0.0.1:5188","access-con
 test("notification inbox accepts friend requests and opens new messages",async({page})=>{
   await page.addInitScript(()=>{
     localStorage.setItem("lang","en");
+    localStorage.setItem("navigationMode","classic");
     localStorage.setItem("authState",JSON.stringify({state:{user:{id:1,username:"Traveler",email:"traveler@example.com"},token:"test"},version:0}));
   });
   let accepted=false;let items=[
@@ -28,9 +29,13 @@ test("notification inbox accepts friend requests and opens new messages",async({
     return route.fulfill({headers,json:{data}});
   });
   await page.goto("/dashboard");
-  const headerBell=page.locator('[data-testid="header-notifications"]:visible').first();
+  const appHeader=page.locator("header.navbar").first();
+  const headerBell=appHeader.getByTestId("header-notifications");
   await expect(headerBell).toBeVisible();
   await expect(headerBell).toContainText("2");
+  await expect(appHeader.getByRole("combobox",{name:"Language"})).toBeVisible();
+  if (page.viewportSize().width >= 768) await expect(appHeader.getByRole("button",{name:/Traveler/})).toBeVisible();
+  await expect(appHeader.getByRole("button",{name:/log out/i})).toBeVisible();
   await headerBell.click();
   await expect(page).toHaveURL(/\/notifications$/);
   await expect(page.getByText("Friend sent you a friend request")).toBeVisible();

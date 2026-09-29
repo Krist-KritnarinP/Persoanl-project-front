@@ -261,7 +261,6 @@ export default function AppLayout() {
                 AI LHOUNG
               </span>
             </span>
-            {notificationLink}
             <button
               className="grid h-8 w-6 shrink-0 place-items-center rounded-md text-base-content/60 hover:bg-base-content/10 hover:text-base-content focus-visible:outline-2 focus-visible:outline-primary"
               aria-label={t("side.classic")}
@@ -276,8 +275,7 @@ export default function AppLayout() {
         </aside>
       )}
       <div className="min-w-0 flex-1">
-        <header className="lg:hidden sticky top-0 z-30 flex items-center gap-3 bg-base-100/95 border-b border-base-content/10 px-4 py-2">
-            {sidebarEnabled && <>
+        {sidebarEnabled && <header className="lg:hidden sticky top-0 z-30 flex items-center gap-3 bg-base-100/95 border-b border-base-content/10 px-4 py-2">
             <button
               ref={menuButton}
               data-testid="sidebar-open"
@@ -292,8 +290,7 @@ export default function AppLayout() {
             >
               <FiMenu />
             </button>
-            </>}
-            {!sidebarEnabled && <span className="flex min-w-0 items-center gap-2">
+            <span className="flex min-w-0 items-center gap-2">
               <img
                 src="/image/MiniDog.PNG"
                 alt="Minidog"
@@ -302,12 +299,7 @@ export default function AppLayout() {
               <span className="font-display text-2xl tracking-wider bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent whitespace-nowrap">
                 AI LHOUNG
               </span>
-            </span>}
-            <span className="ml-auto">{notificationLink}</span>
-        </header>
-        {!sidebarEnabled && <header className="hidden lg:flex sticky top-0 z-30 h-14 items-center gap-3 border-b border-base-content/10 bg-base-100/95 px-5">
-          <span className="font-display text-xl tracking-wider bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">AI LHOUNG</span>
-          <span className="ml-auto">{notificationLink}</span>
+            </span>
         </header>}
         <Suspense
           fallback={
@@ -316,7 +308,7 @@ export default function AppLayout() {
             </div>
           }
         >
-          <Outlet context={{ sidebarEnabled }} />
+          <Outlet context={{ sidebarEnabled, notificationLink }} />
         </Suspense>
       </div>
       {!sidebarEnabled && (

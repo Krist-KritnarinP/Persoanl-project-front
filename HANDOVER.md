@@ -2,7 +2,7 @@
 
 ## Header, trip cards, and draggable chat dock
 
-- ย้าย notification bell ไปอยู่ header เดียวกับ app brand บน sidebar/mobile header; ไม่มีแถบ notification เปล่าเหนือเนื้อหา
+- วาง notification bell ใน Dashboard header แถวเดียวกับ language switcher, ชื่อผู้ใช้ และ logout; เอาออกจาก sidebar brand และ app bar แยก
 - ป้องกันข้อความ Trip map/Navigate+QR ล้นด้วย min-width/word wrapping ใน flex children และปุ่ม; browser ตรวจกรอบข้อความเทียบการ์ดจริง
 - Chat dock ลากตาม pointer ไปตำแหน่งใดก็ได้ตามขอบจอ, clamp ไม่ให้ออกจาก viewport และบันทึกพิกัด; panel เปิดภายใน viewport
 - ตรวจ browser `social.spec.js`, `trips.spec.js`, `billing.spec.js` ผ่าน 10/10 desktop/mobile รวมธีม popup, ยกเลิก/ยืนยัน, prompt เปลี่ยนชื่อ, drag และกรอบการ์ด

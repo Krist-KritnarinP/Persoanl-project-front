@@ -29,7 +29,7 @@ import { useAppDialog } from "@/components/AppDialogContext";
 function Dashboard() {
   const { t, locale } = useLang();
   const { confirm } = useAppDialog();
-  const { sidebarEnabled } = useOutletContext();
+  const { sidebarEnabled, notificationLink } = useOutletContext();
   const [viewMode, setViewMode] = useState("grid");
   const [searchTerm, setSearchTerm] = useState("");
 
@@ -167,6 +167,7 @@ function Dashboard() {
 
           {/* Profile */}
           <div className="flex items-center gap-1 sm:gap-2 shrink-0">
+            {notificationLink}
             <ThemeToggle />
             <LanguageSwitcher />
             <button
