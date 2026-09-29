@@ -1,5 +1,12 @@
 # สถานะล่าสุด — Frontend / Social + Trip collaboration (2026-09-30)
 
+## Traveling dog loading screen (2026-09-30)
+
+- Replaced shared spinner with a lightweight SVG dog carrying a backpack, walking legs/wagging tail, mountains, signpost and animated route/dots. Styles scoped in `components/LoadingScreen.css`; theme-aware scenery and text.
+- Shared by owner/public trip loading, TripMapPage initial data loading and both router/AppLayout Suspense fallbacks. Uses existing loading conditions with no artificial wait or fake progress.
+- Loading title/hint localized TH/EN/ZH/KO; decorative SVG hidden from assistive tech, one polite status announcement; `prefers-reduced-motion` disables all animation.
+- Browser test 2/2 desktop/mobile checks waiting state, responsive fit, reduced motion and disappearance when data resolves; reviewed light/dark screenshots. Build/unit 13/13 pass; lint has 8 existing warnings. Front only, no push/deploy.
+
 ## Chat send SQL regression — API fix (2026-09-30)
 
 - User reported sending messages fails. Confirmed API notification `jsonb_build_object` parameters caused PostgreSQL 42P18 and rolled back the message transaction after notifications migration.

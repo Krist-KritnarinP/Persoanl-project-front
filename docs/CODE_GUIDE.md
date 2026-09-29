@@ -27,7 +27,7 @@
 | components/ | แก้ส่วนแสดงผลหรือ modal ที่ใช้ในหน้า |
 | components/trips/TripOverviewStats.jsx | แสดงสถิติที่หน้าทริปคำนวณไว้ ไม่ fetch เอง |
 | components/trips/TripShareModal.jsx | แสดงกล่องแชร์; สร้าง/ลบ token และ clipboard อยู่ที่หน้า |
-| components/LoadingScreen.jsx | spinner เต็มหน้า |
+| components/LoadingScreen.jsx + LoadingScreen.css | น้องหมาสะพายเป้ระหว่างโหลดหน้า; SVG/CSS, status สำหรับ screen reader และ reduced motion |
 | constants/activityTypes.js | icon/สี/ชื่อแปลของประเภทกิจกรรม |
 | utils/datetime.js | รูปแบบวันที่ของหน้าทริปเจ้าของและแผนที่ |
 | stores/tripStore.js | รายการทริป |
@@ -82,3 +82,5 @@ Sidebar ปิดแล้วกลับ classic layout เต็ม ไม่�
 
 ## Trip invitations in notifications (2026-09-30)
 `TripInvitations.jsx` ใช้ร่วม Dashboard/Notifications และ poll/focus refresh pending invitations จาก collaboration API เดิม. AppLayout รวมจำนวน pending กับ social unread count และฟัง `trip-invitations-changed` เพื่อ refresh badge หลัง accept/decline. รายการนี้ไม่ใช่ notification rows จึงไม่หายเมื่อกดอ่านทั้งหมด; ไม่ต้อง backfill หรือ migration. Accept/decline ยังคงใช้ PUT `/collaboration/invitations/:tripId` และ API ตรวจ recipient/status เดิม.
+
+LoadingScreen ใช้กับ initial trip/map data loading และ Suspense ของ AppRouter/AppLayout; ข้อความ `loading.journeyTitle/journeyHint` ใน i18n/additions.js. ไม่เพิ่ม timer เพื่อยืดเวลาแสดง loading; ปุ่มที่กำลังบันทึกยังใช้ spinner เดิม.

@@ -1,3 +1,4 @@
+import LoadingScreen from "@/components/LoadingScreen";
 import { useOutletContext } from "react-router-dom";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
 import ThemeToggle from "@/components/ThemeToggle";
@@ -160,9 +161,7 @@ export default function TripMapPage() {
       </div>
 
       {loading && !trip ? (
-        <div className="flex justify-center py-16">
-          <span className="loading loading-spinner loading-lg text-primary"></span>
-        </div>
+        <LoadingScreen />
       ) : (
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 items-start">
           {/* แผนที่ใหญ่ */}

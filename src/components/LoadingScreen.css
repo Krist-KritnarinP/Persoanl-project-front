@@ -1,0 +1,33 @@
+.journey-loading {
+  display: flex;
+  min-height: 65dvh;
+  width: 100%;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 32px 16px;
+  text-align: center;
+  color: var(--color-primary);
+}
+.journey-loading__scene { width: min(100%, 360px); }
+.journey-loading__scene svg { display: block; width: 100%; height: auto; }
+.journey-loading__tag { font-size: 10px; font-weight: 700; letter-spacing: .18em; opacity: .75; }
+.journey-loading__dog { animation: journey-bob .65s ease-in-out infinite; }
+.journey-loading__leg { transform-box: fill-box; transform-origin: 50% 0; animation: journey-step .65s ease-in-out infinite alternate; }
+.journey-loading__leg--back { animation-delay: -.65s; }
+.journey-loading__tail { transform-box: fill-box; transform-origin: right center; animation: journey-wag .42s ease-in-out infinite alternate; }
+.journey-loading__cloud { animation: journey-drift 5s ease-in-out infinite alternate; }
+.journey-loading__trail { animation: journey-trail 1s linear infinite; }
+.journey-loading__dots { display: flex; gap: 7px; margin-top: 20px; }
+.journey-loading__dots i { width: 6px; height: 6px; border-radius: 50%; background: currentColor; animation: journey-dot 1.4s ease-in-out infinite; }
+.journey-loading__dots i:nth-child(2) { animation-delay: .15s; }
+.journey-loading__dots i:nth-child(3) { animation-delay: .3s; }
+@keyframes journey-bob { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-3px); } }
+@keyframes journey-step { from { transform: rotate(-12deg); } to { transform: rotate(12deg); } }
+@keyframes journey-wag { from { transform: rotate(-9deg); } to { transform: rotate(12deg); } }
+@keyframes journey-drift { to { transform: translateX(12px); } }
+@keyframes journey-trail { to { stroke-dashoffset: 19; } }
+@keyframes journey-dot { 0%,80%,100% { opacity: .25; } 40% { opacity: 1; } }
+@media (prefers-reduced-motion: reduce) {
+  .journey-loading *, .journey-loading *::before, .journey-loading *::after { animation: none !important; }
+}

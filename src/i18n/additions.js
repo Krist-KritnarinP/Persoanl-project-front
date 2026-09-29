@@ -1,5 +1,7 @@
 export const additions = {
   th: {
+    "loading.journeyTitle": "น้องหมากำลังพาไป…",
+    "loading.journeyHint": "กำลังโหลดข้อมูล อีกนิดก็พร้อมออกเดินทางแล้ว",
     "common.dialogTitle": "ยืนยันรายการ",
     "common.confirm": "ยืนยัน",
     "common.ok": "ตกลง",
@@ -263,6 +265,8 @@ export const additions = {
     "collab.decline": "ปฏิเสธ",
   },
   en: {
+    "loading.journeyTitle": "A little adventure is on its way…",
+    "loading.journeyHint": "Loading your page. We’ll be ready to explore in a moment.",
     "common.dialogTitle": "Confirm action",
     "common.confirm": "Confirm",
     "common.ok": "OK",
@@ -526,6 +530,8 @@ export const additions = {
     "collab.decline": "Decline",
   },
   zh: {
+    "loading.journeyTitle": "小狗正带你出发…",
+    "loading.journeyHint": "正在加载页面，马上就能一起探索。",
     "common.dialogTitle": "确认操作",
     "common.confirm": "确认",
     "common.ok": "知道了",
@@ -773,6 +779,8 @@ export const additions = {
     "collab.decline": "拒绝",
   },
   ko: {
+    "loading.journeyTitle": "강아지와 함께 출발해요…",
+    "loading.journeyHint": "페이지를 불러오는 중이에요. 곧 여행을 시작해요.",
     "common.dialogTitle": "작업 확인",
     "common.confirm": "확인",
     "common.ok": "확인",

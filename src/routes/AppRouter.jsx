@@ -1,3 +1,4 @@
+import LoadingScreen from "@/components/LoadingScreen";
 import React, { lazy, Suspense } from "react";
 import {
   createBrowserRouter,
@@ -73,11 +74,7 @@ const router = createBrowserRouter([
 function AppRouter() {
   return (
     <Suspense
-      fallback={
-        <div className="min-h-screen grid place-items-center" role="status">
-          <span className="loading loading-spinner" />
-        </div>
-      }
+      fallback={<LoadingScreen />}
     >
       <RouterProvider router={router} />
     </Suspense>

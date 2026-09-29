@@ -1,3 +1,4 @@
+import LoadingScreen from "@/components/LoadingScreen";
 import { useEffect, useRef, useState, useCallback, Suspense } from "react";
 import { NavLink, Outlet, useLocation } from "react-router-dom";
 import {
@@ -309,11 +310,7 @@ export default function AppLayout() {
             </span>
         </header>}
         <Suspense
-          fallback={
-            <div className="p-12 text-center" role="status">
-              <span className="loading loading-spinner" />
-            </div>
-          }
+          fallback={<LoadingScreen />}
         >
           <Outlet context={{ sidebarEnabled, notificationLink }} />
         </Suspense>
