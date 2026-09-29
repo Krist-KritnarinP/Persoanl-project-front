@@ -72,20 +72,10 @@ function Modal({ children, title, onClose, drawer = false }) {
   );
 }
 
-function SidebarContent({ close, settings, signingOut, signOut }) {
+function SidebarContent({ close, settings, signingOut, signOut, unreadNotifications }) {
   const { t } = useLang();
   const user = useUserStore((s) => s.user);
   const { pathname } = useLocation();
-  const [unreadNotifications, setUnreadNotifications] = useState(0);
-  useEffect(() => {
-    let active = true;
-    const load = () => mainApi.get("/social/notifications/unread-count")
-      .then(({ data }) => { if (active) setUnreadNotifications(data.data); })
-      .catch(() => {});
-    const initial = setTimeout(load, 0);
-    const timer = setInterval(load, 15000);
-    return () => { active = false; clearTimeout(initial); clearInterval(timer); };
-  }, []);
   const links = [
     ["/travel-overview", FiMap, "side.overview"],
     ["/dashboard", FiBriefcase, "side.trips"],
@@ -184,6 +174,23 @@ export default function AppLayout() {
   });
   const [modal, setModal] = useState(null);
   const [signingOut, setSigningOut] = useState(false);
+  const [unreadNotifications, setUnreadNotifications] = useState(0);
+  const loadUnreadNotifications = useCallback(() => {
+    mainApi.get("/social/notifications/unread-count")
+      .then(({ data }) => setUnreadNotifications(Number(data.data) || 0))
+      .catch(() => {});
+  }, []);
+  useEffect(() => {
+    loadUnreadNotifications();
+    const timer = setInterval(loadUnreadNotifications, 10000);
+    window.addEventListener("focus", loadUnreadNotifications);
+    document.addEventListener("visibilitychange", loadUnreadNotifications);
+    return () => {
+      clearInterval(timer);
+      window.removeEventListener("focus", loadUnreadNotifications);
+      document.removeEventListener("visibilitychange", loadUnreadNotifications);
+    };
+  }, [loadUnreadNotifications, pathname]);
   // Stable callbacks keep the modal and its focus trap mounted while state changes.
   const opener = useRef(null);
   const menuButton = useRef(null);
@@ -210,7 +217,23 @@ export default function AppLayout() {
     opener.current = event.currentTarget;
     setModal("settings");
   };
-  const content = { close, settings, signOut, signingOut };
+  const content = { close, settings, signOut, signingOut, unreadNotifications };
+  const notificationLink = (
+    <NavLink
+      to="/notifications"
+      aria-label={`${t("side.notifications")}${unreadNotifications ? ` (${unreadNotifications})` : ""}`}
+      title={t("side.notifications")}
+      className="btn btn-ghost btn-circle relative"
+      data-testid="header-notifications"
+    >
+      <FiBell className="text-xl" />
+      {unreadNotifications > 0 && (
+        <span className="badge badge-error badge-xs absolute right-0 top-0 min-w-4 text-error-content" aria-hidden="true">
+          {unreadNotifications > 99 ? "99+" : unreadNotifications}
+        </span>
+      )}
+    </NavLink>
+  );
   const toggle = () => {
     setSidebarEnabled((value) => {
       localStorage.setItem("navigationMode", value ? "classic" : "sidebar");
@@ -250,8 +273,8 @@ export default function AppLayout() {
         </aside>
       )}
       <div className="min-w-0 flex-1">
-        {sidebarEnabled && (
-          <header className="lg:hidden sticky top-0 z-30 flex items-center gap-3 bg-base-100/95 border-b border-base-content/10 px-4 py-2">
+        <header className="lg:hidden sticky top-0 z-30 flex items-center gap-3 bg-base-100/95 border-b border-base-content/10 px-4 py-2">
+            {sidebarEnabled && <>
             <button
               ref={menuButton}
               data-testid="sidebar-open"
@@ -276,8 +299,12 @@ export default function AppLayout() {
                 AI LHOUNG
               </span>
             </span>
-          </header>
-        )}
+            </>}
+            <span className="ml-auto">{notificationLink}</span>
+        </header>
+        <header className="hidden lg:flex sticky top-0 z-30 h-14 items-center justify-end border-b border-base-content/10 bg-base-100/95 px-5" data-testid="desktop-app-header">
+          {notificationLink}
+        </header>
         <Suspense
           fallback={
             <div className="p-12 text-center" role="status">

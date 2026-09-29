@@ -1,5 +1,12 @@
 # สถานะล่าสุด — Frontend / Social + Trip collaboration (2026-09-30)
 
+## Header notifications and chat removal
+
+- เพิ่มปุ่มกระดิ่งบนแถบด้านบนทั้ง desktop/mobile/classic layout พร้อม unread badge; รีเฟรชตอนเข้า route, กลับมา focus และทุก 10 วินาที
+- เพิ่มปุ่มลบแชทจากรายการ เรียก membership endpoint ให้แชทหายจากบัญชีปัจจุบัน โดยสมาชิกอื่นยังเห็นประวัติเดิม
+- Header navigation และการลบแชทมี browser coverage บน desktop/mobile
+- Notification events จะถูกสร้างเมื่อ DB มีตาราง `notifications`; environment ที่ยังไม่ได้รัน API `npm run migrate:notifications` จะแสดง badge เป็น 0
+
 ## Chat regression and friend removal
 
 - Root cause: social API wrote notifications in the message/friendship transaction; configured DB has no notifications table yet, so those transactions rolled back.

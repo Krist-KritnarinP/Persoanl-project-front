@@ -27,7 +27,12 @@ test("notification inbox accepts friend requests and opens new messages",async({
     else if(path.endsWith("/me"))data={username:"Traveler",email:"traveler@example.com"};
     return route.fulfill({headers,json:{data}});
   });
-  await page.goto("/notifications");
+  await page.goto("/dashboard");
+  const headerBell=page.locator('[data-testid="header-notifications"]:visible').first();
+  await expect(headerBell).toBeVisible();
+  await expect(headerBell).toContainText("2");
+  await headerBell.click();
+  await expect(page).toHaveURL(/\/notifications$/);
   await expect(page.getByText("Friend sent you a friend request")).toBeVisible();
   await page.getByRole("button",{name:"Accept friend"}).click();
   await expect.poll(()=>accepted).toBe(true);

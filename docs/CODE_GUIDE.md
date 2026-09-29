@@ -34,7 +34,7 @@
 | stores/tripActivityStore.js | รายละเอียดทริป CRUD วัน/กิจกรรม และ weather/share |
 | stores/userStore.js | login/logout และ session ที่ persist |
 | components/ChatDock.jsx + services/locationTracking.js | floating chat และอัปเดตตำแหน่งที่ผู้ใช้อนุญาตจนหมดเวลา/หยุดแชร์ |
-| layouts/AppLayout.jsx | sidebar notification unread count poll; หน้า Notifications เป็นแหล่ง action หลัก |
+| layouts/AppLayout.jsx | Header/sidebar notification unread badge; หน้า Notifications เป็นแหล่ง action หลัก |
 | api/mainApi.js | Axios, access token และ single-flight refresh |
 | hooks/useTripCoordinates.js + utils/geocode.js | พิกัด DB → cache → ค้นหาอัตโนมัติ; progressive render |
 | utils/gmaps.js | สร้าง URL นำทาง Google Maps |
