@@ -1,8 +1,17 @@
+# สถานะล่าสุด — Frontend (2026-09-29)
+
+- Repo `main` อยู่ที่ `3f6e278` และตรงกับ `origin/main`; working tree สะอาด
+- GitHub Actions run [36524216696](https://github.com/Krist-KritnarinP/Persoanl-project-front/actions/runs/36524216696) ผ่านตามสถานะที่ผู้ใช้ยืนยัน
+- งานล่าสุดทำ browser tests ให้ใช้ได้บน GitHub Actions โดยไม่เปลี่ยน production logic
+- Roadmap หารบิลระบุพัฒนาชุดแรกแล้วใน `docs/SPLIT_BILLS_PLAN.md`; รายละเอียดและงาน setup/acceptance ที่ยังเหลืออยู่ใน API `docs/BILLING.md`
+
+---
+
 # Handover — Frontend CI repair (2026-09-29)
 
 - GitHub Actions run 36521327905 ของ commit 52cc4de: npm ci/unit/build/SEO/Chromium install ผ่าน; browser tests ล้ม 8 (6 screenshot path `/private/tmp` ใช้ได้บน Mac แต่ไม่มีบน Ubuntu, 2 planner test กดปุ่ม dashboard ที่ถูกย้ายไป `/trips/ai` แล้ว)
 - เปลี่ยน screenshot test เป็น `test.info().outputPath(...)` ของ Playwright และให้ planner test เปิด route จริงโดยตรง; ไม่แก้ production logic
-- รัน browser suite ครบ 32 desktop/mobile ผ่านบนเครื่อง; รอ GitHub Actions ของ commit แก้เพื่อยืนยันบน Linux
+- รัน browser suite ครบ 32 desktop/mobile ผ่านบนเครื่อง; GitHub Actions ของ commit แก้ยืนยันผ่านแล้วใน run 36524216696
 - Log: https://github.com/Krist-KritnarinP/Persoanl-project-front/actions/runs/36521327905
 
 ---
