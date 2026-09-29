@@ -63,10 +63,11 @@ test("travel card opens overview, filters map/calendar/costs and supports four l
       return r.fulfill({ status: 204, headers });
     const url = new URL(r.request().url());
     const overview = url.pathname.endsWith("/overview");
+    const invitations = url.pathname.endsWith("/collaboration/invitations");
     return r.fulfill({
       headers,
       json: {
-        data: overview
+        data: invitations ? [] : overview
           ? url.searchParams.get("page") === "2"
             ? trips.slice(2)
             : trips.slice(0, 2)

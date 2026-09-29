@@ -21,6 +21,7 @@ const ShareTripView = lazy(() => import("@/pages/ShareTripView"));
 const ForgotPassword = lazy(() => import("@/pages/ForgotPassword"));
 const ResetPassword = lazy(() => import("@/pages/ResetPassword"));
 const Userprofile = lazy(() => import("@/pages/Userprofile"));
+const Chat = lazy(() => import("@/pages/Chat"));
 import useUserStore from "@/stores/userStore";
 
 // เช็กสิทธิ์คนที่ Login แล้ว
@@ -55,6 +56,7 @@ const router = createBrowserRouter([
           { path: "/travel-overview", element: <TravelOverview /> },
           { path: "/trips/ai", element: <AiPlanner /> },
           { path: "/userprofile", element: <Userprofile /> },
+          { path: "/chat", element: <Chat /> },
           { path: "/trips", element: <Trips /> },
           { path: "/trips/:tripId", element: <Trips /> },
           { path: "/trips/:tripId/map", element: <TripMapPage /> },

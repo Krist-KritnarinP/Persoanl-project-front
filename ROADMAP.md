@@ -32,6 +32,11 @@
   - [x] apply `npm run migrate:collaboration` กับ DB ที่ตั้งใน environment นี้; ตรวจแล้วทริปเดิม 5 รายการยังอยู่
   - [ ] apply migration ใน DB environment อื่นก่อน deploy ที่นั่น และ verify roles/revocation/privacy บน PostgreSQL ชั่วคราว
   - [ ] ส่งอีเมลแจ้งคำเชิญ; MVP ปัจจุบันให้ผู้รับเห็นคำเชิญหลัง sign in ที่ Dashboard
+- [x] **เพื่อน แชทกลุ่ม และขอพิกัดชั่วคราว (เริ่มทำ 2026-09-30):** friend request แบบยืนยัน, direct/group chat, bubble dock และ location sharing ที่ผู้ใช้อนุมัติก่อนพร้อมระยะเวลา 5 นาที–24 ชั่วโมง
+  - API contract, retention, migration และข้อจำกัด realtime: [SOCIAL_CHAT_PLAN.md](../PersonalProject_API/docs/SOCIAL_CHAT_PLAN.md)
+  - [x] Apply `npm run migrate:social` กับ DB ที่ตั้งใน environment นี้; ตรวจ trips=5 และ tables social ว่าง
+  - [ ] Apply migration แยก DB environment อื่นก่อน deploy ที่นั่น และตรวจ privacy/expiry/leave-group บน PostgreSQL ชั่วคราว
+  - [ ] Push notifications, read receipts, media, offline chat และ native background location ยังเป็นงานต่อยอด
 - [x] **AI Trip Planner MVP**: ข้อความความต้องการ + ปฏิทินเริ่ม/สิ้นสุด ไม่จำกัดจำนวนวัน (กดครั้งเดียว ระบบร่างต่อจนครบ) → Gemini ร่าง JSON → ตรวจ/แก้/ลบกิจกรรม → ยืนยัน → สร้างทริปและเปิดหน้าเดิม
   - ตรวจวัน/เวลา/ราคา/ownership ด้วย Zod; AI ไม่ส่งพิกัด; บันทึกทั้งชุดใน transaction พร้อม account lock และ durable receipt กันยืนยันซ้ำ
   - ฉบับร่าง PLAN แยกจาก WEATHER; ร่าง v2 เก็บความคืบหน้าข้ามวันจนยืนยัน พร้อม progress และข้อความ token แบบสั้น; ใช้ AI quota/kill switch/fallback เดิม, output cap 6,000 tokens (ไม่ใช่ระบบ Pro/billing)

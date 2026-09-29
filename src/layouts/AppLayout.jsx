@@ -11,11 +11,13 @@ import {
   FiChevronLeft,
   FiChevronRight,
   FiSettings,
+  FiMessageCircle,
 } from "react-icons/fi";
 import { useLang } from "@/i18n";
 import useUserStore from "@/stores/userStore";
 import ThemeToggle from "@/components/ThemeToggle";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
+import ChatDock from "@/components/ChatDock";
 
 function Modal({ children, title, onClose, drawer = false }) {
   const ref = useRef(null);
@@ -76,6 +78,7 @@ function SidebarContent({ close, settings, signingOut, signOut }) {
     ["/travel-overview", FiMap, "side.overview"],
     ["/dashboard", FiBriefcase, "side.trips"],
     ["/trips/ai", FiCompass, "side.ai"],
+    ["/chat", FiMessageCircle, "side.chat"],
   ];
   const row =
     "flex items-center gap-3 rounded-xl px-3 py-3 min-h-12 transition-colors";
@@ -302,6 +305,7 @@ export default function AppLayout() {
           </div>
         </Modal>
       )}
+      <ChatDock />
     </div>
   );
 }

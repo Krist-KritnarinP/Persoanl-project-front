@@ -88,6 +88,7 @@ test("sidebar navigates, collapses or traps mobile focus, shows account and logs
     ["Overview", "/travel-overview"],
     ["My trips", "/dashboard"],
     ["Plan with AI", "/trips/ai"],
+    ["Friends & chat", "/chat"],
   ]) {
     await openNavigation(page);
     await page

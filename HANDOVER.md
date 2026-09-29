@@ -1,4 +1,14 @@
-# สถานะล่าสุด — Frontend / Trip collaboration (2026-09-30)
+# สถานะล่าสุด — Frontend / Social + Trip collaboration (2026-09-30)
+
+## Friends, group chat, timed location
+
+- เพิ่มหน้า `/chat` สำหรับเพิ่ม/ตอบรับเพื่อน, เริ่มแชทส่วนตัว, สร้างกลุ่ม, ส่งข้อความ และส่งคำขอแชร์พิกัด
+- Floating chat dock เปิดแชทด่วนจากหน้า protected; ข้อความ/ตำแหน่ง refresh ทุก 4 วินาทีขณะเปิดแชท
+- แชร์ location ต้องกดเองและอนุญาต browser geolocation; ตั้งเวลา 5 นาที/15 นาที/1 ชม./8 ชม./24 ชม. หรือหยุดก่อนเวลาได้
+- ย้าย/ย่อการเชิญผู้ร่วมทริปไปใต้แผนที่ด้านขวา
+- API migration `npm run migrate:social` apply แล้วกับ DB ที่ตั้งใน environment นี้; ตรวจ trips=5 และ tables social ยังว่าง ต้อง apply แยก DB environment อื่นก่อน deploy ที่นั่น ดู API `docs/SOCIAL_CHAT_PLAN.md`
+- ตรวจ Front build/lint/unit และ browser suite 34/34 (2 workers); API unit 40/40
+- commits ในเครื่องยังไม่ได้ push/deploy; social migration apply เฉพาะ DB ที่ตั้งใน environment นี้
 
 - เริ่มฟีเจอร์ร่วมทริป: เจ้าของเชิญบัญชีเดิมเป็น viewer/editor, ผู้รับยอมรับ/ปฏิเสธจาก Dashboard, ผู้ร่วมออกจากทริปได้ และเจ้าของถอนสิทธิ์ได้
 - Viewer อ่านแผนและ ledger; editor แก้แผนและ ledger; ปุ่มแก้ไข/ลบทริป/แชร์ public ซ่อนตาม role โดย API เป็นตัวบังคับสิทธิ์จริง

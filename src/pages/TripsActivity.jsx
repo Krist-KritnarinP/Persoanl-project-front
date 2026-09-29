@@ -490,33 +490,6 @@ export default function TripActivity() {
         </div>
       )}
 
-      {isTripOwner && (
-        <section className="glass glass-card rounded-3xl p-4 md:p-5 space-y-4" aria-labelledby="collaboration-heading">
-          <div>
-            <h2 id="collaboration-heading" className="font-bold text-lg">{t("collab.title")}</h2>
-            <p className="text-sm opacity-70">{t("collab.description")}</p>
-          </div>
-          <form onSubmit={submitInvite} className="flex flex-col sm:flex-row gap-2">
-            <input className="input input-bordered min-w-0 flex-1" type="email" required maxLength={100} value={inviteEmail} onChange={(e) => setInviteEmail(e.target.value)} placeholder={t("collab.email")} aria-label={t("collab.email")} />
-            <select className="select select-bordered" value={inviteRole} onChange={(e) => setInviteRole(e.target.value)} aria-label={t("collab.role")}>
-              <option value="editor">{t("collab.editor")}</option>
-              <option value="viewer">{t("collab.viewer")}</option>
-            </select>
-            <button className="btn btn-primary" type="submit" disabled={collaborationBusy || !inviteEmail.trim()}>{t("collab.invite")}</button>
-          </form>
-          <p className="text-xs opacity-60">{t("collab.accountHint")}</p>
-          {collaborationMessage && <p role="status" className="text-sm">{collaborationMessage}</p>}
-          <ul className="divide-y divide-base-content/10">
-            {collaborators.map((row) => (
-              <li key={row.userId} className="flex items-center justify-between gap-3 py-2">
-                <span className="min-w-0"><span className="block truncate font-medium">{row.user.username}</span><span className="block truncate text-xs opacity-60">{row.user.email} · {t(`collab.status.${row.status}`)} · {t(`collab.role.${row.role}`)}</span></span>
-                <button type="button" className="btn btn-ghost btn-sm text-error" disabled={collaborationBusy} onClick={() => removeCollaborator(row.userId)}>{t("collab.remove")}</button>
-              </li>
-            ))}
-          </ul>
-        </section>
-      )}
-
       <button
         type="button"
         onClick={() => navigate(`/trips/${tripId}/billing`)}
@@ -860,6 +833,32 @@ export default function TripActivity() {
             label={mapSubtitle}
             mapHref={`/trips/${tripId}/map`}
           />
+          {isTripOwner && (
+            <section className="glass glass-card rounded-2xl p-3 space-y-3" aria-labelledby="collaboration-heading">
+              <div>
+                <h2 id="collaboration-heading" className="font-bold">{t("collab.title")}</h2>
+                <p className="text-xs opacity-70">{t("collab.description")}</p>
+              </div>
+              <form onSubmit={submitInvite} className="flex flex-wrap gap-2">
+                <input className="input input-bordered input-sm min-w-0 flex-1" type="email" required maxLength={100} value={inviteEmail} onChange={(e) => setInviteEmail(e.target.value)} placeholder={t("collab.email")} aria-label={t("collab.email")} />
+                <select className="select select-bordered select-sm" value={inviteRole} onChange={(e) => setInviteRole(e.target.value)} aria-label={t("collab.role")}>
+                  <option value="editor">{t("collab.editor")}</option>
+                  <option value="viewer">{t("collab.viewer")}</option>
+                </select>
+                <button className="btn btn-primary btn-sm" type="submit" disabled={collaborationBusy || !inviteEmail.trim()}>{t("collab.invite")}</button>
+              </form>
+              <p className="text-xs opacity-60">{t("collab.accountHint")}</p>
+              {collaborationMessage && <p role="status" className="text-sm">{collaborationMessage}</p>}
+              <ul className="divide-y divide-base-content/10">
+                {collaborators.map((row) => (
+                  <li key={row.userId} className="flex items-center justify-between gap-2 py-1.5">
+                    <span className="min-w-0"><span className="block truncate text-sm font-medium">{row.user.username}</span><span className="block truncate text-xs opacity-60">{t(`collab.status.${row.status}`)} · {t(`collab.role.${row.role}`)}</span></span>
+                    <button type="button" className="btn btn-ghost btn-xs text-error" disabled={collaborationBusy} onClick={() => removeCollaborator(row.userId)}>{t("collab.remove")}</button>
+                  </li>
+                ))}
+              </ul>
+            </section>
+          )}
         </div>
       </div>
 

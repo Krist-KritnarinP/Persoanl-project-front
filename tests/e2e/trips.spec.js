@@ -9,7 +9,9 @@ const headers = {
 const token = "demo-share-token";
 const fixture = () => ({
   id: 71,
+  userId: 1,
   tripName: "Refactor regression trip",
+  accessRole: "owner",
   destination: "Bangkok",
   startDate: "2026-10-01",
   endDate: "2026-10-02",
@@ -65,6 +67,7 @@ test("owner trip keeps totals, sharing, day edits, saved pins and theme when ope
     if (method === "OPTIONS") return route.fulfill({ status: 204, headers });
     let data;
     if (path === "/api/trips/71" && method === "GET") data = trip;
+    else if (path === "/api/collaboration/trips/71/collaborators") data = [];
     else if (path.includes("/weather/")) data = [];
     else if (path === "/api/trips/71/share" && method === "POST") {
       mutations.push(method + path);
@@ -193,7 +196,7 @@ test("oversized Thai route cannot crash owner or shared trip; a shorter day rest
   await page.route("http://127.0.0.1:8899/api/**", (route) =>
     route.fulfill({
       headers,
-      json: { data: route.request().url().includes("/weather/") ? [] : trip },
+      json: { data: /\/weather\/|\/collaboration\//.test(route.request().url()) ? [] : trip },
     }),
   );
   for (const path of ["/trips/71", "/share/" + token]) {
