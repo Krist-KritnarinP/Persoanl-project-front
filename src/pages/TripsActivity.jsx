@@ -18,6 +18,7 @@ import {
   FiEye,
 } from "react-icons/fi";
 import { useTripActivityStore } from "@/stores/tripActivityStore";
+import useUserStore from "@/stores/userStore";
 import { toast } from "react-toastify";
 import { useLang } from "@/i18n";
 import { formatTripDate } from "@/utils/datetime";
@@ -34,6 +35,7 @@ import ActivityItem from "@/components/ActivityItem";
 import TripMap from "@/components/TripMap";
 import TripNavCard from "@/components/TripNavCard";
 import { useTripCoordinates } from "@/hooks/useTripCoordinates";
+import mainApi from "@/api/mainApi";
 
 /** Own-trip workspace: state and event handlers here; reusable display blocks live in components/trips. */
 export default function TripActivity() {
@@ -47,6 +49,14 @@ export default function TripActivity() {
   const ACTIVITY_TYPES = getActivityTypeMeta(t);
 
   const trip = useTripActivityStore((state) => state.trip);
+  const currentUser = useUserStore((state) => state.user);
+  const canEditTrip = trip?.accessRole !== "viewer";
+  const isTripOwner = Number(trip?.userId) === Number(currentUser?.id);
+  const [collaborators, setCollaborators] = useState([]);
+  const [inviteEmail, setInviteEmail] = useState("");
+  const [inviteRole, setInviteRole] = useState("editor");
+  const [collaborationMessage, setCollaborationMessage] = useState("");
+  const [collaborationBusy, setCollaborationBusy] = useState(false);
   const loading = useTripActivityStore((state) => state.loading);
   const fetchTripDetails = useTripActivityStore(
     (state) => state.fetchTripDetails,
@@ -168,6 +178,56 @@ export default function TripActivity() {
   useEffect(() => {
     if (tripId) fetchTripDetails(tripId);
   }, [tripId, fetchTripDetails]);
+
+  useEffect(() => {
+    if (!tripId || !isTripOwner) return;
+    mainApi.get(`/collaboration/trips/${tripId}/collaborators`)
+      .then(({ data }) => setCollaborators(data.data || []))
+      .catch(() => setCollaborators([]));
+  }, [tripId, isTripOwner]);
+
+  const submitInvite = async (event) => {
+    event.preventDefault();
+    setCollaborationBusy(true);
+    setCollaborationMessage("");
+    try {
+      await mainApi.post(`/collaboration/trips/${tripId}/collaborators`, {
+        email: inviteEmail,
+        role: inviteRole,
+      });
+      const { data } = await mainApi.get(`/collaboration/trips/${tripId}/collaborators`);
+      setCollaborators(data.data || []);
+      setInviteEmail("");
+      setCollaborationMessage(t("collab.invited"));
+    } catch (error) {
+      setCollaborationMessage(error.response?.status === 404 ? t("collab.accountMissing") : t("collab.actionFailed"));
+    } finally {
+      setCollaborationBusy(false);
+    }
+  };
+
+  const removeCollaborator = async (userId) => {
+    setCollaborationBusy(true);
+    try {
+      await mainApi.delete(`/collaboration/trips/${tripId}/collaborators/${userId}`);
+      setCollaborators((rows) => rows.filter((row) => row.userId !== userId));
+    } catch {
+      setCollaborationMessage(t("collab.actionFailed"));
+    } finally {
+      setCollaborationBusy(false);
+    }
+  };
+
+  const leaveCollaborativeTrip = async () => {
+    setCollaborationBusy(true);
+    try {
+      await mainApi.delete(`/collaboration/trips/${tripId}/membership`);
+      navigate("/dashboard");
+    } catch {
+      setCollaborationMessage(t("collab.actionFailed"));
+      setCollaborationBusy(false);
+    }
+  };
 
   // ไม่ auto-select วันแรก — เริ่มที่แท็บภาพรวม (selectedDayId === null)
   const activeDay = trip?.days?.find((d) => d.id === selectedDayId) || null;
@@ -408,12 +468,12 @@ export default function TripActivity() {
           <FiArrowLeft /> {t("common.back")}
         </button>
         <div className="flex items-center gap-2 shrink-0">
-          <button
+          {isTripOwner && <button
             onClick={openShare}
             className="btn btn-primary btn-sm rounded-full gap-1.5 shadow-md"
           >
             <FiShare2 /> {t("share.btn")}
-          </button>
+          </button>}
           <span className="hidden sm:inline-flex items-center rounded-full border border-base-content/20 bg-white/20 px-3 py-1.5 text-sm font-semibold leading-none whitespace-nowrap">
             Trip #{tripId}
           </span>
@@ -422,6 +482,40 @@ export default function TripActivity() {
 
       {/* TRIP INFO CARD */}
       <TripInfoCard trip={trip} formatDate={formatDate} />
+
+      {!isTripOwner && trip?.accessRole && (
+        <div className="rounded-2xl border border-info/30 bg-info/10 px-4 py-3 text-sm flex flex-wrap items-center justify-between gap-3">
+          <span role="status">{t(trip.accessRole === "viewer" ? "collab.viewerNotice" : "collab.editorNotice")}</span>
+          <button type="button" className="btn btn-ghost btn-sm" disabled={collaborationBusy} onClick={leaveCollaborativeTrip}>{t("collab.leave")}</button>
+        </div>
+      )}
+
+      {isTripOwner && (
+        <section className="glass glass-card rounded-3xl p-4 md:p-5 space-y-4" aria-labelledby="collaboration-heading">
+          <div>
+            <h2 id="collaboration-heading" className="font-bold text-lg">{t("collab.title")}</h2>
+            <p className="text-sm opacity-70">{t("collab.description")}</p>
+          </div>
+          <form onSubmit={submitInvite} className="flex flex-col sm:flex-row gap-2">
+            <input className="input input-bordered min-w-0 flex-1" type="email" required maxLength={100} value={inviteEmail} onChange={(e) => setInviteEmail(e.target.value)} placeholder={t("collab.email")} aria-label={t("collab.email")} />
+            <select className="select select-bordered" value={inviteRole} onChange={(e) => setInviteRole(e.target.value)} aria-label={t("collab.role")}>
+              <option value="editor">{t("collab.editor")}</option>
+              <option value="viewer">{t("collab.viewer")}</option>
+            </select>
+            <button className="btn btn-primary" type="submit" disabled={collaborationBusy || !inviteEmail.trim()}>{t("collab.invite")}</button>
+          </form>
+          <p className="text-xs opacity-60">{t("collab.accountHint")}</p>
+          {collaborationMessage && <p role="status" className="text-sm">{collaborationMessage}</p>}
+          <ul className="divide-y divide-base-content/10">
+            {collaborators.map((row) => (
+              <li key={row.userId} className="flex items-center justify-between gap-3 py-2">
+                <span className="min-w-0"><span className="block truncate font-medium">{row.user.username}</span><span className="block truncate text-xs opacity-60">{row.user.email} · {t(`collab.status.${row.status}`)} · {t(`collab.role.${row.role}`)}</span></span>
+                <button type="button" className="btn btn-ghost btn-sm text-error" disabled={collaborationBusy} onClick={() => removeCollaborator(row.userId)}>{t("collab.remove")}</button>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
 
       <button
         type="button"
@@ -553,12 +647,12 @@ export default function TripActivity() {
               <h2 className="text-xl font-bold flex items-center gap-2">
                 <FiCalendar /> {t("day.plan")}
               </h2>
-              <button
+              {canEditTrip && <button
                 onClick={handleOpenAddDayModal}
                 className="btn btn-primary btn-sm rounded-full gap-1 shrink-0"
               >
                 <FiPlus /> {t("day.addDay")}
-              </button>
+              </button>}
             </div>
 
             <div className="flex items-center gap-2 overflow-x-auto pb-2 custom-scrollbar">
@@ -617,18 +711,18 @@ export default function TripActivity() {
                     <FiEye />{" "}
                     <span className="hidden sm:inline">{t("common.view")}</span>
                   </button>
-                  <button
+                  {canEditTrip && <button
                     onClick={() => handleOpenEditDayModal(activeDay)}
                     className="btn btn-ghost btn-sm text-info hover:bg-white/20"
                   >
                     <FiEdit2 /> {t("day.editDay")}
-                  </button>
-                  <button
+                  </button>}
+                  {canEditTrip && <button
                     onClick={() => handleDeleteDay(activeDay.id)}
                     className="btn btn-ghost btn-sm text-error hover:bg-white/20"
                   >
                     <FiTrash2 /> {t("day.delDay")}
-                  </button>
+                  </button>}
                 </div>
               </div>
 
@@ -657,12 +751,12 @@ export default function TripActivity() {
                   <h4 className="font-semibold text-lg sm:text-xl">
                     {t("day.actList")}
                   </h4>
-                  <button
+                  {canEditTrip && <button
                     onClick={handleOpenAddActivityModal}
                     className="btn btn-primary btn-sm glass rounded-full gap-1 shrink-0"
                   >
                     <FiPlus /> {t("act.addAct")}
-                  </button>
+                  </button>}
                 </div>
 
                 {activeDay.activities && activeDay.activities.length > 0 ? (
@@ -676,8 +770,8 @@ export default function TripActivity() {
                           ACTIVITY_TYPES.ATTRACTION
                         }
                         formatZonedTime={formatZonedTime}
-                        onEdit={handleOpenEditActivityModal}
-                        onDelete={handleDeleteActivity}
+                        onEdit={canEditTrip ? handleOpenEditActivityModal : undefined}
+                        onDelete={canEditTrip ? handleDeleteActivity : undefined}
                         onView={setViewingActivity}
                       />
                     ))}
@@ -811,7 +905,7 @@ export default function TripActivity() {
         }
         formatZonedTime={formatZonedTime}
         onClose={() => setViewingActivity(null)}
-        onEdit={handleOpenEditActivityModal}
+        onEdit={canEditTrip ? handleOpenEditActivityModal : undefined}
       />
       <DayDetailModal
         day={viewingDay}

@@ -65,3 +65,6 @@ Sidebar ปิดแล้วกลับ classic layout เต็ม ไม่�
 
 ## Trip billing
 `pages/TripBilling.jsx` เป็น workspace ของทริป; `components/billing/BillForm.jsx` จัดการฟอร์ม/preview, `SplitEditor.jsx` เลือกวิธีหารและสมาชิก. APIคำนวณเงินจริงและตรวจสิทธิ์; หน้าเว็บไม่ใช่แหล่งยอดเงินที่เชื่อถือได้. ดู HANDOVER ล่าสุดและคู่มือ API docs/BILLING.md ก่อนแก้สูตร
+
+## ผู้ร่วมทริป
+เจ้าของเชิญบัญชีที่มีอยู่และเลือก viewer/editor ในหน้า Trip; ผู้รับตอบรับจาก Dashboard. รายละเอียด API, สิทธิ์ และ migration อยู่ใน API `docs/TRIP_COLLABORATION_PLAN.md`.

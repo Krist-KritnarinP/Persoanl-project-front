@@ -140,6 +140,7 @@ function BillingWorkspace({ tripId }) {
   );
   const outstanding = data.summary.debts.reduce((n, d) => n + d.remaining, 0);
   const hasMembers = data.members.some((m) => m.active);
+  const canEdit = trip?.accessRole !== "viewer";
   const canAddBill = hasMembers && !editing;
   return (
     <main className="billing-workspace w-full space-y-7 px-4 pt-4 pb-16 md:px-6 md:pt-8">
@@ -168,7 +169,7 @@ function BillingWorkspace({ tripId }) {
               {t("bill.workspaceIntro")}
             </p>
           </div>
-          <button
+          {canEdit && <button
             type="button"
             className="btn billing-hero-action gap-2 border-0 px-5"
             disabled={!!editing}
@@ -183,7 +184,7 @@ function BillingWorkspace({ tripId }) {
             <FiPlus aria-hidden="true" />{" "}
             {t(hasMembers ? "bill.new" : "bill.startWithMembers")}
             <FiArrowRight aria-hidden="true" />
-          </button>
+          </button>}
         </div>
         <span aria-hidden="true" className="billing-hero-orbit" />
       </header>
@@ -229,6 +230,7 @@ function BillingWorkspace({ tripId }) {
         </div>
       </section>
       <p className="text-sm text-base-content/65">{t("bill.notice")}</p>
+      {!canEdit && <p role="status" className="alert alert-info">{t("collab.viewerNotice")}</p>}
       <section
         id="billing-members"
         className="billing-panel space-y-5 rounded-3xl p-5 md:p-7"
@@ -246,7 +248,7 @@ function BillingWorkspace({ tripId }) {
             </p>
           </div>
         </div>
-        <form
+        {canEdit && <form
           className="flex flex-col gap-2 sm:flex-row"
           onSubmit={async (e) => {
             e.preventDefault();
@@ -271,7 +273,7 @@ function BillingWorkspace({ tripId }) {
           <button className="btn btn-primary gap-2" disabled={busy}>
             <FiPlus aria-hidden="true" /> {t("bill.addMember")}
           </button>
-        </form>
+        </form>}
         <div className="grid sm:grid-cols-2 xl:grid-cols-3 gap-3">
           {data.summary.members.map((m) => (
             <article
@@ -319,7 +321,7 @@ function BillingWorkspace({ tripId }) {
                   ฿{moneyText(m.received)}
                 </p>
               )}
-              <div className="flex gap-2">
+              {canEdit && <div className="flex gap-2">
                 <button
                   className="btn btn-xs btn-ghost"
                   disabled={busy}
@@ -350,11 +352,11 @@ function BillingWorkspace({ tripId }) {
                 >
                   {t(m.active ? "bill.archive" : "bill.restore")}
                 </button>
-              </div>
+              </div>}
             </article>
           ))}
         </div>
-        {hasMembers && !editing && (
+        {canEdit && hasMembers && !editing && (
           <button
             type="button"
             className="btn btn-primary gap-2"
@@ -364,7 +366,7 @@ function BillingWorkspace({ tripId }) {
           </button>
         )}
       </section>
-      {editing && (
+      {canEdit && editing && (
         <div id="billing-editor" className="scroll-mt-6">
           <BillForm
             key={editing.id || "new"}
@@ -493,7 +495,7 @@ function BillingWorkspace({ tripId }) {
                 {locked && (
                   <p className="text-sm text-warning">{t("bill.locked")}</p>
                 )}
-                <div className="flex gap-2">
+                {canEdit && <div className="flex gap-2">
                   <button
                     disabled={busy || b.voided || locked || !!editing}
                     className="btn btn-sm"
@@ -514,7 +516,7 @@ function BillingWorkspace({ tripId }) {
                   >
                     {t("bill.voidAction")}
                   </button>
-                </div>
+                </div>}
               </div>
             </details>
           );
@@ -534,6 +536,8 @@ function BillingWorkspace({ tripId }) {
           <p className="billing-empty rounded-2xl p-6 text-sm text-base-content/70">
             {t("bill.noOutstanding")}
           </p>
+        ) : !canEdit ? (
+          <p className="text-sm text-base-content/65">{t("collab.viewerNotice")}</p>
         ) : (
           <div className="space-y-4">
             <p className="text-sm">{t("bill.repayNote")}</p>
@@ -654,7 +658,7 @@ function BillingWorkspace({ tripId }) {
                   {moneyText(a.amount)}
                 </p>
               ))}
-              <button
+              {canEdit && <button
                 className="btn btn-sm btn-outline"
                 disabled={busy || s.reversed}
                 onClick={() =>
@@ -666,7 +670,7 @@ function BillingWorkspace({ tripId }) {
                 }
               >
                 {t("bill.reverse")}
-              </button>
+              </button>}
             </article>
           ))}
         </section>

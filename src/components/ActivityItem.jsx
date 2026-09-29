@@ -62,7 +62,7 @@ export default function ActivityItem({
 
       {/* Action Buttons */}
       <div className="flex sm:flex-col md:flex-row items-center gap-1 shrink-0">
-        <button
+        {onEdit && <button
           onClick={(e) => {
             e.stopPropagation();
             onEdit(activity);
@@ -71,8 +71,8 @@ export default function ActivityItem({
           aria-label={t("common.edit")}
         >
           <FiEdit2 />
-        </button>
-        <button
+        </button>}
+        {onDelete && <button
           onClick={(e) => {
             e.stopPropagation();
             onDelete(activity.id);
@@ -81,7 +81,7 @@ export default function ActivityItem({
           aria-label={t("common.delete")}
         >
           <FiTrash2 />
-        </button>
+        </button>}
       </div>
     </div>
   );

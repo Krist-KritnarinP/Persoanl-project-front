@@ -23,6 +23,7 @@ import ThemeToggle from "@/components/ThemeToggle";
 import { useLang } from "@/i18n";
 import useTripStore from "@/stores/tripStore";
 import useUserStore from "@/stores/userStore";
+import TripInvitations from "@/components/TripInvitations";
 
 function Dashboard() {
   const { t, locale } = useLang();
@@ -209,6 +210,13 @@ function Dashboard() {
             : "flex-1 overflow-y-auto pr-1 space-y-6 custom-scrollbar"
         }
       >
+        <TripInvitations
+          t={t}
+          onAccepted={async (tripId) => {
+            await fetchTrips();
+            navigate(`/trips/${tripId}`);
+          }}
+        />
         {/* HERO BANNER */}
         <section className="glass rounded-4xl p-6 md:p-8 relative overflow-hidden flex flex-col md:flex-row justify-between items-start md:items-center gap-6 shrink-0">
           <div className="space-y-2 z-10 max-w-xl">
@@ -438,13 +446,13 @@ function Dashboard() {
                               </span>
                             </span>
                           )}
-                          <button
+                          {trip.accessRole === "owner" && <button
                             onClick={(e) => handleDeleteTrip(e, trip.id)}
                             title={t("common.delete")}
                             className="btn btn-ghost btn-sm btn-circle text-error/60 hover:text-error hover:bg-error/10 shrink-0"
                           >
                             <FiTrash2 className="text-lg hover:text-red-400" />
-                          </button>
+                          </button>}
                         </div>
                       </div>
 
