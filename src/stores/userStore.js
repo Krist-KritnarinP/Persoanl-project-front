@@ -1,5 +1,6 @@
 import { mainApi, apiRegister } from "@/api/mainApi";
 import { toast } from "react-toastify";
+import { tKey } from "@/i18n";
 import { useTripActivityStore } from "./tripActivityStore";
 import { useTripStore } from "./tripStore";
 import { create } from "zustand";
@@ -42,9 +43,7 @@ const useUserStore = create(
           await mainApi.post("/users/logout");
         } catch (error) {
           if (error.response?.status !== 401) {
-            toast.error(
-              "Could not revoke server sessions. Please reconnect and sign out again.",
-            );
+            toast.error(tKey("auth.logoutFail"));
             return;
           }
         }

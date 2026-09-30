@@ -111,7 +111,7 @@ function SidebarContent({ close, settings, signingOut, signOut, unreadNotificati
               <Icon className="text-xl shrink-0" />
               <span className="min-w-0 flex-1">{t(key)}</span>
               {to === "/notifications" && unreadNotifications > 0 && (
-                <span className="badge badge-error badge-sm text-error-content" aria-label={`${unreadNotifications} unread`}>
+                <span className="badge badge-error badge-sm text-error-content" aria-label={t("notif.unread", { count: unreadNotifications })}>
                   {unreadNotifications > 99 ? "99+" : unreadNotifications}
                 </span>
               )}

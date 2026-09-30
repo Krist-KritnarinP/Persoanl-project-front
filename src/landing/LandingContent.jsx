@@ -48,7 +48,7 @@ export default function LandingContent({
         <div className="lp-nav-end">
           <ThemeToggle />
           <select
-            aria-label="Language"
+            aria-label={(additions[lang] || additions.th)["common.language"]}
             value={lang}
             onChange={(e) => onLanguage?.(e.target.value)}
           >

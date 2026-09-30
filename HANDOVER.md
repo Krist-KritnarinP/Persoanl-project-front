@@ -1,5 +1,13 @@
 # สถานะล่าสุด — Frontend / Social + Trip collaboration (2026-09-30)
 
+## Copy audit 4 ภาษา: กระชับ + เป็นธรรมชาติ (2026-09-30)
+
+- ตรวจและ rewrite ข้อความ UI ทั้ง product (TH/EN/ZH/KO): ตัดคำซ้ำ คำฟุ่มเฟือย และศัพท์ช่างที่โผล่ถึง user ("72 ไบต์ UTF-8", "token", "(ล่าสุด 100 รายการ)"); ฟอร์ม login ภาษาไทยที่เคยเป็นอังกฤษครึ่งฟอร์มแปลเป็นไทยหมด; toast "Login Success!!" เป็นประโยคปกติ
+- ล็อกศัพท์: ทริป/กิจกรรม/งบ/จุดหมาย, Trip/activity/budget/destination; ชื่อเฉพาะคง EN (Google Maps, QR, AI, THB, Sidebar); ZH ใช้标点เต็มรูป (？，。！…), KO โทน ~해요 ให้สม่ำเสมอ
+- เพิ่ม key ใหม่: `trip.tag` (ป้าย Trip #id), `common.language` (aria), `act.coords` (แทน "📍 Map (optional)"), `auth.logoutFail` (toast เดิม hardcode EN ใน userStore), `notif.unread` (aria badge); เพิ่ม `tKey()` ใน i18n ให้ store เรียกภาษาตามเครื่องได้; ตัด ⏰/📍 ออกจาก label
+- แก้ FAQ landing ที่ข้อมูลตกยุค (เคยบอกว่า AI สร้างทริปไม่ได้ ทั้งที่มี AiPlanner แล้ว) ทั้ง 4 ภาษา; key parity ครบ 423 keys ไม่ขาดไม่เกิน
+- ตรวจ build ผ่าน, lint 0 errors, unit 13/13, SEO ผ่าน; ไม่แตะ logic/DB; commit นี้เท่านั้น ไม่รวม ROADMAP.md ที่อีก session แก้ค้างไว้
+
 ## Traveling dog loading screen (2026-09-30)
 
 - Replaced shared spinner with a lightweight SVG dog carrying a backpack, walking legs/wagging tail, mountains, signpost and animated route/dots. Styles scoped in `components/LoadingScreen.css`; theme-aware scenery and text.

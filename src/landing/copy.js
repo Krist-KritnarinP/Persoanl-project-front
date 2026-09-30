@@ -2,17 +2,17 @@ export const copy = {
   th: {
     title: "วางแผนเที่ยวให้เป็นเรื่องสนุก | AI LHOUNG",
     description:
-      "รวมแผนเที่ยวรายวัน แผนที่ งบประมาณ และ AI สรุปอากาศไว้ในที่เดียว จัดทริปและแชร์แผนให้เพื่อนดูด้วย AI LHOUNG",
-    nav: ["ฟีเจอร์", "ลองดูตัวอย่าง", "วิธีเริ่มต้น"],
+      "แผนเที่ยวรายวัน แผนที่ งบประมาณ และสรุปอากาศ AI รวมในที่เดียว แชร์ให้เพื่อนดูได้",
+    nav: ["ฟีเจอร์", "ตัวอย่าง", "วิธีใช้"],
     login: "เข้าสู่ระบบ",
     start: "เริ่มวางแผนทริป",
-    dashboard: "ไปที่ทริปของฉัน",
+    dashboard: "ทริปของฉัน",
     eyebrow: "LESS PLANNING CHAOS. MORE ADVENTURE.",
     hero: ["ทริปที่ดี", "เริ่มจากแผนที่ใช่"],
     intro:
       "เก็บทุกที่ที่อยากไป จัดวันให้ลงตัว แล้วออกเดินทางด้วยกัน แผนเที่ยว แผนที่ และงบประมาณ — ครบในที่เดียว",
     explore: "ดูตัวอย่างแผนเที่ยว",
-    note: "เริ่มจากทริปเล็ก ๆ หรือการเดินทางครั้งใหญ่ของคุณ",
+    note: "ทริปเล็กหรือทริปใหญ่ เริ่มได้หมด",
     ribbon: [
       "จัดแผนรายวัน",
       "ดูพิกัดบนแผนที่",
@@ -27,7 +27,7 @@ export const copy = {
     budget: "งบตัวอย่าง",
     currency: "บาท",
     day: "วันที่",
-    sampleNote: "ข้อมูลตัวอย่างเพื่อแสดงการใช้งาน ไม่ใช่คำแนะนำหรือราคาจองจริง",
+    sampleNote: "ข้อมูลตัวอย่าง ไม่ใช่ราคาจองจริง",
     dayNames: ["เดินเล่นในเมือง", "ขึ้นเขาไปหาหมอก", "เก็บความทรงจำกลับบ้าน"],
     stops: [
       ["กาแฟยามเช้า", "เดินเล่นย่านเมืองเก่า", "มื้อเย็นริมปิง"],
@@ -37,15 +37,15 @@ export const copy = {
     featureEyebrow: "A LITTLE MORE ORGANIZED.",
     featureTitle: "ทุกไอเดียการเที่ยว\nมีที่ของมัน",
     featureIntro:
-      "เลิกสลับไปมาระหว่างโน้ต ลิงก์ และข้อความ แล้วให้แผนของคุณอยู่ด้วยกัน",
+      "เลิกสลับไปมาระหว่างโน้ต ลิงก์ และแชท รวมแผนไว้ที่เดียว",
     features: [
       [
         "แผนรายวัน ที่ปรับได้ตามใจ",
-        "เพิ่มวัน จัดกิจกรรม ใส่เวลาและรายละเอียด ให้ทุกจุดแวะอยู่ในลำดับที่คุณต้องการ",
+        "เพิ่มวัน จัดกิจกรรม ใส่เวลาและรายละเอียดตามใจ",
       ],
       [
         "เห็นทั้งทริปบนแผนที่",
-        "ดูพิกัดของกิจกรรมและสลับดูแต่ละวัน ช่วยให้เห็นว่าที่ไหนอยู่ใกล้กัน",
+        "ดูพิกัดทุกกิจกรรม สลับดูทีละวัน เห็นเลยว่าที่ไหนใกล้กัน",
       ],
       [
         "เห็นงบ ก่อนออกเดินทาง",
@@ -53,15 +53,15 @@ export const copy = {
       ],
       [
         "เช็กอากาศกับ AI",
-        "ขอ AI สรุปสภาพอากาศประกอบแผนเที่ยว เก็บประวัติไว้กลับมาอ่านได้",
+        "ให้ AI สรุปอากาศของทริป พร้อมเก็บประวัติไว้ดูย้อนหลัง",
       ],
       [
         "ส่งแผนเดียวกันให้เพื่อน",
-        "แชร์ลิงก์แบบดูอย่างเดียว ไม่ต้องส่งภาพหลายหน้า และปิดลิงก์ได้เมื่อไม่ใช้แล้ว",
+        "แชร์ลิงก์ดูอย่างเดียว ไม่ต้องส่งภาพหลายหน้า ปิดได้ทุกเมื่อ",
       ],
     ],
     aiNote:
-      "AI อาจคลาดเคลื่อนและขึ้นกับโควต้าบริการ ควรตรวจพยากรณ์จริงก่อนเดินทาง",
+      "AI อาจคลาดเคลื่อนและมีโควต้าจำกัด ตรวจพยากรณ์จริงก่อนเดินทาง",
     stepsTitle: "จาก “อยากไป”\nเป็น “พร้อมไป”",
     steps: [
       ["สร้างทริปของคุณ", "ใส่ชื่อทริป จุดหมาย และวันที่เดินทาง"],
@@ -76,7 +76,7 @@ export const copy = {
       ],
       [
         "AI สร้างทริปให้ทั้งหมดเลยไหม?",
-        "ตอนนี้คุณเป็นคนจัดแผนเอง ส่วน AI ช่วยสรุปอากาศประกอบทริป ระบบสร้างทริปอัตโนมัติยังไม่เปิดใช้งาน",
+        "ได้ — เมนูสร้างทริปด้วย AI (ช่วงทดลองใช้) ร่างแผนให้ แล้วคุณตรวจแก้ก่อนบันทึก ส่วนพยากรณ์อากาศ AI จะสรุปประกอบทริปให้",
       ],
       [
         "แก้ไขแผนหลังสร้างได้ไหม?",
@@ -91,8 +91,8 @@ export const copy = {
   en: {
     title: "Plan your next adventure | AI LHOUNG",
     description:
-      "Bring your daily itinerary, map, budget and AI weather summaries together. Organize a trip and share a read-only plan with friends using AI LHOUNG.",
-    nav: ["Features", "Explore a trip", "How it works"],
+      "Daily itinerary, map, budget and AI weather in one place — share read-only plans with friends.",
+    nav: ["Features", "Sample trip", "How it works"],
     login: "Log in",
     start: "Plan a trip",
     dashboard: "My trips",
@@ -101,7 +101,7 @@ export const copy = {
     intro:
       "Save the places you love, give every day a little direction, and head out together. Your itinerary, map and budget, all in one place.",
     explore: "Explore a sample trip",
-    note: "For your next little escape. Or your biggest adventure yet.",
+    note: "From weekend escapes to big adventures.",
     ribbon: [
       "Daily itineraries",
       "Places on a map",
@@ -116,8 +116,7 @@ export const copy = {
     budget: "Sample budget",
     currency: "THB",
     day: "Day",
-    sampleNote:
-      "Illustrative itinerary. Locations and costs are examples, not live booking offers.",
+    sampleNote: "Sample content — not live booking prices.",
     dayNames: [
       "Wander the old town",
       "A day in the mountains",
@@ -131,7 +130,7 @@ export const copy = {
     featureEyebrow: "A LITTLE MORE ORGANIZED.",
     featureTitle: "A place for every\ntravel idea.",
     featureIntro:
-      "Less jumping between notes, links and messages. More of your trip, together.",
+      "Less jumping between notes, links and chats. Your whole trip, together.",
     features: [
       [
         "Every day, your way",
@@ -139,7 +138,7 @@ export const copy = {
       ],
       [
         "See the bigger picture",
-        "View activity pins and switch between days to see which places are close together.",
+        "See every stop on the map. Switch days to spot what's close together.",
       ],
       [
         "Know your travel budget",
@@ -147,11 +146,11 @@ export const copy = {
       ],
       [
         "A little help with the weather",
-        "Ask AI for a weather summary for your trip and revisit earlier results.",
+        "Get an AI weather summary for your trip, with past reports saved.",
       ],
       [
         "One plan to share",
-        "Send friends a read-only link and revoke access when you no longer need it.",
+        "Send one read-only link. No screenshots — revoke it anytime.",
       ],
     ],
     aiNote:
@@ -176,7 +175,7 @@ export const copy = {
       ],
       [
         "Does AI create the whole itinerary?",
-        "You currently build the itinerary yourself. AI helps with weather summaries; automatic trip generation is not available yet.",
+        "It drafts the plan — you review and edit before saving (beta). It also summarizes weather for your trip.",
       ],
       [
         "Can I change a plan later?",
@@ -202,7 +201,7 @@ copy.zh = {
   hero: ["美好的旅行", "从好计划开始"],
   intro: "收藏想去的地方，安排每一天，将行程、地图和预算放在一起。",
   explore: "查看示例行程",
-  note: "从周末小旅行，到期待已久的冒险。",
+    note: "从周末小旅行到期待已久的冒险。",
   ribbon: ["每日行程", "地图地点", "旅行预算", "分享计划"],
   sample: "示例行程",
   sampleTitle: "清迈慢生活",
@@ -212,7 +211,7 @@ copy.zh = {
   budget: "示例预算",
   currency: "泰铢",
   day: "第",
-  sampleNote: "示例地点和费用仅用于展示，并非实时预订报价。",
+    sampleNote: "示例内容，并非实时预订报价。",
   dayNames: ["漫步古城", "山间一日", "带着回忆回家"],
   stops: [
     ["早晨咖啡", "漫步古城", "河畔晚餐"],
@@ -220,7 +219,7 @@ copy.zh = {
     ["北泰早餐", "挑选纪念品", "返程"],
   ],
   featureTitle: "每个旅行想法\n都有自己的位置",
-  featureIntro: "不用在笔记、链接和消息之间来回切换。",
+    featureIntro: "不用在笔记、链接和聊天之间来回切换。",
   features: [
     ["按你的节奏安排每一天", "添加日期、活动、时间和备注。"],
     ["在地图上查看行程", "查看活动位置，按天切换，了解地点之间的距离。"],
@@ -240,7 +239,7 @@ copy.zh = {
     ["查看分享需要账号吗？", "只读分享无需账号。创建和编辑行程需要登录。"],
     [
       "AI 会自动生成行程吗？",
-      "目前需要自行安排行程，AI 提供天气摘要，自动生成尚未开放。",
+      "AI 会帮您起草完整行程（测试版），保存前可以检查修改，也能生成天气摘要。",
     ],
     ["之后可以修改吗？", "可以在行程页面添加和编辑日期、活动、时间及预算。"],
   ],
@@ -272,7 +271,7 @@ copy.ko = {
   budget: "예시 예산",
   currency: "바트",
   day: "Day",
-  sampleNote: "장소와 비용은 설명을 위한 예시이며 실제 예약 가격이 아닙니다.",
+    sampleNote: "예시일 뿐이며 실제 예약 가격이 아닙니다.",
   dayNames: ["구시가지 산책", "산에서 보내는 하루", "추억과 함께 집으로"],
   stops: [
     ["아침 커피", "구시가지 둘러보기", "강변 저녁 식사"],
@@ -280,7 +279,7 @@ copy.ko = {
     ["북부식 아침 식사", "기념품 고르기", "집으로 돌아가기"],
   ],
   featureTitle: "모든 여행 아이디어가\n모이는 곳",
-  featureIntro: "메모와 링크, 메시지를 오갈 필요 없이 한곳에서 계획하세요.",
+    featureIntro: "메모와 링크, 채팅을 오갈 필요 없이 한곳에서 계획하세요.",
   features: [
     ["내 취향대로 하루 계획", "날짜, 활동, 시간과 메모를 추가하세요."],
     [
@@ -313,7 +312,7 @@ copy.ko = {
     ],
     [
       "AI가 전체 일정을 만드나요?",
-      "현재 일정은 직접 작성합니다. AI는 날씨 요약을 도우며 자동 일정 생성은 아직 제공되지 않습니다.",
+      "AI가 전체 일정을 대신 짜 드립니다(베타). 저장 전에 확인·수정할 수 있고 날씨 요약도 제공됩니다.",
     ],
     [
       "나중에 변경할 수 있나요?",

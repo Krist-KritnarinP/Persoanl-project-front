@@ -178,7 +178,7 @@ export default function ActivityModal({
             <div className="form-control">
               <label className="label py-1">
                 <span className="label-text font-semibold text-sm">
-                  ⏰ {t("act.time")} *
+                  {t("act.time")} *
                 </span>
               </label>
               <ClockTimePicker
@@ -237,7 +237,7 @@ export default function ActivityModal({
             <div className="flex items-center justify-between gap-2">
               <label className="label py-1">
                 <span className="label-text font-semibold text-sm">
-                  📍 Map (optional)
+                  {t("act.coords")}
                 </span>
               </label>
               <button

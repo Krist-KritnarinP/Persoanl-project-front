@@ -479,7 +479,7 @@ export default function TripActivity() {
             <FiShare2 /> {t("share.btn")}
           </button>}
           <span className="hidden sm:inline-flex items-center rounded-full border border-base-content/20 bg-white/20 px-3 py-1.5 text-sm font-semibold leading-none whitespace-nowrap">
-            Trip #{tripId}
+            {t("trip.tag", { id: tripId })}
           </span>
         </div>
       </div>
@@ -590,7 +590,6 @@ export default function TripActivity() {
                               {act.activityTime && (
                                 <div className="flex items-center gap-1.5 pl-3 text-xs">
                                   <span className="bg-base-200/60 px-1.5 py-0.5 rounded flex items-center gap-1">
-                                    <span>⏰</span>
                                     <span>
                                       {formatZonedTime(act.activityTime)}
                                     </span>
