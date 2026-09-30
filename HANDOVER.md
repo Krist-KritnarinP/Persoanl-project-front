@@ -1,5 +1,14 @@
 # สถานะล่าสุด — Frontend / Social + Trip collaboration (2026-09-30)
 
+## Chat workspace and dock UX (2026-10-01)
+
+- Full-width chat now prioritizes the conversation on mobile; friends/manage controls follow below. Desktop uses a compact friend sidebar, avatar room header, horizontally scrollable room selection and bounded message area.
+- Location/map controls live in a keyboard-accessible disclosure, with active-sharing indicator; map previews/Google links and explicit consent flows remain available. Group creation form is collapsed initially to reduce visual clutter.
+- Shared composer supports multiline textarea, Enter send / Shift+Enter newline with IME guard, visible focus styling and send button. Messages follow new content when near the bottom; reading older history does not intentionally jump on polls.
+- Dock keeps draggable positioning; refresh moves to header and close has its own translated accessible label. Bounded location tools and independent message scrolling keep the composer inside the panel.
+- `pages/Chat.css` scopes the shared page/dock styling. New labels TH/EN/ZH/KO; API/send/location contracts unchanged.
+- Verified localhost with API mocks: social + notifications 6/6 desktop/mobile including multiline dock send and composer bounds with maps open, consent, deletion and drag; reviewed light/dark page and dock screenshots. Build/unit 13/13 pass; lint has 9 existing warnings after prior copy audit. No API/DB change or push/deploy.
+
 ## Copy audit 4 ภาษา: กระชับ + เป็นธรรมชาติ (2026-09-30)
 
 - ตรวจและ rewrite ข้อความ UI ทั้ง product (TH/EN/ZH/KO): ตัดคำซ้ำ คำฟุ่มเฟือย และศัพท์ช่างที่โผล่ถึง user ("72 ไบต์ UTF-8", "token", "(ล่าสุด 100 รายการ)"); ฟอร์ม login ภาษาไทยที่เคยเป็นอังกฤษครึ่งฟอร์มแปลเป็นไทยหมด; toast "Login Success!!" เป็นประโยคปกติ

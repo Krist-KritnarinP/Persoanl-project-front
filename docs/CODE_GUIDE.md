@@ -84,3 +84,6 @@ Sidebar ปิดแล้วกลับ classic layout เต็ม ไม่�
 `TripInvitations.jsx` ใช้ร่วม Dashboard/Notifications และ poll/focus refresh pending invitations จาก collaboration API เดิม. AppLayout รวมจำนวน pending กับ social unread count และฟัง `trip-invitations-changed` เพื่อ refresh badge หลัง accept/decline. รายการนี้ไม่ใช่ notification rows จึงไม่หายเมื่อกดอ่านทั้งหมด; ไม่ต้อง backfill หรือ migration. Accept/decline ยังคงใช้ PUT `/collaboration/invitations/:tripId` และ API ตรวจ recipient/status เดิม.
 
 LoadingScreen ใช้กับ initial trip/map data loading และ Suspense ของ AppRouter/AppLayout; ข้อความ `loading.journeyTitle/journeyHint` ใน i18n/additions.js. ไม่เพิ่ม timer เพื่อยืดเวลาแสดง loading; ปุ่มที่กำลังบันทึกยังใช้ spinner เดิม.
+
+## Chat workspace UI (2026-10-01)
+`pages/Chat.css` is shared by Chat and ChatDock. ConversationPanel keeps location tools in a native details disclosure (closed initially), scrolls messages separately and anchors the multiline composer. Enter submits, Shift+Enter inserts a newline, IME composition must never submit. Room height is bounded; avoid flex shrink/clipping on composer/header. Chat stays full-width; mobile displays conversation before friend management. Group creation is in a separate disclosure. ChatDock refresh is in the header, with existing pointer-drag logic preserved.
