@@ -1,3 +1,4 @@
+import { ManualWeatherSummary } from "./ManualWeather";
 import React from "react";
 import {
   FiClock,
@@ -84,6 +85,8 @@ export default function ActivityDetailModal({
           )}
         </dl>
 
+        <ManualWeatherSummary weather={activity.manualWeather} />
+
         <div className="flex gap-2 pt-1">
           {onEdit && (
             <button
@@ -142,6 +145,7 @@ export function DayDetailModal({
               {day.description}
             </p>
           )}
+          <ManualWeatherSummary weather={day.manualWeather} />
           <p className="text-sm sm:text-base font-semibold mt-2 text-primary">
             {day.activities?.length || 0} {t("day.ovActs")} •{" "}
             {budget.toLocaleString()} {t("day.baht")}

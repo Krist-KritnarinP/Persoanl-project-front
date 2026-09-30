@@ -1,3 +1,5 @@
+import { normalizeManualWeather } from "@/constants/manualWeather";
+import { ManualWeatherSummary } from "@/components/ManualWeather";
 import { useOutletContext } from "react-router-dom";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
 import ThemeToggle from "@/components/ThemeToggle";
@@ -287,7 +289,7 @@ export default function TripActivity() {
   // Day Handlers (เพิ่มกลับมา: UI เดิมมีแค่เพิ่มวัน)
   const handleOpenAddDayModal = () => {
     setEditingDay(null);
-    setDayFormData({ dayDate: "", description: "" });
+    setDayFormData({ dayDate: "", description: "", manualWeather: null });
     setIsDayModalOpen(true);
   };
 
@@ -298,6 +300,7 @@ export default function TripActivity() {
         ? new Date(day.dayDate).toISOString().split("T")[0]
         : "",
       description: day.description || "",
+      manualWeather: day.manualWeather || null,
     });
     setIsDayModalOpen(true);
   };
@@ -306,9 +309,9 @@ export default function TripActivity() {
     e.preventDefault();
     try {
       if (editingDay) {
-        await updateDay(editingDay.id, tripId, dayFormData);
+        await updateDay(editingDay.id, tripId, { ...dayFormData, manualWeather: normalizeManualWeather(dayFormData.manualWeather) });
       } else {
-        await createDay(tripId, dayFormData);
+        await createDay(tripId, { ...dayFormData, manualWeather: normalizeManualWeather(dayFormData.manualWeather) });
       }
       setIsDayModalOpen(false);
     } catch (err) {
@@ -344,6 +347,7 @@ export default function TripActivity() {
       activityTime: "",
       price: 0,
       description: "",
+      manualWeather: null,
       status: "planned",
       latitude: "",
       longitude: "",
@@ -363,6 +367,7 @@ export default function TripActivity() {
       activityTime: act.activityTime ? formatZonedTime(act.activityTime) : "",
       price: act.price || 0,
       description: act.description || "",
+      manualWeather: act.manualWeather || null,
       status: act.status || "planned",
       latitude: act.latitude ?? "",
       longitude: act.longitude ?? "",
@@ -385,6 +390,7 @@ export default function TripActivity() {
 
       const payload = {
         ...activityFormData,
+        manualWeather: normalizeManualWeather(activityFormData.manualWeather),
         price: Number(activityFormData.price) || 0,
         activityTime: formattedTime,
         latitude:
@@ -677,6 +683,7 @@ export default function TripActivity() {
                   <p className="text-sm sm:text-base opacity-80 mt-1">
                     {activeDay.description}
                   </p>
+                  <ManualWeatherSummary weather={activeDay.manualWeather} />
                 </div>
                 <div className="flex items-center gap-2 shrink-0">
                   <button

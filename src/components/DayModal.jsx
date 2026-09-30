@@ -1,3 +1,4 @@
+import { ManualWeatherFields } from "./ManualWeather";
 import React from "react";
 import { useLang } from "@/i18n";
 
@@ -53,6 +54,8 @@ export default function DayModal({
               }
             ></textarea>
           </div>
+
+          <ManualWeatherFields value={dayFormData.manualWeather} onChange={(manualWeather) => setDayFormData({ ...dayFormData, manualWeather })} />
 
           <div className="modal-action">
             <button

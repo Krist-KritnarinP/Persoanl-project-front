@@ -1,3 +1,4 @@
+import { ManualWeatherFields } from "./ManualWeather";
 import React, { useState } from "react";
 import {
   FiHome,
@@ -231,6 +232,8 @@ export default function ActivityModal({
               }
             />
           </div>
+
+          <ManualWeatherFields value={activityFormData.manualWeather} onChange={(manualWeather) => setActivityFormData({ ...activityFormData, manualWeather })} />
 
           {/* พิกัดแผนที่ (optional — เว้นว่างได้ ระบบจะค้นหาจากชื่อให้เอง) */}
           <div className="form-control">

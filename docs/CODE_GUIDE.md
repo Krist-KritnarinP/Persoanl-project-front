@@ -92,3 +92,7 @@ LoadingScreen ใช้กับ initial trip/map data loading และ Suspens
 `src/visual-design.css` is the final shared presentation stylesheet, imported after index.css/landing.css in main.jsx. Theme IDs `liquid-glass` / `liquid-glass-dark` stay unchanged for compatibility. Semantic tokens: page-paper, surface-paper, surface-tint, line, muted-ink, field-line; typography keeps existing multilingual fonts and handwritten branding. Use opaque surfaces, 16px cards, 12px controls, restrained shadow and 3px visible focus. Existing functional layouts, planner inline styles and map clipping rules remain authoritative. Do not add fixed max-width to full-width app pages.
 
 References: [WCAG 1.4.3 contrast](https://www.w3.org/WAI/WCAG22/Understanding/contrast-minimum.html), [WCAG 2.5.8 target size](https://www.w3.org/WAI/WCAG22/Understanding/target-size-minimum.html). Core token pairs are browser-tested at >=4.5:1; small buttons target 28px minimum, touch small buttons 44px. A full accessibility audit remains separate (not all inline links/controls or opacity combinations are certified). Existing API mock tests protect workflows; `visual-design.spec.js` covers palette, focus and dashboard overflow across both themes and viewport projects.
+
+## Manual weather (2026-10-01)
+
+`components/ManualWeather.jsx` contains shared input/summary; `constants/manualWeather.js` normalizes blanks; `i18n/manualWeather.js` labels. TripsActivity sends observations on existing CRUD and private/public/detail views render them. See [weather behavior](WEATHER_AI.md).

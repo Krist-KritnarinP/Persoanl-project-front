@@ -1,3 +1,4 @@
+import { ManualWeatherSummary } from "./ManualWeather";
 import { useLang } from "@/i18n";
 import React from "react";
 import { FiClock, FiEdit2, FiTrash2 } from "react-icons/fi";
@@ -36,6 +37,8 @@ export default function ActivityItem({
               {typeConfig?.label}
             </span>
           </div>
+
+          <ManualWeatherSummary weather={activity.manualWeather} />
 
           {/* Time Display */}
           {activity.activityTime && formatZonedTime && (

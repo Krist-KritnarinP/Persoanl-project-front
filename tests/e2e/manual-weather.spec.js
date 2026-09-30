@@ -1,0 +1,55 @@
+import { test, expect } from "@playwright/test";
+const headers = { "access-control-allow-origin":"http://127.0.0.1:5188", "access-control-allow-credentials":"true", "access-control-allow-headers":"content-type,authorization", "access-control-allow-methods":"GET,POST,PUT,DELETE,OPTIONS" };
+test("day and activity weather persist independently, clear and appear on read-only shares",async({page})=>{
+  const trip={id:71,userId:1,accessRole:"owner",tripName:"Weather journal",destination:"Bangkok",days:[{id:81,dayCount:1,dayDate:"2026-10-01",description:"Travel day",activities:[{id:91,dayId:81,activityType:"ATTRACTION",locationName:"Park",latitude:13.7563,longitude:100.5018,description:"Walk",activityTime:"1970-01-01T09:30:00Z"}]}]};
+  const errors=[];page.on("pageerror",e=>errors.push(e.message));
+  await page.addInitScript(()=>{localStorage.setItem("lang","en");localStorage.setItem("authState",JSON.stringify({state:{user:{id:1},token:"test"},version:0}));});
+  await page.route("**/*tile*",r=>r.abort());
+  await page.route("http://127.0.0.1:8899/api/**",async r=>{
+    const method=r.request().method(),path=new URL(r.request().url()).pathname;
+    if(method==="OPTIONS")return r.fulfill({status:204,headers});
+    let data=[];
+    if(path==="/api/trips/71"||path.startsWith("/api/shared/")) data={...trip,sharedBy:"Owner"};
+    else if(path==="/api/days/81"&&method==="PUT"){Object.assign(trip.days[0],r.request().postDataJSON());data=trip.days[0];}
+    else if(path==="/api/activities/91"&&method==="PUT"){Object.assign(trip.days[0].activities[0],r.request().postDataJSON());data=trip.days[0].activities[0];}
+    else if(path.includes("unread-count"))data=0;
+    await r.fulfill({headers,json:{data}});
+  });
+  const selectDay=()=>page.getByRole("button",{name:/^Day 1/}).first().click();
+  await page.goto("/trips/71");await selectDay();
+  await page.getByRole("button",{name:/Edit day/i}).first().click();
+  let form=page.locator(".modal form");
+  await form.getByLabel("Weather condition",{exact:true}).selectOption("rain");
+  await form.getByLabel("Temperature (°C)",{exact:true}).fill("0");
+  await form.getByLabel("Description preset").selectOption("humid");
+  await form.getByLabel("Additional description (your words)").fill("Rain near the station");
+  await form.getByRole("button",{name:"Save",exact:true}).click();
+  await expect(page.getByTestId("manual-weather-summary").first()).toContainText("0 °C");
+  expect(trip.days[0].manualWeather.temperatureC).toBe(0);
+  expect(trip.days[0].activities[0].manualWeather).toBeUndefined();
+  await page.getByRole("button",{name:"Edit",exact:true}).click();
+  form=page.locator(".modal form");
+  await form.getByLabel("Weather condition",{exact:true}).selectOption("snow");
+  await form.getByLabel("Temperature (°C)",{exact:true}).fill("-3.5");
+  await form.getByLabel("Additional description (your words)").fill("Snow on the path");
+  await form.getByRole("button",{name:"Save",exact:true}).click();
+  await expect(page.getByTestId("manual-weather-summary").last()).toContainText("-3.5 °C");
+  await page.reload();await selectDay();
+  await expect(page.getByTestId("manual-weather-summary")).toHaveCount(2);
+  await page.getByRole("button",{name:"Edit",exact:true}).click();
+  await expect(page.getByLabel("Temperature (°C)",{exact:true})).toHaveValue("-3.5");
+  await page.locator(".modal-box").screenshot({path:test.info().outputPath("weather-form.png")});
+  await page.getByRole("button",{name:"Cancel",exact:true}).click();
+  await page.goto("/share/weather-share");await selectDay();
+  await expect(page.getByTestId("manual-weather-summary")).toHaveCount(2);
+  await expect(page.getByText("Snow on the path",{exact:true})).toBeVisible();
+  await expect(page.getByRole("button",{name:"Edit",exact:true})).toHaveCount(0);
+  await page.goto("/trips/71");await selectDay();
+  await page.getByRole("button",{name:/Edit day/i}).first().click();
+  await page.getByRole("button",{name:"Clear weather record"}).click();
+  await page.locator(".modal form").getByRole("button",{name:"Save",exact:true}).click();
+  await expect(page.getByTestId("manual-weather-summary")).toHaveCount(1);
+  expect(trip.days[0].manualWeather).toBeNull();
+  expect(trip.days[0].activities[0].manualWeather.temperatureC).toBe(-3.5);
+  expect(errors).toEqual([]);
+});

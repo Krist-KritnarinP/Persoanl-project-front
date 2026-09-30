@@ -26,6 +26,8 @@
 
 ## Phase 1 — Core Value & Activation (3–4 สัปดาห์)
 
+- [x] บันทึกสภาพอากาศเองรายวัน/กิจกรรม: ไอคอน 22 แบบ, °C, คำอธิบายเลือก 15 แบบ + พิมพ์เอง, 4 ภาษา; additive migration apply แล้วสำหรับ localhost (2026-10-01)
+
 > AI Trip Planner MVP เปิดจาก Dashboard → /trips/ai; งานต่อยอดยังแยกไว้ด้านล่าง
 - [x] **ร่วมทริปหลายคน (เริ่มทำ 2026-09-29):** owner เชิญบัญชีที่มีอยู่ เลือก viewer/editor; ผู้รับตอบรับจาก Dashboard; editor แก้ itinerary/ledger, viewer อ่านอย่างเดียว; owner ถอนสิทธิ์ได้
   - API บังคับสิทธิ์ owner/editor/viewer และ public share คง whitelist เดิม; รายละเอียด contract: [API collaboration roadmap](../PersonalProject_API/docs/TRIP_COLLABORATION_PLAN.md)

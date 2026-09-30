@@ -178,7 +178,7 @@ test("owner trip keeps totals, sharing, day edits, saved pins and theme when ope
     .first()
     .click();
   const form = page.locator(".modal form");
-  await form.locator("textarea").fill("Edited day");
+  await form.locator("textarea").first().fill("Edited day");
   await form.getByRole("button", { name: "Save", exact: true }).click();
   await expect(
     page.getByText("Edited day", { exact: true }).first(),

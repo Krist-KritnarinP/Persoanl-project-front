@@ -1,3 +1,4 @@
+import { ManualWeatherSummary } from "@/components/ManualWeather";
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { FiArrowLeft, FiClock, FiEye, FiUser } from "react-icons/fi";
@@ -173,6 +174,7 @@ export default function ShareTripView() {
               </p>
             )}
           </div>
+          <ManualWeatherSummary weather={activeDay.manualWeather} />
           {activeDay.activities?.length > 0 ? (
             <div className="grid grid-cols-1 gap-3">
               {activeDay.activities.map((act) => {
@@ -201,6 +203,7 @@ export default function ShareTripView() {
                           <FiClock /> {formatTime(act.activityTime)}
                         </p>
                       )}
+                      <ManualWeatherSummary weather={act.manualWeather} />
                       {act.description && (
                         <p className="text-sm opacity-70 mt-0.5 leading-relaxed line-clamp-2">
                           {act.description}
