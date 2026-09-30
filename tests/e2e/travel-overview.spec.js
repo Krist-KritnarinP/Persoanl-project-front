@@ -97,7 +97,7 @@ test("travel card opens overview, filters map/calendar/costs and supports four l
   await expect(page.getByTestId("travel-trip")).toHaveCount(1);
   await expect(page.getByTestId("travel-trip")).toContainText("Next trip");
   await expect(
-    page.getByText("No coordinates in this selection"),
+    page.getByText("No pins to show"),
   ).toBeVisible();
   await page.getByRole("button", { name: /Clear selected date/ }).click();
   await page.getByRole("button", { name: "Next month", exact: true }).click();
@@ -112,7 +112,7 @@ test("travel card opens overview, filters map/calendar/costs and supports four l
     ["en", "Travel overview"],
   ]) {
     await page
-      .getByRole("combobox", { name: "Language", exact: true })
+      .locator('select:has(option[value="en"])')
       .selectOption(language);
     await expect(
       page.getByRole("heading", { name: title, exact: true }),
@@ -155,5 +155,5 @@ test("overview error retries and empty account renders without invented statisti
   await expect(page.getByRole("alert")).toContainText("Unable to load");
   fail = false;
   await page.getByRole("button", { name: "Retry", exact: true }).click();
-  await expect(page.getByText("No trips in this selection")).toBeVisible();
+  await expect(page.getByText("No trips found")).toBeVisible();
 });

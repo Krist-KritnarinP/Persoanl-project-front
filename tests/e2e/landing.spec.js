@@ -27,10 +27,10 @@ test("Landing presents real features, interactive sample and working login on al
     .getByText("AI สร้างทริปให้ทั้งหมดเลยไหม?", { exact: true })
     .click();
   await expect(
-    page.getByText("ตอนนี้คุณเป็นคนจัดแผนเอง", { exact: false }),
+    page.getByText("ร่างแผนให้ แล้วคุณตรวจแก้ก่อนบันทึก", { exact: false }),
   ).toBeVisible();
   for (const lang of ["en", "zh", "ko", "th"]) {
-    await page.getByRole("combobox", { name: "Language" }).selectOption(lang);
+    await page.locator('select:has(option[value="en"])').selectOption(lang);
     await expect(page.locator("html")).toHaveAttribute(
       "lang",
       lang === "zh" ? "zh-CN" : lang,

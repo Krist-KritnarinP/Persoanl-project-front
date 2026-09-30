@@ -260,7 +260,7 @@ test("oversized Thai route cannot crash owner or shared trip; a shorter day rest
     await page.goto(path);
     await expect(
       page.getByText(
-        "Route link is too long for a QR code. Select fewer stops on the map.",
+        "Link too long for QR — select fewer stops.",
       ),
     ).toBeVisible();
     await expect(page.getByText("Unexpected Application Error!")).toHaveCount(

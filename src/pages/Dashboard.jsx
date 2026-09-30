@@ -221,7 +221,7 @@ function Dashboard() {
           }}
         />
         {/* HERO BANNER */}
-        <section className="glass rounded-4xl p-6 md:p-8 relative overflow-hidden flex flex-col md:flex-row justify-between items-start md:items-center gap-6 shrink-0">
+        <section className="dashboard-welcome glass rounded-4xl p-6 md:p-8 relative overflow-hidden flex flex-col md:flex-row justify-between items-start md:items-center gap-6 shrink-0">
           <div className="space-y-2 z-10 max-w-xl">
             <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-primary/10 text-primary text-sm font-semibold">
               <FiCompass />

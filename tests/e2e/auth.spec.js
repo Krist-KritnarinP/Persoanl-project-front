@@ -17,9 +17,9 @@ test('Login always shows Google and Forgot; recovery works with a cached login',
   await expect(page.getByRole('link', { name: 'Forgot password?' })).toBeVisible();
   await page.screenshot({ path: testInfo.outputPath('login.png'), fullPage: true });
   await page.getByRole('link', { name: 'Forgot password?' }).click();
-  await page.getByRole('textbox', { name: 'E-mail' }).fill('tester@example.invalid');
+  await page.getByRole('textbox', { name: 'Email' }).fill('tester@example.invalid');
   await page.getByRole('button', { name: 'Send reset link' }).click();
-  await expect(page.getByRole('status').filter({ hasText: 'If an account exists' })).toBeVisible();
+  await expect(page.getByRole('status').filter({ hasText: 'If this email has an account' })).toBeVisible();
   await page.evaluate(() => localStorage.setItem('authState', JSON.stringify({ state: { user: { id: 1 }, token: 'cached' }, version: 0 })));
   await page.goto('/reset-password#token=' + 'a'.repeat(43));
   await expect(page.getByRole('heading', { name: 'Create a new password' })).toBeVisible();

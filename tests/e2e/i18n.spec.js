@@ -60,7 +60,7 @@ test("all pages support switching all four languages without rendering errors", 
   for (const path of ["/", "/login", "/forgot-password", "/reset-password"]) {
     await page.goto(path);
     for (const lang of ["en", "zh", "ko", "th"]) {
-      await page.getByRole("combobox", { name: "Language" }).selectOption(lang);
+      await page.locator('select:has(option[value="en"])').selectOption(lang);
       if (lang !== "th") {
         const visibleCopy = await page.evaluate(() => {
           const root = document.body.cloneNode(true);
@@ -100,7 +100,7 @@ test("all pages support switching all four languages without rendering errors", 
     await page.goto(path);
     if (!path.startsWith("/share/")) await openSettings(page);
     for (const lang of ["en", "zh", "ko", "th"]) {
-      await page.getByRole("combobox", { name: "Language" }).selectOption(lang);
+      await page.locator('select:has(option[value="en"])').selectOption(lang);
       if (lang !== "th") {
         const visibleCopy = await page.evaluate(() => {
           const root = document.body.cloneNode(true);
@@ -149,6 +149,9 @@ test("planner sends the selected language and translates preview and validation 
   await page.route("http://127.0.0.1:8899/api/**", async (r) => {
     if (r.request().method() === "OPTIONS")
       return r.fulfill({ status: 204, headers });
+    const path = new URL(r.request().url()).pathname;
+    if (path === "/api/social/notifications/unread-count" || path === "/api/collaboration/invitations")
+      return r.fulfill({headers,json:{data:path.endsWith("unread-count")?0:[]}});
     const request = r.request().postDataJSON();
     expect(request.language).toBe("en");
     return r.fulfill({
@@ -186,7 +189,7 @@ test("planner sends the selected language and translates preview and validation 
     .click();
   for (const lang of ["en", "zh", "ko", "th"]) {
     await openSettings(page);
-    await page.getByRole("combobox", { name: "Language" }).selectOption(lang);
+    await page.locator('select:has(option[value="en"])').selectOption(lang);
     await page.keyboard.press("Escape");
     await expect(
       page.getByRole("heading", { name: additions[lang]["planner.review"] }),

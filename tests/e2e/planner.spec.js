@@ -53,6 +53,8 @@ test("planner calendar, generation failure, editable preview and lost-save retry
       path = new URL(req.url()).pathname;
     if (req.method() === "OPTIONS")
       return route.fulfill({ status: 204, headers });
+    if (path === "/api/social/notifications/unread-count" || path === "/api/collaboration/invitations")
+      return route.fulfill({headers,json:{data:path.endsWith("unread-count")?0:[]}});
     if (path === "/api/trips")
       return route.fulfill({ headers, json: { data: [] } });
     if (path === "/api/planner/draft") {
@@ -101,14 +103,14 @@ test("planner calendar, generation failure, editable preview and lost-save retry
     .getByLabel("อยากเที่ยวแบบไหน?")
     .fill("เชียงใหม่ 2 คน ชอบเที่ยวในเมือง");
   await page.getByLabel("วันเริ่มเดินทาง").fill("2026-12-10");
-  await expect(page.getByRole("note")).toContainText("token");
+  await expect(page.getByRole("note")).toContainText("กดครั้งเดียว");
   await expect(page.getByLabel("อยากเที่ยวแบบไหน?")).toHaveCSS(
     "border-radius",
     "0px",
   );
   await page.getByLabel("วันสิ้นสุด").fill("2026-12-10");
   await page.getByRole("button", { name: "✨ ให้ AI ช่วยวางแผน" }).click();
-  await expect(page.getByRole("alert")).toContainText("AI ยังร่างแผนไม่ได้");
+  await expect(page.getByRole("alert")).toContainText("ร่างแผนไม่สำเร็จ");
   await expect(page.getByLabel("อยากเที่ยวแบบไหน?")).toHaveValue(
     "เชียงใหม่ 2 คน ชอบเที่ยวในเมือง",
   );
@@ -124,7 +126,7 @@ test("planner calendar, generation failure, editable preview and lost-save retry
     .getByRole("button", { name: "ลบกิจกรรม มื้อเที่ยง เชียงใหม่" })
     .click();
   await expect(
-    page.getByText("งบกิจกรรมประมาณการรวมทั้งกลุ่ม: ฿150"),
+    page.getByText("งบรวมทั้งกลุ่มประมาณ ฿150"),
   ).toBeVisible();
   expect(
     await page.evaluate(
@@ -133,7 +135,7 @@ test("planner calendar, generation failure, editable preview and lost-save retry
   ).toBe(true);
   await page.getByRole("button", { name: "บันทึกเป็นทริปของฉัน" }).click();
   await expect(page.getByRole("alert")).toContainText(
-    "ยังยืนยันผลการบันทึกไม่ได้",
+    "ยังยืนยันผลไม่ได้",
   );
   await expect(page.getByLabel("ชื่อทริป")).toBeDisabled();
   await page.getByRole("button", { name: "ลองบันทึกอีกครั้ง" }).click();
@@ -154,6 +156,9 @@ test("nine-day draft shows token notice and resumes after quota without losing p
   await page.route("http://127.0.0.1:8899/api/**", async (route) => {
     if (route.request().method() === "OPTIONS")
       return route.fulfill({ status: 204, headers });
+    const path = new URL(route.request().url()).pathname;
+    if (path === "/api/social/notifications/unread-count" || path === "/api/collaboration/invitations")
+      return route.fulfill({headers,json:{data:path.endsWith("unread-count")?0:[]}});
     expect(new URL(route.request().url()).pathname).toBe("/api/planner/draft");
     expect(route.request().postDataJSON().endDate).toBe("2026-12-18");
     calls++;
@@ -194,7 +199,7 @@ test("nine-day draft shows token notice and resumes after quota without losing p
 
   await expect(page.getByRole("alert")).toContainText("ขีดจำกัด");
   await expect(page.getByText(/กำลังจัดแผน 7 \/ 9 วัน/)).toBeVisible();
-  await page.getByRole("button", { name: "ลองทำต่อ" }).click();
+  await page.getByRole("button", { name: "ทำต่อ" }).click();
   await expect(page.getByText(/ร่างครบแล้ว 9 \/ 9 วัน/)).toBeVisible();
   await expect(
     page.getByRole("button", { name: "บันทึกเป็นทริปของฉัน" }),

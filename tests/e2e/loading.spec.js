@@ -9,7 +9,9 @@ test('travel dog loader announces loading, respects reduced motion and leaves wh
     await route.fulfill({headers:{'access-control-allow-origin':'http://127.0.0.1:5188','access-control-allow-credentials':'true'},json:{data:{id:71,tripName:'Loading complete',destination:'Bangkok',days:[]}}});
   });
   try {
+    const loadingRequest = page.waitForRequest(request => request.url().includes(':8899/api/') && request.method() === 'GET');
     await page.goto('/share/loading-demo');
+    await loadingRequest;
     const loader=page.locator('.journey-loading');
     await expect(loader).toBeVisible();
     await expect(loader).toHaveAttribute('role','status');

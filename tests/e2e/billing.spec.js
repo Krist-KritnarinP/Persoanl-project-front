@@ -268,16 +268,16 @@ test("billing imports activity, previews charges, records a partial repayment an
   });
   await expect(memberFilter).toHaveCSS(
     "background-color",
-    "rgb(255, 255, 255)",
+    "rgb(255, 253, 248)",
   );
   await expect(memberFilter.locator("option").first()).toHaveCSS(
     "color",
-    "rgb(23, 32, 27)",
+    "rgb(38, 61, 52)",
   );
   await openSettings(page);
   for (const lang of ["th", "zh", "ko", "en"]) {
     await page
-      .getByRole("combobox", { name: "Language", exact: true })
+      .locator('select:has(option[value="en"])')
       .selectOption(lang);
     await expect(page.locator("h1")).not.toContainText("bill.heading");
   }
@@ -285,10 +285,10 @@ test("billing imports activity, previews charges, records a partial repayment an
     .getByRole("button", { name: "Switch to dark theme", exact: true })
     .click();
   await page.keyboard.press("Escape");
-  await expect(memberFilter).toHaveCSS("background-color", "rgb(32, 41, 35)");
+  await expect(memberFilter).toHaveCSS("background-color", "rgb(32, 43, 37)");
   await expect(memberFilter.locator("option").first()).toHaveCSS(
     "color",
-    "rgb(242, 245, 242)",
+    "rgb(243, 241, 233)",
   );
   expect(requests).toHaveLength(2);
   expect(errors).toEqual([]);

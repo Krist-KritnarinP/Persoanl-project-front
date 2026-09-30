@@ -51,7 +51,7 @@ test("sidebar navigates, collapses or traps mobile focus, shows account and logs
       page.getByRole("link", { name: "Open travel dashboard" }),
     ).toBeVisible();
     await expect(
-      page.getByRole("combobox", { name: "Language" }),
+      page.locator('select:has(option[value="en"])'),
     ).toBeVisible();
     await page.reload();
     await expect(page.getByTestId("enable-sidebar")).toBeVisible();
@@ -80,7 +80,7 @@ test("sidebar navigates, collapses or traps mobile focus, shows account and logs
       .click();
     await expect(page.getByTestId("sidebar-open")).toHaveCount(0);
     await expect(
-      page.getByRole("combobox", { name: "Language" }),
+      page.locator('select:has(option[value="en"])'),
     ).toBeVisible();
     await page.getByTestId("enable-sidebar").click();
   }
@@ -100,11 +100,11 @@ test("sidebar navigates, collapses or traps mobile focus, shows account and logs
   }
   await openSettings(page);
   await page
-    .getByRole("combobox", { name: "Language", exact: true })
+    .locator('select:has(option[value="en"])')
     .selectOption("th");
   await expect(page.getByRole("dialog")).toContainText("ภาษาและธีม");
   await page
-    .getByRole("combobox", { name: "Language", exact: true })
+    .locator('select:has(option[value="en"])')
     .selectOption("en");
   await page.keyboard.press("Escape");
   await openNavigation(page);

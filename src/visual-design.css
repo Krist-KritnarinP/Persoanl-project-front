@@ -1,0 +1,185 @@
+/* Travel notebook visual system. Presentation only; existing routes/state stay intact.
+   4/8px spacing rhythm, 12px controls, 16px cards, restrained elevation.
+   Loaded after legacy styles; theme identifiers are retained for saved preferences. */
+:root, :root[data-theme="liquid-glass"] {
+  --color-base-100: #fffdf8;
+  --color-base-200: #f4f1e9;
+  --color-base-300: #e7e3d8;
+  --color-base-content: #263d34;
+  --color-primary: #25634c;
+  --color-primary-content: #ffffff;
+  --color-secondary: #465c54;
+  --color-secondary-content: #ffffff;
+  --color-accent: #a84c35;
+  --color-accent-content: #ffffff;
+  --color-success: #25634c;
+  --color-success-content: #ffffff;
+  --color-info: #316375;
+  --color-info-content: #ffffff;
+  --color-warning: #8b5b18;
+  --color-warning-content: #ffffff;
+  --color-error: #b53b3b;
+  --color-error-content: #ffffff;
+  --page-paper: #f4f1e9;
+  --surface-paper: #fffdf8;
+  --surface-tint: #edf2e9;
+  --line: #d9dfd6;
+  --muted-ink: #596b61;
+  --field-line: #84968a;
+  --soft-shadow: 0 3px 12px #263d3406;
+  --menu-bg: var(--surface-paper);
+  --menu-ink: var(--color-base-content);
+  --radius-box: 1rem;
+  --radius-field: .75rem;
+}
+:root[data-theme="liquid-glass-dark"] {
+  --color-base-100: #202b25;
+  --color-base-200: #18211c;
+  --color-base-300: #344139;
+  --color-base-content: #f3f1e9;
+  --color-primary: #9ad2b3;
+  --color-primary-content: #172d22;
+  --color-secondary: #bed0c5;
+  --color-secondary-content: #172d22;
+  --color-accent: #efb49b;
+  --color-accent-content: #381d12;
+  --color-success: #9ad2b3;
+  --color-success-content: #172d22;
+  --color-info: #a6cdda;
+  --color-info-content: #192f37;
+  --color-warning: #e8c78b;
+  --color-warning-content: #382a14;
+  --color-error: #f2ada7;
+  --color-error-content: #3b1c19;
+  --page-paper: #18211c;
+  --surface-paper: #202b25;
+  --surface-tint: #2a3930;
+  --line: #3e5044;
+  --muted-ink: #bec9be;
+  --field-line: #849d8a;
+  --soft-shadow: 0 3px 12px #00000012;
+  --menu-bg: var(--surface-paper);
+  --menu-ink: var(--color-base-content);
+}
+html[data-theme] { background: var(--page-paper); }
+html[data-theme] body {
+  background: var(--page-paper);
+  color: var(--color-base-content);
+  line-height: 1.65;
+  transition: none;
+}
+html[data-theme] :is(h1,h2,h3) { text-wrap: balance; }
+html[data-theme] h1:not(.font-display) { letter-spacing: -.025em; line-height: 1.3; }
+html[data-theme] :is(.glass,.social-surface,.billing-panel,.billing-form,.modal-box) {
+  background: var(--surface-paper);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  box-shadow: var(--soft-shadow);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+/* Keep overflow/position rules: maps, dialogs and scroll areas rely on them. */
+html[data-theme] .glass { transform: none; transition: border-color .16s ease, box-shadow .16s ease; }
+html[data-theme] .glass:active { transform: none; }
+html[data-theme] .glass::before, html[data-theme] .glass::after, html[data-theme] .btn::after { content: none; }
+html[data-theme] :is(.glass-floating,.aura::before,.aura::after) { animation: none; }
+html[data-theme] .navbar.glass { border-radius: 16px; box-shadow: none; }
+html[data-theme] :is(.social-hero,.billing-hero,.dashboard-welcome) {
+  background: var(--surface-tint);
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  box-shadow: none;
+}
+html[data-theme] .dashboard-welcome { padding: clamp(20px,3vw,40px); border-left: 4px solid var(--color-primary); }
+.dashboard-welcome > .pointer-events-none { display: none; }
+html[data-theme] .btn {
+  background: var(--surface-paper);
+  color: var(--color-base-content);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  box-shadow: none;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  transform: none;
+  text-shadow: none;
+  font-weight: 600;
+  transition: background-color .15s ease, border-color .15s ease;
+}
+html[data-theme] .btn:hover { background: var(--surface-tint); border-color: var(--field-line); transform: none; box-shadow: none; }
+html[data-theme] .btn:active { transform: none; filter: brightness(.96); }
+html[data-theme] :is(.btn-primary,.bg-primary,.badge-primary) { background: var(--color-primary); color: var(--color-primary-content); border-color: transparent; }
+html[data-theme] .btn-primary:hover { background: color-mix(in srgb,var(--color-primary) 90%,var(--color-base-content)); }
+html[data-theme] :is(.btn-secondary,.badge-secondary) { background: var(--color-secondary); color: var(--color-secondary-content); }
+html[data-theme] :is(.btn-accent,.badge-accent) { background: var(--color-accent); color: var(--color-accent-content); }
+html[data-theme] :is(.btn-success,.badge-success:not(.badge-outline),.bg-success) { background: var(--color-success); color: var(--color-success-content); }
+html[data-theme] :is(.btn-error,.badge-error:not(.badge-outline)) { background: var(--color-error); color: var(--color-error-content); }
+html[data-theme] :is(.btn-warning,.badge-warning:not(.badge-outline)) { background: var(--color-warning); color: var(--color-warning-content); }
+html[data-theme] :is(.btn-info,.badge-info:not(.badge-outline)) { background: var(--color-info); color: var(--color-info-content); }
+html[data-theme] .btn-ghost { background: transparent; border-color: transparent; }
+html[data-theme] .btn-ghost:hover { background: var(--surface-tint); }
+html[data-theme] .btn-outline { background: transparent; color: var(--color-primary); border-color: var(--color-primary); }
+html[data-theme] .btn.text-error { color: var(--color-error); }
+html[data-theme] .btn-circle { border-radius: 50%; }
+html[data-theme] .btn-xs { min-height: 28px; }
+html[data-theme] .btn-sm { min-height: 36px; }
+html[data-theme] .btn:disabled { opacity: .48; cursor: not-allowed; filter: none; }
+html[data-theme] :is(.input,.textarea,.select), html[data-theme] select.select {
+  background-color: var(--surface-paper);
+  color: var(--color-base-content);
+  border: 1px solid var(--field-line);
+  border-radius: 12px;
+  box-shadow: none;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  transform: none;
+  transition: border-color .15s ease;
+}
+html[data-theme] :is(.input,.textarea,.select):hover { background-color: var(--surface-paper); border-color: var(--color-primary); }
+html[data-theme] :is(.input,.textarea,.select):focus { background-color: var(--surface-paper); border-color: var(--color-primary); transform: none; box-shadow: none; }
+html[data-theme] :is(.input,.textarea)::placeholder { color: var(--muted-ink); opacity: 1; }
+html[data-theme] :is(button,a,input,textarea,select,summary):focus-visible { outline: 3px solid var(--color-primary); outline-offset: 3px; }
+html[data-theme] :is(.input,.textarea,.select):focus-visible { outline-offset: 2px; }
+html[data-theme] select option { background: var(--surface-paper); color: var(--color-base-content); }
+html[data-theme] [data-testid="desktop-sidebar"] { background: var(--surface-paper); border-color: var(--line); padding: 20px 12px; }
+html[data-theme] nav a[aria-current="page"] { background: var(--surface-tint); color: var(--color-primary); border-radius: 12px; box-shadow: inset 3px 0 var(--color-primary); }
+html[data-theme] [data-testid="header-notifications"] { box-shadow: none; }
+html[data-theme] .modal-box { box-shadow: 0 16px 60px #0003; }
+html[data-theme] dialog::backdrop { background: #18211c80; backdrop-filter: blur(3px); }
+html[data-theme] .social-ui .social-surface { border-radius: 16px; }
+html[data-theme] .chat-messages { background-color: var(--page-paper); }
+html[data-theme] .chat-composer .textarea { border: 0; background: transparent; }
+html[data-theme] .chat-composer .textarea:focus-visible { outline: none; }
+html[data-theme] .chat-composer__field:focus-within { outline: 3px solid var(--color-primary); outline-offset: 2px; box-shadow: none; }
+html[data-theme] .chat-message { box-shadow: none; }
+html[data-theme] .chat-dock-panel { box-shadow: 0 12px 48px #0003; }
+html[data-theme] .trip-layout-card.glass-card { border-radius: 16px; }
+html[data-theme] .trip-layout-card .btn { overflow: visible; border-radius: 10px; }
+/* Muted explanatory text remains legible on the new opaque surfaces. */
+html[data-theme] :is(.text-base-content\/40,.text-base-content\/45,.text-base-content\/50,.text-base-content\/55,.text-base-content\/60,.text-base-content\/65,.text-base-content\/70) { color: var(--muted-ink); }
+html[data-theme] .billing-nav-link { background: var(--surface-paper); border-color: var(--line); box-shadow: none; }
+/* Marketing pages use the same palette, retaining original illustrations and copy. */
+html[data-theme] .landing {
+  --lp-ink: var(--color-base-content);
+  --lp-brand: var(--color-primary);
+  --lp-brand-deep: var(--color-primary);
+  --lp-paper: var(--page-paper);
+  --lp-muted: var(--muted-ink);
+  --lp-card: var(--surface-paper);
+  --lp-line: var(--line);
+  --lp-accent: var(--color-accent);
+  --lp-radius: 16px;
+  background: var(--page-paper);
+}
+html[data-theme] .landing :is(.lp-nav,.lp-feature,.lp-itinerary,.lp-weather-sticker,.lp-plan-sticker) { background: var(--surface-paper); border-color: var(--line); box-shadow: var(--soft-shadow); border-radius: 16px; }
+html[data-theme] .landing .lp-nav { border-bottom: 2px solid var(--line); }
+html[data-theme] .landing .lp-ribbon, html[data-theme] .landing .lp-sample-section { background: var(--surface-tint); }
+html[data-theme] .landing .lp-button { border-radius: 12px; box-shadow: none; }
+html[data-theme] .landing .lp-button:not(.lp-button-light):not(.lp-button-ghost) { background: var(--color-primary); color: var(--color-primary-content); }
+html[data-theme] .landing .lp-nav-end select { background: var(--surface-paper); color: var(--color-base-content); border-color: var(--field-line); }
+@media (pointer: coarse) {
+  html[data-theme] .btn-sm { min-height: 44px; }
+  html[data-theme] .btn-xs { min-height: 32px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  html[data-theme] :is(.btn,.glass,.input,.textarea,.select) { transition: none; }
+}

@@ -2,6 +2,7 @@ import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import "./index.css";
 import "./landing/landing.css";
+import "./visual-design.css";
 import App from "./App.jsx";
 import { LanguageProvider } from "./i18n/index.jsx";
 

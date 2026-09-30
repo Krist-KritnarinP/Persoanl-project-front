@@ -41,6 +41,7 @@
 - [x] **Chat send SQL fix (2026-09-30):** API cast notification JSON parameters เป็น text เพื่อแก้ PostgreSQL 42P18 ที่ rollback ข้อความ; ตรวจ production INSERT ด้วย read-only EXPLAIN ผ่าน (API `87aedd5`)
 - [x] **Travel dog loading UI (2026-09-30):** น้องหมาสะพายเป้เดินระหว่างโหลดหน้า/ทริป/แผนที่ รองรับ 4 ภาษาและ reduced motion; แสดงตาม loading จริง, browser desktop/mobile ผ่าน
 - [x] **Chat workspace UX (2026-10-01):** หน้าแชทเต็มความกว้าง เน้นบทสนทนาบนมือถือ; เก็บพิกัด/สร้างกลุ่มในส่วนพับเปิด, ช่องพิมพ์หลายบรรทัด, กล่องลอยมีปุ่มรีเฟรชบนหัวและช่องพิมพ์อยู่ในกรอบ; browser social/notifications 6/6
+- [x] **Travel notebook visual redesign (2026-10-01):** shared CSS โทนกระดาษอุ่น/เขียวป่า ลด blur/เงา ยกระดับ focus/สี/ปุ่มทั้งสองธีม; คงน้องหมาและ logic เดิมทั้งหมด; checkpoint `c95a9d7`, ตรวจ core contrast ≥4.5:1 และ browser flows (ยังไม่ใช่ full WCAG audit)
 - [x] **Trip invitation inbox (2026-09-30):** คำเชิญร่วมทริปเดิม/ใหม่แสดงในหน้าแจ้งเตือน พร้อมรับ/ปฏิเสธและ badge จำนวน pending; Dashboard/inbox refresh ทุก 10 วินาทีและเมื่อกลับเข้าเว็บ; ใช้ collaboration API เดิม ไม่ migrate DB
 - [x] **Theme-aware dialogs:** ใช้ dialog กลางแทน browser-native confirm/prompt สำหรับ destructive actions, share revoke, bill confirmation และแก้ชื่อสมาชิก; TH/EN/ZH/KO (2026-09-30)
 - [x] ปรับ UI Trip map/Navigate+QR ให้ข้อความไม่ล้นกรอบ; chat dock ลากไปตำแหน่งใดก็ได้บนขอบจอและจำพิกัด; confirm/alert/prompt ใช้ dialog ตาม theme (2026-09-30)

@@ -1,5 +1,15 @@
 # สถานะล่าสุด — Frontend / Social + Trip collaboration (2026-09-30)
 
+## Travel notebook visual redesign (2026-10-01)
+
+- Before-design checkpoint: `c95a9d7` (empty commit marking the existing working application; pre-existing unstaged mobile ROADMAP edits are preserved separately).
+- Added `src/visual-design.css`, imported after legacy styles: warm paper/forest palette, opaque surfaces, restrained elevation, 16px cards/12px controls, visible keyboard focus, calmer hover behavior and matching dark theme. Landing, auth, dashboard, trip/map, billing and social pages inherit the system. Existing dog illustration, branding, copy and full-width content remain.
+- Production changes outside CSS: one stylesheet import in main.jsx and one decorative Dashboard class. No handler, state, route, API, dependency, schema or DB change. Existing overflow/scroll layout and planner's inline square textarea are retained.
+- Standards used: WCAG contrast minimum and target size; test checks four core foreground/background pairs >=4.5:1 in both themes, mobile dashboard width and visible focus. This is not a full WCAG conformance audit.
+- Build, SEO and unit 13/13 pass; lint has 9 pre-existing warnings. Browser suite: 37/42 passed after test fixture/copy alignment; remaining 5 failures resolved by current auth/planner copy, original textarea shape and waiting for shared-data request before loader screenshots. Targeted auth/planner/loading rerun 10/10 passed (desktop/mobile), completing coverage of all 42 cases across runs.
+- Tests updated for prior copy-audit text, translated language-selector labels, notification/invitation shell requests and the new palette; product text/logic not changed. Reviewed dashboard light/dark and existing regression screenshots. Testing remains localhost with API mocks; no push/deploy.
+- To undo just the visual system, remove visual-design.css import and dashboard-welcome class; existing theme IDs/preferences remain compatible. Git checkpoint identifies the pre-design version.
+
 ## Chat workspace and dock UX (2026-10-01)
 
 - Full-width chat now prioritizes the conversation on mobile; friends/manage controls follow below. Desktop uses a compact friend sidebar, avatar room header, horizontally scrollable room selection and bounded message area.
