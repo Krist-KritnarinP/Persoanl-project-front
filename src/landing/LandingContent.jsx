@@ -154,7 +154,6 @@ export default function LandingContent({
               <p className="lp-eyebrow">{c.featureEyebrow}</p>
               <h2>{c.featureTitle}</h2>
             </div>
-            <p>{c.featureIntro}</p>
           </div>
           <FeatureGallery lang={lang} />
         </section>

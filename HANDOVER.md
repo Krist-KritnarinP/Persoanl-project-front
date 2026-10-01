@@ -1,8 +1,13 @@
 # สถานะล่าสุด — Frontend / Social + Trip collaboration (2026-09-30)
 
+## Landing feature heading trimmed (2026-10-01)
+
+- Removed the extra sentence beside the illustrated feature section heading in all languages. The heading now leads directly into the nine illustrated cards, with their captions carrying the specific feature details.
+- Removed unused `featureIntro` copy and the now obsolete heading paragraph styles. Verified build, static SEO and landing browser tests (4/4 desktop/mobile); the removed sentence is absent from source and prerendered HTML. Local only; no push/deploy. The unrelated mobile roadmap edit remains unstaged.
+
 ## Landing copy made conversational (2026-10-01)
 
-- Rewrote the public landing hero/feature introduction and nine Thai feature captions around concrete trip actions. Removed the self-referential “ดูภาพเดียว ก็รู้ว่าใช้ทำอะไรได้” and redundant “ภาพตัวอย่างการใช้งาน” label. Localized the sample, steps, closing and footer labels in TH/EN/ZH/KO rather than displaying fixed English marketing slogans.
+- Rewrote the public landing hero and nine Thai feature captions around concrete trip actions. Removed the self-referential “ดูภาพเดียว ก็รู้ว่าใช้ทำอะไรได้” and redundant “ภาพตัวอย่างการใช้งาน” label. Localized the sample, steps, closing and footer labels in TH/EN/ZH/KO rather than displaying fixed English marketing slogans.
 - Illustrations, feature claims, SEO meta, Thai prerender, auth and API logic stay intact. `featureCopy.js` remains the source for the live marketing copy, joined to `copy.js`; the older feature arrays in `copy.js` are still overridden by this source.
 - Verified build, static SEO, lint (0 errors, 9 existing warnings), and desktop/mobile landing + visual browser suite (8 passed); reviewed feature screenshots and checked that the removed phrase is absent from prerendered HTML. Local only; no push/deploy. Existing unrelated mobile roadmap edit remains unstaged.
 

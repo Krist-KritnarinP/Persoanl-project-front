@@ -36,8 +36,6 @@ export const copy = {
     ],
     featureEyebrow: "A LITTLE MORE ORGANIZED.",
     featureTitle: "ทุกไอเดียการเที่ยว\nมีที่ของมัน",
-    featureIntro:
-      "เลิกสลับไปมาระหว่างโน้ต ลิงก์ และแชท รวมแผนไว้ที่เดียว",
     features: [
       [
         "แผนรายวัน ที่ปรับได้ตามใจ",
@@ -128,8 +126,6 @@ export const copy = {
     ],
     featureEyebrow: "A LITTLE MORE ORGANIZED.",
     featureTitle: "A place for every\ntravel idea.",
-    featureIntro:
-      "Less jumping between notes, links and chats. Your whole trip, together.",
     features: [
       [
         "Every day, your way",
@@ -218,7 +214,6 @@ copy.zh = {
     ["北泰早餐", "挑选纪念品", "返程"],
   ],
   featureTitle: "每个旅行想法\n都有自己的位置",
-    featureIntro: "不用在笔记、链接和聊天之间来回切换。",
   features: [
     ["按你的节奏安排每一天", "添加日期、活动、时间和备注。"],
     ["在地图上查看行程", "查看活动位置，按天切换，了解地点之间的距离。"],
@@ -278,7 +273,6 @@ copy.ko = {
     ["북부식 아침 식사", "기념품 고르기", "집으로 돌아가기"],
   ],
   featureTitle: "모든 여행 아이디어가\n모이는 곳",
-    featureIntro: "메모와 링크, 채팅을 오갈 필요 없이 한곳에서 계획하세요.",
   features: [
     ["내 취향대로 하루 계획", "날짜, 활동, 시간과 메모를 추가하세요."],
     [
@@ -332,7 +326,6 @@ for (const [lang, visual] of Object.entries(featureCopy)) {
     intro: visual.heroIntro,
     featureEyebrow: visual.eyebrow,
     featureTitle: visual.title,
-    featureIntro: visual.intro,
     sampleEyebrow: visual.sampleEyebrow,
     stepsEyebrow: visual.stepsEyebrow,
     endEyebrow: visual.endEyebrow,

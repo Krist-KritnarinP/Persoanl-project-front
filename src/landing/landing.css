@@ -381,10 +381,6 @@
   padding-block: 95px;
 }
 .lp-section-heading {
-  display: flex;
-  justify-content: space-between;
-  align-items: end;
-  gap: 35px;
   margin-bottom: 40px;
 }
 .landing h2 {
@@ -400,12 +396,6 @@
   white-space: pre-line;
   font-weight: 400;
   margin: 0;
-}
-.lp-section-heading > p {
-  max-width: 330px;
-  color: var(--lp-muted);
-  margin: 0 0 6px;
-  font-size: 17px;
 }
 .lp-feature-grid {
   display: grid;
@@ -990,16 +980,11 @@
     padding-block: 58px;
   }
   .lp-section-heading {
-    display: block;
     margin-bottom: 27px;
   }
   .landing h2 {
     font-size: 32px;
     letter-spacing: -0.6px;
-  }
-  .lp-section-heading > p {
-    margin-top: 18px;
-    font-size: 16px;
   }
   .lp-feature-grid {
     grid-template-columns: 1fr;
