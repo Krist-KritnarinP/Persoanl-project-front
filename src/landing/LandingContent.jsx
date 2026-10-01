@@ -31,10 +31,8 @@ export default function LandingContent({
       </a>
       <header className="lp-nav lp-wrap">
         <a href="/" className="lp-brand" aria-label="AI LHOUNG Home">
-          <span className="lp-brand-icon">
-            <FiCompass />
-          </span>{" "}
-          AI LHOUNG<span className="lp-brand-dot">✳</span>
+          <img src="/image/MiniDog.PNG" alt="" className="lp-brand-image" />
+          <span className="font-display text-2xl md:text-3xl tracking-wider bg-linear-to-r from-primary to-accent bg-clip-text text-transparent whitespace-nowrap">AI LHOUNG</span>
         </a>
         <nav
           aria-label={(additions[lang] || additions.th)["ui.navigation"]}
@@ -285,7 +283,8 @@ export default function LandingContent({
       </main>
       <footer className="lp-wrap lp-footer">
         <a className="lp-brand" href="/">
-          AI LHOUNG<span className="lp-brand-dot">✳</span>
+          <img src="/image/MiniDog.PNG" alt="" className="lp-brand-image" />
+          <span className="font-display text-2xl md:text-3xl tracking-wider bg-linear-to-r from-primary to-accent bg-clip-text text-transparent whitespace-nowrap">AI LHOUNG</span>
         </a>
         <p>{c.footer}</p>
         <span>MADE FOR YOUR NEXT ADVENTURE ↗</span>

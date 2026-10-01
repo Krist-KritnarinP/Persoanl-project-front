@@ -1,5 +1,11 @@
 # สถานะล่าสุด — Frontend / Social + Trip collaboration (2026-09-30)
 
+## Landing logo consistency (2026-10-01)
+
+- Replaced the landing header/footer compass + star wordmark with the same `/image/MiniDog.PNG` circular image, handwriting font, primary-to-accent text and responsive 40/48px image sizing used by the app header. Removed obsolete landing logo styles; links and app behavior unchanged.
+- Build/static SEO and desktop/mobile landing browser checks passed (4 cases). Local only; no push/deploy. Unrelated mobile roadmap edits remain unstaged.
+
+
 ## Login travel dog + visual feature landing (2026-10-01)
 
 - `/login`: reuse the original loading mascot via `TravelingDog.jsx/.css`; `LoginJourney.jsx` draws a muted mountain landscape, dog walks back and forth on a CSS loop. `pages/Login.css` provides desktop/mobile composition in both themes. Pause/play control is translated in all 4 languages; reduced-motion disables the scene and rotating heading animation. Decorative scene ignores pointer input and is hidden from assistive technology.

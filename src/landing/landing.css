@@ -61,23 +61,24 @@
   box-shadow: 0 8px 24px rgba(23, 32, 27, 0.08);
 }
 .lp-brand {
-  font-weight: 800;
-  letter-spacing: -0.7px;
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  gap: 9px;
-  font-size: 21px;
+  gap: 8px;
+  min-width: 0;
   white-space: nowrap;
 }
-.lp-brand-icon {
-  display: grid;
-  place-items: center;
-  font-size: 27px;
+.lp-brand-image {
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  object-fit: cover;
+  background: color-mix(in srgb, var(--color-primary) 20%, transparent);
+  border: 1px solid color-mix(in srgb, var(--color-primary) 30%, transparent);
 }
-.lp-brand-dot {
-  align-self: flex-start;
-  font-size: 14px;
-  line-height: 2;
+@media (min-width: 768px) {
+  .lp-brand { gap: 12px; }
+  .lp-brand-image { width: 48px; height: 48px; }
 }
 .lp-nav-links,
 .lp-nav-end {
@@ -820,9 +821,6 @@
   justify-content: space-between;
   gap: 20px;
 }
-.lp-footer .lp-brand {
-  font-size: 19px;
-}
 .lp-footer p {
   font-size: 14px;
   color: var(--lp-muted);
@@ -905,13 +903,6 @@
     flex-wrap: wrap;
     gap: 12px;
     border-radius: 1.5rem;
-  }
-  .lp-brand {
-    font-size: 19px;
-    gap: 6px;
-  }
-  .lp-brand-icon {
-    font-size: 22px;
   }
   .lp-nav-links {
     display: none;
