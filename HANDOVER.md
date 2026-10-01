@@ -1,5 +1,11 @@
 # DEPLOY LIVE — อ่านก่อนแตะงาน deploy (2026-10-01)
 
+## GitHub push / automatic deployment verified (2026-10-01)
+
+- Pushed Front `4082d7b` to `Krist-KritnarinP/Persoanl-project-front` `main` after API `a41b661` reached its own `main`. Both local branches matched `origin/main` with clean worktrees at the push checkpoint.
+- GitHub commit status for Front `4082d7b` reported Vercel **success** (“Deployment has completed”); the production homepage returned HTTP 200. Render production API returned HTTP 200 at `/health/live`; a harmless invalid-email registration request with an eight-character password returned only the email validation error, confirming the new API password rule is serving live traffic.
+- No manual Redeploy was needed. Git-connected Vercel and Render services normally deploy linked `main` pushes automatically when auto-deploy is enabled; check their deployment dashboards if a later push does not appear. The signup UI and API were already built/tested in the prior entries.
+
 - Repo ที่ใช้จริงมีแค่ 2 ตัวนี้: `PersonalProject_Front` ↔ GitHub `Krist-KritnarinP/Persoanl-project-front` และ `PersonalProject_API` ↔ GitHub `Krist-KritnarinP/Persoanl-project-Back` ห้ามใช้ `AIlhongdeploy` / `AIlhongdeploy-phase0` (monorepo backup เก่าใน `_AI_LHOUNG_BACKUP_2026-09-26/`) มา deploy เด็ดขาด
 - Front อยู่บน **Vercel** project `persoanl-project-front`: `https://persoanl-project-front.vercel.app` — Framework Vite, Build `npm run build`, Output `dist`; `vercel.json` (security headers + SPA rewrite) อยู่ใน repo นี้แล้ว
 - API อยู่บน **Render** service `Persoanl-project-Back`: `https://persoanl-project-back.onrender.com` (Singapore, Free; sleep 15 นาที เปิดครั้งแรกช้า ~50 วิ)
