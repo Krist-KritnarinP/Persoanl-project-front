@@ -5,6 +5,12 @@ assert.equal((html.match(/<h1>/g) || []).length, 1);
 assert.ok(html.includes("ทริปที่ดี") && html.includes("แผนรายวัน"));
 assert.ok(html.includes('href="/login"') && html.includes('id="sample"'));
 assert.ok(!html.includes('href="https://example.com'));
+for (const id of ["plan", "map", "nearby", "team", "chat", "bills", "weather", "overview", "share"]) {
+  assert.ok(html.includes(`data-feature="${id}"`), `Missing prerendered feature: ${id}`);
+  assert.ok(html.includes(`id="feature-${id}"`), `Missing feature heading: ${id}`);
+}
+assert.ok(html.includes("หารบิล") && html.includes("แชร์พิกัด") && html.includes("บันทึกอากาศ"));
+
 const robots = await readFile("dist/robots.txt", "utf8");
 const canonical = html.match(/rel="canonical" href="([^"]+)"/);
 if (canonical) {

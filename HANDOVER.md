@@ -1,5 +1,15 @@
 # สถานะล่าสุด — Frontend / Social + Trip collaboration (2026-09-30)
 
+## Login travel dog + visual feature landing (2026-10-01)
+
+- `/login`: reuse the original loading mascot via `TravelingDog.jsx/.css`; `LoginJourney.jsx` draws a muted mountain landscape, dog walks back and forth on a CSS loop. `pages/Login.css` provides desktop/mobile composition in both themes. Pause/play control is translated in all 4 languages; reduced-motion disables the scene and rotating heading animation. Decorative scene ignores pointer input and is hidden from assistive technology.
+- Auth handlers/routes, Google linking, registration and recovery remain unchanged. Email/password inputs now have explicit accessible labels and autocomplete.
+- `/`: `FeatureGallery.jsx`, `featureCopy.js`, `feature-gallery.css` explain 9 existing feature groups through local SVG diagrams and short captions: AI/manual plan, map/navigation/QR, nearby discovery, collaborators/notifications, chat/timed location, split bills, AI/manual weather, overview/calendar/costs, read-only sharing. Labels/captions/meta support TH/EN/ZH/KO. Examples are labelled; AI verification and nearby-data limitations are explicit.
+- All diagrams/captions remain in prerendered Thai HTML; static meta and SEO assertions now cover the expanded feature inventory. No external illustration service, GIF/video dependency or schema/API/DB changes.
+- Checks: unit **14 passed**; browser **14 passed** (welcome-visuals, landing, auth, loading; desktop/mobile); build + `test:seo` passed; lint 0 errors / 9 pre-existing warnings; `git diff --check` clean. Reviewed login and feature screenshots including light/dark and mobile. Screenshots remain in ignored `test-results`.
+- Docs: ROADMAP, CODE_GUIDE and LANDING_SEO updated. Local work only; no push/deploy. Existing unrelated mobile roadmap edits and API `docs/ADMIN.md` are preserved outside this commit.
+
+
 ## Nearby places and itinerary insertion (2026-10-01)
 
 - Collapsed disclosure below each daily ActivityItem; filters radius 1–5 km, restaurants/cafés, attractions, parks/nature reserves, hotels/accommodation and result count 1–5. Search is on demand, with loading/error/empty states, straight-line distance, Google Maps links and provider attribution. Four UI languages; selected insertion form receives keyboard focus.

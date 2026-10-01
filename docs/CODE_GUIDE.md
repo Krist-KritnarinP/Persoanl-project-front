@@ -27,7 +27,10 @@
 | components/ | แก้ส่วนแสดงผลหรือ modal ที่ใช้ในหน้า |
 | components/trips/TripOverviewStats.jsx | แสดงสถิติที่หน้าทริปคำนวณไว้ ไม่ fetch เอง |
 | components/trips/TripShareModal.jsx | แสดงกล่องแชร์; สร้าง/ลบ token และ clipboard อยู่ที่หน้า |
-| components/LoadingScreen.jsx + LoadingScreen.css | น้องหมาสะพายเป้ระหว่างโหลดหน้า; SVG/CSS, status สำหรับ screen reader และ reduced motion |
+| components/LoadingScreen.jsx + LoadingScreen.css | หน้าสถานะ loading ใช้ TravelingDog ร่วมกับ login; status สำหรับ screen reader และ reduced motion |
+| components/TravelingDog.jsx + TravelingDog.css | SVG หมาสะพายเป้และ animation เดิม; scenery=false แสดงเฉพาะหมา |
+| components/LoginJourney.jsx + pages/Login.css | ฉาก login วนไปกลับ; ปุ่มพักใน Login.jsx และ reduced motion โดยไม่เปลี่ยน auth handlers |
+| landing/FeatureGallery.jsx + featureCopy.js + feature-gallery.css | infographic ฟีเจอร์ 9 กลุ่ม/4 ภาษา; copy.js ใช้คำอธิบายเดียวกันสำหรับ SEO; ดู docs/LANDING_SEO.md |
 | constants/activityTypes.js | icon/สี/ชื่อแปลของประเภทกิจกรรม |
 | utils/datetime.js | รูปแบบวันที่ของหน้าทริปเจ้าของและแผนที่ |
 | stores/tripStore.js | รายการทริป |

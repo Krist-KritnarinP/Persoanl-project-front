@@ -1,3 +1,4 @@
+import { featureCopy } from "./featureCopy.js";
 export const copy = {
   th: {
     title: "วางแผนเที่ยวให้เป็นเรื่องสนุก | AI LHOUNG",
@@ -324,3 +325,15 @@ copy.ko = {
   footer: "조금의 계획, 더 많은 발견.",
   skip: "본문으로 건너뛰기",
 };
+
+// Keep marketing metadata and the illustrated feature inventory in sync.
+for (const [lang, visual] of Object.entries(featureCopy)) {
+  Object.assign(copy[lang], {
+    description: visual.meta,
+    intro: visual.heroIntro,
+    featureEyebrow: visual.eyebrow,
+    featureTitle: visual.title,
+    featureIntro: visual.intro,
+    features: visual.features.map(({ title, description }) => [title, description]),
+  });
+}

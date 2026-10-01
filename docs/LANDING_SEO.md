@@ -8,10 +8,18 @@
 - แผนที่ส่วนตัวและข้อมูลทริปยังอยู่หลัง auth ตามเดิม; Landing ไม่เรียก API/AI/map tiles
 
 ## เนื้อหาและการออกแบบ
-ครีม/เขียวเข้ม, mountain postcard SVG ที่ทำใน repo, ฟีเจอร์ 5 ส่วน, ตัวอย่างทริปเชียงใหม่สลับ 3 วัน, ขั้นตอนเริ่มต้น, FAQ และ CTA
-รองรับ TH/EN/ZH/KO ใช้ preference เดียวกับแอป แผนตัวอย่าง/งบไม่ใช่ราคา booking จริง ภาพอากาศบน postcard เป็น illustration
-แสดงฟีเจอร์ที่มีจริง: itinerary, map pins, budget, AI weather, read-only sharing; ไม่อ้างว่ามี automatic AI trip generation, PDF หรือรีวิว/จำนวนผู้ใช้ที่ไม่มีหลักฐาน
-PDF ถูกพักตามคำสั่งล่าสุด ยังไม่ได้ติดตั้ง PDF library หรือแก้ backend สำหรับ export
+ครีม/เขียวเข้ม, mountain postcard SVG ใน repo, infographic 9 กลุ่มพร้อมคำอธิบายสั้น, ตัวอย่างทริปเชียงใหม่สลับ 3 วัน, ขั้นตอนเริ่มต้น, FAQ และ CTA
+รองรับ TH/EN/ZH/KO และธีมสว่าง/มืด ใช้ preference เดียวกับแอป ภาพทั้งหมดเป็นตัวอย่างอธิบายการใช้งาน ไม่ใช่ข้อมูลทริปจริงหรือราคา booking
+แสดงฟีเจอร์ที่มีจริง: AI ช่วยร่าง/แก้แพลนรายวัน, หมุด/Google Maps/QR, สถานที่ใกล้เคียง 1–5 กม., เชิญผู้ร่วมทริป/สิทธิ์/แจ้งเตือน, เพื่อน/แชท/แชร์พิกัดตามเวลาที่อนุญาต, หารบิล, อากาศ AI/บันทึกเองระดับวันและกิจกรรม, ภาพรวมแผนที่/ปฏิทิน/ค่าใช้จ่าย, ลิงก์แชร์อ่านอย่างเดียว
+มีหมายเหตุให้ตรวจข้อมูล AI ก่อนเดินทาง และข้อมูลสถานที่ใกล้เคียงไม่ใช่อันดับรีวิว ไม่อ้าง PDF, booking หรือจำนวนผู้ใช้ที่ไม่มีหลักฐาน
+- `src/landing/FeatureGallery.jsx`: ภาพ SVG + semantic figure/caption ทั้ง 9 กลุ่ม
+- `src/landing/featureCopy.js`: ข้อความสั้น/ป้ายในภาพ/meta ทั้ง 4 ภาษา เชื่อมผ่าน `copy.js`
+- `src/landing/feature-gallery.css`: responsive grid และสีอิงธีม
+
+## หน้า Login: ฉากหมาเดินทาง (2026-10-01)
+ใช้หมา SVG ตัวเดียวกับ Loading ผ่าน `TravelingDog.jsx` ฉากภูเขา/เส้นทางใน `LoginJourney.jsx` และการจัดหน้าใน `pages/Login.css`
+หมาเดินไปกลับวนด้วย CSS ไม่ดาวน์โหลด GIF/video; ฉากเป็น decorative (`aria-hidden`, `pointer-events: none`) มีปุ่มพัก/เล่น และหยุดอัตโนมัติตาม `prefers-reduced-motion` รวมข้อความหมุนในฟอร์ม
+ฟอร์มบนมือถืออยู่ถัดจากภาพหมา; desktop วางฟอร์มขวา รองรับ light/dark ระบบ login/register/Google/recovery เดิม
 
 ## SEO ที่ทำ
 - title/description/Open Graph ใน index.html, heading structure, semantic HTML, skip link, focus styles, local SVG ไม่มี remote image tracker
@@ -43,7 +51,9 @@ PDF ถูกพักตามคำสั่งล่าสุด ยังไ
 Browser coverage: desktop/mobile, CTA, sample day toggle, FAQ, 4 languages, no horizontal overflow, no API calls on Landing, auth redirect, Google linking and password recovery เดิม
 ไฟล์ภาพตรวจงานอยู่ใน test-results (ไม่ commit)
 
-ผลรอบนี้: unit 6 ผ่าน, browser 8 ผ่าน, build และ SEO checks ทั้ง configured/unconfigured domain ผ่าน; lint 0 errors/8 warnings เดิม
+ผลรอบเริ่มต้น: unit 6 ผ่าน, browser 8 ผ่าน, build และ SEO checks ทั้ง configured/unconfigured domain ผ่าน; lint 0 errors/8 warnings เดิม
+
+รอบภาพเคลื่อนไหว/infographic 2026-10-01: unit 14 ผ่าน, build และ static SEO ผ่าน; lint 0 errors/9 warnings เดิม ตรวจ browser desktop/mobile ครอบคลุม auth เดิม, loading, animation pause/reduced motion, infographic 9 กลุ่มและข้อความ 4 ภาษาไม่ล้น ภาพตรวจงานอยู่ใน test-results (ไม่ commit)
 
 ## ปรับ readability ตาม feedback
 ข้อความ charcoal/เทาเข้ม หัวข้อเน้นน้ำตาลอุ่น เนื้อหาประมาณ 16–18px และมือถือใช้ feature cards คอลัมน์เดียว สีเขียวเหลือเป็นสีประกอบ/ปุ่ม; ตรวจ browser 4 กรณีและภาพ desktop/mobile ผ่าน

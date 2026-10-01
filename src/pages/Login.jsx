@@ -1,3 +1,5 @@
+import LoginJourney from "@/components/LoginJourney";
+import "./Login.css";
 import React, { useState } from "react";
 import UserRegister from "@/components/UserRegister"; // 👈 เพิ่มบรรทัดนี้
 import useUserStore from "@/stores/userStore";
@@ -14,6 +16,7 @@ import { Link } from "react-router-dom";
 
 function Login() {
   const { t, lang } = useLang();
+  const [motionPaused, setMotionPaused] = useState(false);
   const [googleCredential, setGoogleCredential] = useState(null);
   const [linkPassword, setLinkPassword] = useState("");
   const [googleBusy, setGoogleBusy] = useState(false);
@@ -63,20 +66,24 @@ function Login() {
 
   return (
     <>
-      <div className="min-h-screen px-4 pt-10 md:pt-20 pb-20 md:pb-28 flex items-center justify-center">
+      <div className={`login-page ${motionPaused ? "login-page--paused" : ""}`}>
+        <LoginJourney />
         <Link
           to="/"
-          className="absolute top-4 left-4 text-sm font-semibold link"
+          className="login-home text-sm font-semibold link"
         >
           ← AI LHOUNG
         </Link>
-        <div className="absolute top-4 right-4 flex items-center gap-1">
+        <div className="login-settings flex items-center gap-1">
           <ThemeToggle />
           <LanguageSwitcher />
         </div>
-        <div className="p-2 sm:p-5 mx-auto max-w-5xl min-h-135 flex flex-col md:flex-row justify-between items-center w-full gap-8">
+        <button type="button" className="login-motion-toggle" aria-pressed={motionPaused} onClick={() => setMotionPaused(!motionPaused)}>
+          <span aria-hidden="true">{motionPaused ? "▶" : "Ⅱ"}</span> {t(motionPaused ? "auth.resumeScene" : "auth.pauseScene")}
+        </button>
+        <div className="login-layout">
           {/* ฝั่งซ้าย: ข้อความต้อนรับ */}
-          <div className="flex flex-col gap-4 md:basis-3/5 text-center md:text-left">
+          <div className="login-welcome">
             <div className="font-display text-6xl sm:text-7xl p-2 text-primary">
               AI LHOUNG
             </div>
@@ -88,7 +95,7 @@ function Login() {
           </div>
 
           {/* ฝั่งขวา: ฟอร์ม Login */}
-          <div className="aura aura-dual w-full max-w-md shadow-xl">
+          <div className="login-form-surface w-full max-w-md">
             <div className="card bg-base-100">
               <div className="card-body p-4 sm:p-8">
                 <span className="flex flex-wrap justify-center text-lg sm:text-xl mx-1 text-center">
@@ -113,6 +120,8 @@ function Login() {
                     <div className="w-full">
                       <input
                         type="email"
+                        aria-label={t("auth.email")}
+                        autoComplete="email"
                         {...register("email")}
                         className="input input-bordered w-full text-base"
                         placeholder={t("auth.email")}
@@ -125,6 +134,8 @@ function Login() {
                     <div className="w-full">
                       <input
                         type="password"
+                        aria-label={t("auth.password")}
+                        autoComplete="current-password"
                         {...register("password")}
                         className="input input-bordered w-full text-base"
                         placeholder={t("auth.password")}

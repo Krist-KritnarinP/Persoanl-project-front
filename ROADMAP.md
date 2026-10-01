@@ -59,6 +59,7 @@
 - [x] คำนวณงบประมาณรวมจริง — ตรวจพบยอดรวมทริปและรายวันใน TripsActivity แล้ว
 - [ ] Onboarding: ทริปตัวอย่าง + ทัวร์ 3 ขั้นตอนตอนสมัครครั้งแรก
 - [x] Landing page + SEO พื้นฐาน — หน้า `/`, เนื้อหา 4 ภาษา, Thai HTML prerender, meta/OG และ canonical/sitemap เมื่อมีโดเมนจริง; Login ย้าย `/login`
+- [x] Login ฉากหมาเดินทางวนจาก loading พร้อมพักภาพ/reduced motion และ Landing infographic 9 กลุ่มฟีเจอร์ ข้อความสั้น 4 ภาษา/2 ธีม; คง Thai HTML prerender และ auth เดิม (2026-10-01)
 - [ ] เปิด SEO บนโดเมนจริง + Search Console และ URL/hreflang แยกภาษา — ดู docs/LANDING_SEO.md
 - [ ] PWA (install ได้, icon, offline หน้าอ่านทริป) — นักเดินทางใช้บนมือถือกลางทาง
 - [ ] แจ้งเตือนก่อนเดินทาง (email/LINE OA): เช็กลิสต์ + อากาศล่วงหน้า 3 วัน

@@ -1,3 +1,4 @@
+import FeatureGallery from "./FeatureGallery";
 import { additions } from "../i18n/additions";
 import React, { useState } from "react";
 import {
@@ -6,7 +7,6 @@ import {
   FiMapPin,
   FiCalendar,
   FiSun,
-  FiShare2,
   FiCheck,
   FiCompass,
   FiPlus,
@@ -24,7 +24,6 @@ export default function LandingContent({
   const [day, setDay] = useState(0);
   const start = signedIn ? "/dashboard" : "/login";
   const startLabel = signedIn ? c.dashboard : c.start;
-  const icons = [FiCalendar, FiMapPin, FiCompass, FiSun, FiShare2];
   return (
     <div className="landing">
       <a className="lp-skip" href="#main">
@@ -159,64 +158,7 @@ export default function LandingContent({
             </div>
             <p>{c.featureIntro}</p>
           </div>
-          <div className="lp-feature-grid">
-            {c.features.map(([title, desc], i) => {
-              const Icon = icons[i];
-              return (
-                <article className={`lp-feature lp-feature-${i}`} key={title}>
-                  <div className="lp-feature-top">
-                    <Icon />
-                    <span>0{i + 1}</span>
-                  </div>
-                  {i === 0 && (
-                    <div className="lp-mini-days" aria-hidden="true">
-                      <span>
-                        DAY 01 <FiCheck />
-                      </span>
-                      <span>
-                        DAY 02 <FiCheck />
-                      </span>
-                      <span>
-                        DAY 03 <FiPlus />
-                      </span>
-                    </div>
-                  )}
-                  {i === 1 && (
-                    <div className="lp-mini-map" aria-hidden="true">
-                      <svg viewBox="0 0 300 90">
-                        <path
-                          d="M20 70 Q80 5 140 55 T280 15"
-                          fill="none"
-                          stroke="currentColor"
-                          strokeWidth="3"
-                          strokeDasharray="6 6"
-                        />
-                        <circle cx="20" cy="70" r="7" fill="currentColor" />
-                        <circle cx="140" cy="55" r="7" fill="currentColor" />
-                        <circle cx="280" cy="15" r="7" fill="currentColor" />
-                      </svg>
-                    </div>
-                  )}
-                  {i === 2 && (
-                    <div className="lp-mini-budget" aria-hidden="true">
-                      <span>THB</span>
-                      <b>
-                        4,500<span>.00</span>
-                      </b>
-                      <div>
-                        <i />
-                        <i />
-                        <i />
-                      </div>
-                    </div>
-                  )}
-                  <h3>{title}</h3>
-                  <p>{desc}</p>
-                  {i === 3 && <small>{c.aiNote}</small>}
-                </article>
-              );
-            })}
-          </div>
+          <FeatureGallery lang={lang} />
         </section>
         <section id="sample" className="lp-sample-section">
           <div className="lp-wrap lp-sample-layout">

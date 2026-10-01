@@ -2,6 +2,8 @@ import { nearbyTranslations } from "./nearby.js";
 import { manualWeatherTranslations } from "./manualWeather.js";
 export const additions = {
   th: {
+    "auth.pauseScene": "พักภาพเคลื่อนไหว",
+    "auth.resumeScene": "เล่นภาพเคลื่อนไหว",
     ...nearbyTranslations.th,
     ...manualWeatherTranslations.th,
     "loading.journeyTitle": "น้องหมากำลังพาไป…",
@@ -270,6 +272,8 @@ export const additions = {
     "collab.decline": "ปฏิเสธ",
   },
   en: {
+    "auth.pauseScene": "Pause scenery",
+    "auth.resumeScene": "Play scenery",
     ...nearbyTranslations.en,
     ...manualWeatherTranslations.en,
     "loading.journeyTitle": "A little adventure is on its way…",
@@ -539,6 +543,8 @@ export const additions = {
     "collab.decline": "Decline",
   },
   zh: {
+    "auth.pauseScene": "暂停动画",
+    "auth.resumeScene": "播放动画",
     ...nearbyTranslations.zh,
     ...manualWeatherTranslations.zh,
     "loading.journeyTitle": "小狗正带你出发…",
@@ -792,6 +798,8 @@ export const additions = {
     "collab.decline": "拒绝",
   },
   ko: {
+    "auth.pauseScene": "배경 멈추기",
+    "auth.resumeScene": "배경 재생",
     ...nearbyTranslations.ko,
     ...manualWeatherTranslations.ko,
     "loading.journeyTitle": "강아지와 함께 출발해요…",
