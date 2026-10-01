@@ -42,7 +42,7 @@
 | hooks/useTripCoordinates.js + utils/geocode.js | พิกัด DB → cache → ค้นหาอัตโนมัติ; progressive render |
 | utils/gmaps.js | สร้าง URL นำทาง Google Maps |
 | theme.js / i18n/index.jsx | ธีมที่ sync ข้ามหน้า/แท็บ และข้อความ 4 ภาษา |
-| validations/schema.js | ตรวจข้อมูล form ก่อนส่ง |
+| validations/schema.js + components/PasswordStrength.jsx + utils/passwordStrength.js | ตรวจรหัสขั้นต่ำ 8 ตัวก่อนสมัคร/รีเซ็ต/เปลี่ยน; สมัครแสดงระดับแนะนำ 8/12/16 ตัว, API ใช้กติกาขั้นต่ำเดียวกัน |
 
 ## ข้อที่ดูคล้ายกันแต่ห้ามรวมโดยไม่ตรวจ
 - ShareTripView ใช้ fallback วันที่/เวลาไม่เหมือน TripsActivity; จึงยังเก็บ formatter ของ share แยก

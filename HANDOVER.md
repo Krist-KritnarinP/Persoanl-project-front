@@ -8,6 +8,12 @@
 
 # สถานะล่าสุด — Frontend / Social + Trip collaboration (2026-09-30)
 
+## Signup password usability (2026-10-01)
+
+- `validations/schema.js` minimum is now 8 characters to match API registration/reset/profile changes; 72 UTF-8 byte bcrypt bound remains. Empty/oversized username or email, short password, confirmation mismatch and duplicate email each show a translated, field-level reason. Registration form uses `noValidate` so Zod messages are visible and focuses the first invalid field.
+- `PasswordStrength.jsx` shows an advisory 8/12/16-character meter while typing in TH/EN/ZH/KO. Common/repeated patterns remain basic; this is a rough guide, not a guarantee or extra requirement. Eight-character passwords are accepted. Password recovery already exists; external SMTP delivery still needs end-to-end verification.
+- Verification: Front unit 15 passed, build/SEO/lint passed (9 existing warnings), desktop/mobile signup/auth browser tests 6 passed. No DB migration or real account was created. See API HANDOVER for server changes. Local commits only; no push/deploy.
+
 ## Landing feature heading trimmed (2026-10-01)
 
 - Removed the extra sentence beside the illustrated feature section heading in all languages. The heading now leads directly into the nine illustrated cards, with their captions carrying the specific feature details.

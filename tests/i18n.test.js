@@ -16,7 +16,7 @@ test("new UI dictionaries have complete keys and matching interpolation paramete
     }
   }
 });
-test("validation returns translation keys without changing password rules", () => {
+test("validation uses the eight-character password minimum and translated errors", () => {
   assert.equal(
     passwordSchema.safeParse("short").error.issues[0].message,
     "auth.passwordRule",
@@ -26,6 +26,9 @@ test("validation returns translation keys without changing password rules", () =
     "validation.passwordBytes",
   );
   assert.equal(passwordSchema.safeParse("a secure password").success, true);
+  assert.equal(passwordSchema.safeParse("1234567").success, false);
+  assert.equal(passwordSchema.safeParse("12345678").success, true);
+  assert.equal(registerSchema.safeParse({ username: "x".repeat(51), email: "a@example.com", password: "Trip2026", confirmPassword: "Trip2026" }).error.issues[0].message, "validation.usernameMax");
   const result = registerSchema.safeParse({
     username: "a",
     email: "bad",

@@ -1,0 +1,42 @@
+import { test, expect } from "@playwright/test";
+
+test("signup explains missing fields, password levels, mismatch and duplicate email", async ({ page }, testInfo) => {
+  await page.addInitScript(() => localStorage.setItem("lang", "en"));
+  await page.route("https://accounts.google.com/**", route => route.abort());
+  const requests = [];
+  await page.route("http://127.0.0.1:8899/api/auth/register", async route => {
+    if (route.request().method() === "OPTIONS") return route.fulfill({ status: 204, headers: { "access-control-allow-origin": "http://127.0.0.1:5188", "access-control-allow-methods": "POST,OPTIONS", "access-control-allow-headers": "content-type", "access-control-allow-credentials": "true" } });
+    requests.push(route.request().postDataJSON());
+    await route.fulfill({ status: requests.length === 1 ? 409 : 201, headers: { "access-control-allow-origin": "http://127.0.0.1:5188", "access-control-allow-credentials": "true" }, json: requests.length === 1 ? { code: "EMAIL_ALREADY_REGISTERED" } : { user: { id: 1 } } });
+  });
+  await page.goto("/login");
+  await page.getByRole("button", { name: "Create new account" }).click();
+  const dialog = page.locator("#createaccount");
+  await dialog.getByRole("button", { name: "Sign up" }).click();
+  await expect(dialog.getByRole("alert").filter({ hasText: "Enter a username" })).toBeVisible();
+  await expect(dialog.getByRole("alert").filter({ hasText: "Enter your email" })).toBeVisible();
+  await expect(dialog.getByRole("alert").filter({ hasText: "8 characters" })).toBeVisible();
+  await dialog.getByRole("textbox", { name: "Username" }).fill("Traveler");
+  await dialog.getByRole("textbox", { name: "Email" }).fill("traveler@example.invalid");
+  await dialog.getByLabel("Password", { exact: true }).fill("1234567");
+  await expect(dialog.getByRole("meter")).toHaveAttribute("aria-valuenow", "0");
+  await dialog.getByLabel("Password", { exact: true }).fill("Trip2026");
+  await expect(dialog.getByRole("meter")).toHaveAttribute("aria-valuenow", "1");
+  await dialog.getByLabel("Password", { exact: true }).fill("TripPlans2026");
+  await expect(dialog.getByRole("meter")).toHaveAttribute("aria-valuenow", "2");
+  await dialog.getByLabel("Password", { exact: true }).fill("OurTripPlans2026!");
+  await expect(dialog.getByRole("meter")).toHaveAttribute("aria-valuenow", "3");
+  await dialog.screenshot({ path: testInfo.outputPath("signup-password.png") });
+  await dialog.getByLabel("Password", { exact: true }).fill("Trip2026");
+  await dialog.getByLabel("Confirm password").fill("NotMatched");
+  await dialog.getByRole("button", { name: "Sign up" }).click();
+  await expect(dialog.getByRole("alert").filter({ hasText: "Passwords do not match" })).toBeVisible();
+  expect(requests).toHaveLength(0);
+  await dialog.getByLabel("Confirm password").fill("Trip2026");
+  await dialog.getByRole("button", { name: "Sign up" }).click();
+  await expect(dialog.getByRole("alert").filter({ hasText: "already has an account" })).toBeVisible();
+  expect(requests[0].password).toBe("Trip2026");
+  await dialog.getByRole("button", { name: "Sign up" }).click();
+  await expect(dialog).toBeHidden();
+  expect(requests).toHaveLength(2);
+});
