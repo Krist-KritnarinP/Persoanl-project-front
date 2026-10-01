@@ -1,5 +1,11 @@
 # สถานะล่าสุด — Frontend / Social + Trip collaboration (2026-09-30)
 
+## Landing copy made conversational (2026-10-01)
+
+- Rewrote the public landing hero/feature introduction and nine Thai feature captions around concrete trip actions. Removed the self-referential “ดูภาพเดียว ก็รู้ว่าใช้ทำอะไรได้” and redundant “ภาพตัวอย่างการใช้งาน” label. Localized the sample, steps, closing and footer labels in TH/EN/ZH/KO rather than displaying fixed English marketing slogans.
+- Illustrations, feature claims, SEO meta, Thai prerender, auth and API logic stay intact. `featureCopy.js` remains the source for the live marketing copy, joined to `copy.js`; the older feature arrays in `copy.js` are still overridden by this source.
+- Verified build, static SEO, lint (0 errors, 9 existing warnings), and desktop/mobile landing + visual browser suite (8 passed); reviewed feature screenshots and checked that the removed phrase is absent from prerendered HTML. Local only; no push/deploy. Existing unrelated mobile roadmap edit remains unstaged.
+
 ## Travel dog paw direction (2026-10-01)
 
 - Corrected all four paw paths in shared `TravelingDog.jsx`: toes and cream paw markings now face the muzzle instead of the tail. Applies to loading and login; login's whole-character flip keeps paws aligned on the return walk. Animation timing and application logic unchanged.

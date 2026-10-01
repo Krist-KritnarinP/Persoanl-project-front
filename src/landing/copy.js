@@ -8,7 +8,6 @@ export const copy = {
     login: "เข้าสู่ระบบ",
     start: "เริ่มวางแผนทริป",
     dashboard: "ทริปของฉัน",
-    eyebrow: "LESS PLANNING CHAOS. MORE ADVENTURE.",
     hero: ["ทริปที่ดี", "เริ่มจากแผนที่ใช่"],
     intro:
       "เก็บทุกที่ที่อยากไป จัดวันให้ลงตัว แล้วออกเดินทางด้วยกัน แผนเที่ยว แผนที่ และงบประมาณ — ครบในที่เดียว",
@@ -97,7 +96,6 @@ export const copy = {
     login: "Log in",
     start: "Plan a trip",
     dashboard: "My trips",
-    eyebrow: "LESS PLANNING CHAOS. MORE ADVENTURE.",
     hero: ["Good trips start", "with a little plan."],
     intro:
       "Save the places you love, give every day a little direction, and head out together. Your itinerary, map and budget, all in one place.",
@@ -330,10 +328,16 @@ copy.ko = {
 for (const [lang, visual] of Object.entries(featureCopy)) {
   Object.assign(copy[lang], {
     description: visual.meta,
+    eyebrow: visual.heroEyebrow,
     intro: visual.heroIntro,
     featureEyebrow: visual.eyebrow,
     featureTitle: visual.title,
     featureIntro: visual.intro,
+    sampleEyebrow: visual.sampleEyebrow,
+    stepsEyebrow: visual.stepsEyebrow,
+    endEyebrow: visual.endEyebrow,
+    sampleBottom: visual.sampleBottom,
+    footerTagline: visual.footerTagline,
     features: visual.features.map(({ title, description }) => [title, description]),
   });
 }

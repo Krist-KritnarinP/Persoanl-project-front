@@ -1,5 +1,4 @@
 .lp-infographic-grid { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 22px; }
-.lp-gallery-note { margin: -10px 0 20px; color: var(--lp-muted); font-size: 12px; }
 .lp-infographic { grid-column: span 3; min-width: 0; margin: 0; padding: 16px; border: 1px solid var(--lp-line); border-radius: 20px; background: var(--lp-card); }
 .lp-infographic--nearby, .lp-infographic--team, .lp-infographic--chat { grid-column: span 2; }
 .lp-infographic-art { position: relative; display: grid; place-items: center; min-height: 215px; padding: 24px 4px 4px; border-radius: 13px; background: color-mix(in srgb, var(--lp-brand) 6%, var(--lp-paper)); }

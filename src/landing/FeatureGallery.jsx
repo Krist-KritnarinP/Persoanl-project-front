@@ -118,7 +118,6 @@ function Diagram({ kind, c }) {
 export default function FeatureGallery({ lang }) {
   const c = featureCopy[lang] || featureCopy.th;
   return <>
-    <p className="lp-gallery-note">{c.example}</p>
     <div className="lp-infographic-grid">
       {c.features.map((feature, index)=><figure key={feature.id} className={`lp-infographic lp-infographic--${feature.id}`} data-feature={feature.id} aria-labelledby={`feature-${feature.id}`}>
         <div className="lp-infographic-art"><span className="lp-infographic-number" aria-hidden="true">{String(index+1).padStart(2,'0')}</span><Diagram kind={feature.id} c={c} /></div>

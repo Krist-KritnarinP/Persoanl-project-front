@@ -1,11 +1,16 @@
 export const featureCopy = {
   "th": {
-    "eyebrow": "แพลนเบา ๆ แล้วไปด้วยกัน",
-    "title": "ตั้งแต่คิดทริป\nจนถึงระหว่างทาง",
-    "intro": "ดูภาพเดียว ก็รู้ว่าใช้ทำอะไรได้",
-    "example": "ภาพตัวอย่างการใช้งาน",
+    "heroEyebrow": "ชวนกันไปเที่ยว เริ่มตรงนี้",
+    "eyebrow": "ทริปเดียว วางแผนด้วยกัน",
+    "title": "จากที่อยากไป\nสู่วันที่ได้ออกเดินทาง",
+    "intro": "จดที่อยากไป ชวนเพื่อนช่วยจัดวัน แล้วเปิดแผนเดียวกันระหว่างทาง",
+    "sampleEyebrow": "ลองไปเชียงใหม่กัน",
+    "stepsEyebrow": "เริ่มทริปของคุณ",
+    "endEyebrow": "แล้วทริปหน้าล่ะ",
+    "sampleBottom": "เผื่อเวลาให้เรื่องที่ไม่ได้อยู่ในแผน",
+    "footerTagline": "ทริปต่อไป เริ่มที่นี่ ↗",
     "meta": "วางแผนเที่ยวด้วย AI จัดแผนรายวัน แผนที่ ค้นหาที่ใกล้เคียง ร่วมทริป แชท แชร์พิกัด หารบิล และบันทึกอากาศใน AI LHOUNG",
-    "heroIntro": "ที่อยากไป เพื่อนที่อยากชวน และทุกเรื่องระหว่างทาง รวมไว้ในทริปเดียว",
+    "heroIntro": "มีที่ที่อยากไปอยู่ในใจไหม เริ่มจดไว้ แล้วชวนเพื่อนมาช่วยกันจัดทริป",
     "draft": "AI ช่วยร่าง",
     "edit": "คุณปรับได้",
     "day": "วัน",
@@ -32,58 +37,63 @@ export const featureCopy = {
     "features": [
       {
         "id": "plan",
-        "title": "เริ่มจากไอเดีย เป็นแผนรายวัน",
-        "description": "ให้ AI ช่วยร่าง แล้วเติมวัน กิจกรรม เวลา และงบในแบบของคุณ"
+        "title": "เริ่มจากที่ที่อยากไป",
+        "description": "ให้ AI ช่วยร่างทริป แล้วเลือกวัน เวลา และงบเอง"
       },
       {
         "id": "map",
-        "title": "เห็นทาง ก่อนออกเดินทาง",
-        "description": "ดูหมุดรายวัน เปิดเส้นทาง Google Maps หรือสแกน QR"
+        "title": "เปิดแผนที่แล้วไปต่อ",
+        "description": "ดูหมุดแต่ละวัน เปิดทางใน Google Maps หรือสแกน QR"
       },
       {
         "id": "nearby",
-        "title": "เจอที่แวะใหม่ ใกล้แผนเดิม",
-        "description": "เลือกหมวดในระยะ 1–5 กม. แล้วแทรกลงวันที่ต้องการ"
+        "title": "ระหว่างทาง แวะไหนดี",
+        "description": "หาร้านหรือที่เที่ยวในระยะ 1–5 กม. แล้วเพิ่มในวันที่ต้องการ"
       },
       {
         "id": "team",
-        "title": "ชวนเพื่อน มาช่วยกันแพลน",
-        "description": "รับคำเชิญ เลือกสิทธิ์ดูหรือแก้ไข พร้อมแจ้งเตือนในเว็บ"
+        "title": "ชวนเพื่อนมาช่วยจัดทริป",
+        "description": "ส่งคำเชิญ รับแจ้งเตือน และเลือกคนดูหรือช่วยแก้แผน"
       },
       {
         "id": "chat",
-        "title": "คุยกัน เจอกัน ไม่หลงกัน",
-        "description": "แอดเพื่อน แชทส่วนตัว/กลุ่ม และเลือกเวลาแชร์พิกัดได้"
+        "title": "คุยกัน แล้วหากันเจอ",
+        "description": "แชทกับเพื่อนหรือทั้งกลุ่ม ขอพิกัดและเลือกเวลาแชร์ได้"
       },
       {
         "id": "bills",
-        "title": "เที่ยวด้วยกัน หารกันง่าย",
-        "description": "แยกคนออกเงิน คนร่วมจ่าย และบันทึกยอดคืนได้"
+        "title": "จ่ายด้วยกัน ก็หารบิลง่าย",
+        "description": "ดูว่าใครจ่าย ใครหาร และบันทึกยอดที่คืนกันแล้ว"
       },
       {
         "id": "weather",
-        "title": "เก็บอากาศของวันนั้นไว้",
-        "description": "ดูสรุป AI หรือบันทึกไอคอน °C และโน้ตรายวัน/กิจกรรม"
+        "title": "วันนั้นอากาศเป็นยังไง",
+        "description": "ดูสรุปจาก AI หรือบันทึกอากาศและ °C ให้แต่ละวันหรือกิจกรรม"
       },
       {
         "id": "overview",
-        "title": "ทุกทริป อยู่ในภาพเดียว",
-        "description": "สลับแผนที่ ปฏิทิน และภาพรวมค่าใช้จ่าย"
+        "title": "กลับมาดูทริปเมื่อไรก็เจอ",
+        "description": "เปิดทริปทั้งหมดผ่านแผนที่ ปฏิทิน หรือยอดค่าใช้จ่าย"
       },
       {
         "id": "share",
-        "title": "ส่งแผนให้กัน เปิดดูได้เลย",
-        "description": "แชร์ลิงก์ดูอย่างเดียวโดยไม่ต้องมีบัญชี และปิดแชร์ได้ทุกเมื่อ"
+        "title": "ส่งแผนให้คนที่ไปด้วย",
+        "description": "ส่งลิงก์แบบดูอย่างเดียว ไม่ต้องสมัคร และปิดแชร์ได้ทุกเมื่อ"
       }
     ]
   },
   "en": {
-    "eyebrow": "A LITTLE PLAN. A LOT TO EXPLORE.",
-    "title": "From the first idea\nto the way home.",
-    "intro": "Small previews. Everything for the journey.",
-    "example": "Illustrated examples",
+    "heroEyebrow": "LET'S PLAN A TRIP TOGETHER",
+    "eyebrow": "ONE TRIP, PLANNED TOGETHER",
+    "title": "From places on your list\nto days on the road",
+    "intro": "Save the places you want to go, plan each day with friends, and take the same plan along.",
+    "sampleEyebrow": "A few days in Chiang Mai",
+    "stepsEyebrow": "Get your trip started",
+    "endEyebrow": "Where to next?",
+    "sampleBottom": "Leave room for a little surprise.",
+    "footerTagline": "Your next trip starts here ↗",
     "meta": "Plan trips with AI, daily itineraries, maps, nearby places, friends, chat, timed location sharing, split bills and weather notes in AI LHOUNG.",
-    "heroIntro": "The places, the people, and everything along the way. One trip, together.",
+    "heroIntro": "Got a few places in mind? Save them, then invite your friends to plan the trip together.",
     "draft": "AI draft",
     "edit": "Your edits",
     "day": "Day",
@@ -156,12 +166,17 @@ export const featureCopy = {
     ]
   },
   "zh": {
-    "eyebrow": "轻松规划，一起出发",
-    "title": "从旅行灵感\n到一路同行",
-    "intro": "用小小的预览，了解旅行的每一步。",
-    "example": "功能示意图",
+    "heroEyebrow": "一起计划下一趟旅行",
+    "eyebrow": "一起计划同一趟旅行",
+    "title": "从想去的地方\n到真正出发的那天",
+    "intro": "记下想去的地方，和朋友安排每天的行程，路上随时打开同一份计划。",
+    "sampleEyebrow": "一起去清迈看看",
+    "stepsEyebrow": "从这里开始",
+    "endEyebrow": "下一站去哪？",
+    "sampleBottom": "给计划之外的小惊喜留点时间。",
+    "footerTagline": "下一趟旅行，从这里开始 ↗",
     "meta": "用 AI LHOUNG 规划每日行程，查看地图与附近地点，邀请好友、聊天、限时共享位置、分摊费用并记录天气。",
-    "heroIntro": "想去的地方、同行的朋友和路上的点滴，都在同一份行程里。",
+    "heroIntro": "有几个想去的地方？先记下来，再邀请朋友一起安排行程。",
     "draft": "AI 草稿",
     "edit": "自由修改",
     "day": "第",
@@ -234,12 +249,17 @@ export const featureCopy = {
     ]
   },
   "ko": {
-    "eyebrow": "가볍게 계획하고 함께 떠나요",
-    "title": "첫 아이디어부터\n집으로 돌아오는 길까지",
-    "intro": "작은 미리보기로 여행에 필요한 기능을 만나보세요.",
-    "example": "기능 예시",
+    "heroEyebrow": "다음 여행을 함께 계획해요",
+    "eyebrow": "한 여행을 함께 계획해요",
+    "title": "가고 싶은 곳에서\n떠나는 날까지",
+    "intro": "가고 싶은 곳을 모으고, 친구와 날짜별 일정을 짠 뒤 여행 중에도 같은 계획을 열어보세요.",
+    "sampleEyebrow": "치앙마이에서 며칠",
+    "stepsEyebrow": "여행을 시작해요",
+    "endEyebrow": "다음엔 어디로 갈까요?",
+    "sampleBottom": "계획에 없는 작은 즐거움도 남겨두세요.",
+    "footerTagline": "다음 여행은 여기서 시작해요 ↗",
     "meta": "AI LHOUNG에서 AI 일정, 일별 계획, 지도, 주변 장소, 친구 초대, 채팅, 시간제 위치 공유, 비용 정산과 날씨 기록을 관리하세요.",
-    "heroIntro": "가고 싶은 곳, 함께할 친구, 여행 중 필요한 모든 것을 한곳에.",
+    "heroIntro": "가고 싶은 곳이 있다면 먼저 적어두고, 친구를 초대해 함께 일정을 짜보세요.",
     "draft": "AI 초안",
     "edit": "직접 수정",
     "day": "Day",

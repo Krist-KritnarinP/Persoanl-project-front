@@ -161,7 +161,7 @@ export default function LandingContent({
         <section id="sample" className="lp-sample-section">
           <div className="lp-wrap lp-sample-layout">
             <div>
-              <p className="lp-eyebrow">A PEEK AT YOUR NEXT GETAWAY</p>
+              <p className="lp-eyebrow">{c.sampleEyebrow}</p>
               <h2>{c.sampleTitle}</h2>
               <p className="lp-sample-desc">{c.sampleDesc}</p>
               <div className="lp-sample-stats">
@@ -227,14 +227,14 @@ export default function LandingContent({
               </div>
               <div className="lp-itinerary-bottom">
                 <FiCheck />
-                <span>MAKE ROOM FOR THE UNEXPECTED.</span>
+                <span>{c.sampleBottom}</span>
               </div>
             </div>
           </div>
         </section>
         <section id="how" className="lp-wrap lp-section lp-how">
           <div>
-            <p className="lp-eyebrow">THREE LITTLE STEPS</p>
+            <p className="lp-eyebrow">{c.stepsEyebrow}</p>
             <h2>{c.stepsTitle}</h2>
             <a href={start} className="lp-button">
               {startLabel}
@@ -270,7 +270,7 @@ export default function LandingContent({
         </section>
         <section className="lp-wrap lp-last">
           <div>
-            <p className="lp-eyebrow">THE WORLD IS STILL OUT THERE.</p>
+            <p className="lp-eyebrow">{c.endEyebrow}</p>
             <h2>{c.endTitle}</h2>
             <p>{c.endDesc}</p>
             <a className="lp-button lp-button-light" href={start}>
@@ -287,7 +287,7 @@ export default function LandingContent({
           <span className="font-display text-2xl md:text-3xl tracking-wider bg-linear-to-r from-primary to-accent bg-clip-text text-transparent whitespace-nowrap">AI LHOUNG</span>
         </a>
         <p>{c.footer}</p>
-        <span>MADE FOR YOUR NEXT ADVENTURE ↗</span>
+        <span>{c.footerTagline}</span>
       </footer>
     </div>
   );
