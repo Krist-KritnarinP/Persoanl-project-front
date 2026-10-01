@@ -107,7 +107,15 @@
   - ง่าย (ทำเลย): AI เขียนวิธีเดินทางกำกับทุก activity ตอนสร้างทริป ("JR + Nohi bus ~2 ชม. ~1,250฿") + ปุ่ม Google Maps ที่มีอยู่แล้ว — แทบไม่ต้องเพิ่มโค้ด
   - กลาง: ดึงเวลารถไฟ/บัสจริงจากตาราง static (GTFS ญี่ปุ่น/ยุโรป) — แม่นแต่ต้องหาข้อมูลรายประเทศ
   - ยาก/แพง (รอ B2B เรียก): Google Routes API แบบเรียลไทม์ (จ่ายต่อ request + ต้องเปิด billing) — อย่าทำก่อนมีลูกค้าจ่าย
-- [ ] แอป native (Capacitor ห่อเว็บเดิม) ถ้า retention มือถือดี
+- [ ] **แอพมือถือ iOS + Android ลง Store จริง (Capacitor ห่อเว็บเดิม + API/DB เดิม):**
+  - หลักการ: มือถือเป็น client ตัวที่ 2 ต่อ `API เดิม → DB เดิม` ห้ามต่อ DB ตรง ใช้ JWT/session เดิมล็อกอินข้าม platform ได้เลย
+  - Front: เพิ่ม `capacitor.config.ts` (`appId: com.ailhoung.app`), build เว็บเดิมแล้ว `npx cap add ios android` reuse ~90% + ทำ icon 1024 / splash / adaptive icon
+  - Auth: ย้าย refresh token ไป Secure Storage (Keychain/Keystore) ผ่าน Capacitor plugin + แก้ `mainApi.js` interceptor รองรับ 2 ที่เก็บ (web localStorage vs native secure)
+  - API: เพิ่ม CORS `capacitor://localhost, ionic://localhost` + ทำ `/api/v1` กันแอพเก่าพัง + ตาราง `push_tokens (userId, platform, token)` ยิง FCM/APNs
+  - Native ขั้นต่ำกัน Apple 4.2 ตีกลับ (ห้ามห่อเว็บเฉยๆ): push แจ้งเตือนทริป + GPS ตำแหน่งปัจจุบัน + กล้องอัปโหลดรูป + deep link `/share/:token` ผ่าน Universal/App Links
+  - กับดัก Store: ในแอพห้ามมีลิงก์ไปจ่าย Stripe/QR นอกแอพ (ขายบนเว็บแล้ว login มาอ่านสิทธิ์ในแอพ) ไม่งั้นโดนบังคับ IAP 15-30%; มี Google Login ต้องเตรียม Sign in with Apple; กรอก Data Safety + Privacy Manifest (location/email/trip) + โชว์ปุ่มลบข้อมูลเดิมให้ reviewer
+  - ลำดับ: PWA ให้รอดก่อน (1 อาทิตย์) → Capacitor เทสเครื่องจริง 2 ฝั่ง (1-2 อาทิตย์) → TestFlight + Play Internal → submit public (เผื่อ reject รอบแรก 3-7 วัน); ค่า Dev Apple $99/ปี + Google $25 ครั้งเดียว
+  - แลก: ถ้าเอา mobile sprint นี้ ต้องพับ LINE Bot เต็มระบบ + Vault ไฟล์สแกน + PDF server ไปก่อน
 - [ ] คอมมูนิตี้/บล็อก نکتهท่องเที่ยวขับ SEO ภาษาไทย (คำค้น "แพลนเที่ยว X" คู่แข่งน้อย)
 - [ ] **Document Vault (ตู้เอกสารเดินทาง) — ของใหม่, เป็น Pro differentiator:**
   - เก็บขั้นต่ำก่อน: ประเภทเอกสาร (passport/visa/บัตร ปชช./ใบขับขี่สากล) + เลขที่ (mask โชว์ 4 ตัวท้าย) + **วันหมดอายุ** → แจ้งเตือนล่วงหน้า 90/30/7 วัน (cron + email/LINE)
