@@ -84,11 +84,15 @@ function BillingWorkspace({ tripId }) {
       return true;
     } catch (e) {
       setError(
-        e.response?.status === 409
-          ? "bill.conflict"
-          : e.response?.status === 400
-            ? "bill.invalid"
-            : "bill.saveError",
+        e.response?.data?.code === "MEMBER_HAS_BILLING_HISTORY"
+          ? "bill.memberHasHistory"
+          : e.response?.data?.code === "BILL_HAS_REPAYMENT_HISTORY"
+            ? "bill.billHasRepayment"
+            : e.response?.status === 409
+              ? "bill.conflict"
+              : e.response?.status === 400
+                ? "bill.invalid"
+                : "bill.saveError",
       );
       return false;
     } finally {
@@ -96,8 +100,8 @@ function BillingWorkspace({ tripId }) {
       setBusy(false);
     }
   };
-  const confirmed = async (payload) =>
-    (await confirm(t("bill.confirmAction"))) ? command(payload) : false;
+  const confirmed = async (payload, message = t("bill.confirmAction")) =>
+    (await confirm(message)) ? command(payload) : false;
   if (!data)
     return (
       <main className="p-6">
@@ -275,8 +279,10 @@ function BillingWorkspace({ tripId }) {
           </button>
         </form>}
         <div className="grid sm:grid-cols-2 xl:grid-cols-3 gap-3">
-          {data.summary.members.map((m) => (
-            <article
+          {data.summary.members.map((m) => {
+            const hasHistory = data.bills.some((b) => JSON.stringify(b.data).includes(m.id)) ||
+              data.settlements.some((s) => s.fromId === m.id || s.toId === m.id);
+            return <article
               key={m.id}
               className="billing-person rounded-2xl p-4 space-y-3"
             >
@@ -321,7 +327,7 @@ function BillingWorkspace({ tripId }) {
                   ฿{moneyText(m.received)}
                 </p>
               )}
-              {canEdit && <div className="flex gap-2">
+              {canEdit && <div className="flex flex-wrap gap-2">
                 <button
                   className="btn btn-xs btn-ghost"
                   disabled={busy}
@@ -357,9 +363,24 @@ function BillingWorkspace({ tripId }) {
                 >
                   {t(m.active ? "bill.archive" : "bill.restore")}
                 </button>
+                <button
+                  type="button"
+                  disabled={busy || hasHistory || !!editing}
+                  className="btn btn-xs btn-outline btn-error"
+                  onClick={async () => {
+                    if (await confirmed({
+                      action: "member.remove",
+                      id: m.id,
+                      version: m.version,
+                    }, t("bill.confirmDeleteMember") + " " + m.name + "?")) setPerson("");
+                  }}
+                >
+                  {t("bill.deleteMember")}
+                </button>
               </div>}
+              {canEdit && hasHistory && <p className="text-xs text-base-content/65">{t("bill.memberHasHistory")}</p>}
             </article>
-          ))}
+          })}
         </div>
         {canEdit && hasMembers && !editing && (
           <button
@@ -454,6 +475,9 @@ function BillingWorkspace({ tripId }) {
           const locked = data.settlements.some(
             (s) => !s.reversed && s.allocations.some((a) => a.billId === b.id),
           );
+          const hasRepayment = data.settlements.some(
+            (s) => s.allocations.some((a) => a.billId === b.id),
+          );
           return (
             <details
               key={b.id}
@@ -463,6 +487,33 @@ function BillingWorkspace({ tripId }) {
                 {b.date} · {b.title} · ฿{moneyText(b.total)} ·{" "}
                 {t(b.voided ? "bill.void" : "bill.posted")}
               </summary>
+              {canEdit && <div className="flex flex-wrap gap-2 pt-3">
+                <button
+                  type="button"
+                  disabled={busy || b.voided || locked || !!editing}
+                  className="btn btn-sm"
+                  onClick={() => setEditing(b)}
+                >
+                  {t("bill.edit")}
+                </button>
+                <button
+                  type="button"
+                  disabled={busy || b.voided || locked}
+                  className="btn btn-sm btn-outline"
+                  onClick={() => confirmed({ action: "bill.void", id: b.id, version: b.version })}
+                >
+                  {t("bill.voidAction")}
+                </button>
+                <button
+                  type="button"
+                  disabled={busy || hasRepayment || !!editing}
+                  className="btn btn-sm btn-outline btn-error"
+                  onClick={() => confirmed({ action: "bill.remove", id: b.id, version: b.version }, t("bill.confirmDeleteBill") + " " + b.title + "?")}
+                >
+                  {t("bill.deleteBill")}
+                </button>
+                {hasRepayment && <span className="self-center text-sm text-base-content/65">{t("bill.billHasRepayment")}</span>}
+              </div>}
               <div className="pt-4 space-y-2">
                 <p>
                   {t("bill.version")}: {b.version}
@@ -500,28 +551,6 @@ function BillingWorkspace({ tripId }) {
                 {locked && (
                   <p className="text-sm text-warning">{t("bill.locked")}</p>
                 )}
-                {canEdit && <div className="flex gap-2">
-                  <button
-                    disabled={busy || b.voided || locked || !!editing}
-                    className="btn btn-sm"
-                    onClick={() => setEditing(b)}
-                  >
-                    {t("bill.edit")}
-                  </button>
-                  <button
-                    disabled={busy || b.voided || locked}
-                    className="btn btn-sm btn-outline"
-                    onClick={() =>
-                      confirmed({
-                        action: "bill.void",
-                        id: b.id,
-                        version: b.version,
-                      })
-                    }
-                  >
-                    {t("bill.voidAction")}
-                  </button>
-                </div>}
               </div>
             </details>
           );

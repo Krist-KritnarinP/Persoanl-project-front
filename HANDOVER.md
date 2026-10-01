@@ -1,5 +1,11 @@
 # DEPLOY LIVE — อ่านก่อนแตะงาน deploy (2026-10-01)
 
+## Billing member and bill removal (2026-10-02)
+
+- Added Delete member and Delete bill controls to the trip billing page. Existing bill Edit/Void actions are visible under each expanded bill heading. Delete member is available only when no bill snapshot or repayment refers to that member; otherwise the page explains that the member should be archived. Delete bill is available only when no repayment ever referenced it, including reversed repayments. This keeps historical ledger references intact.
+- API supports versioned, idempotent `member.remove` and `bill.remove` commands in the existing authenticated billing transaction. Both preserve an audit event; 409 typed errors protect stale clients. No schema or migration changes, and no existing data was deleted by this work.
+- Verification: API 58 passed, 1 opt-in skipped; Front unit 15 passed; build and lint passed (existing warnings); targeted desktop/mobile browser removal/edit flow 2 passed. See API `docs/BILLING.md` for the rules. Commit and push state recorded by Git after this entry.
+
 ## GitHub push / automatic deployment verified (2026-10-01)
 
 - Pushed Front `4082d7b` to `Krist-KritnarinP/Persoanl-project-front` `main` after API `a41b661` reached its own `main`. Both local branches matched `origin/main` with clean worktrees at the push checkpoint.
