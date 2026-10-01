@@ -5,6 +5,7 @@ import { FiClock, FiEdit2, FiTrash2 } from "react-icons/fi";
 
 export default function ActivityItem({
   activity,
+  children,
   typeConfig,
   formatZonedTime,
   onEdit,
@@ -15,6 +16,7 @@ export default function ActivityItem({
   const Icon = typeConfig?.icon || FiClock;
 
   return (
+    <div className="min-w-0">
     <div
       onClick={() => onView && onView(activity)}
       className={`flex items-center justify-between p-4 rounded-2xl glass bg-white/5 hover:bg-white/10 transition-all border border-white/10 gap-3 ${onView ? "cursor-pointer" : ""}`}
@@ -86,6 +88,8 @@ export default function ActivityItem({
           <FiTrash2 />
         </button>}
       </div>
+    </div>
+    {children}
     </div>
   );
 }

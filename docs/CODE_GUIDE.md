@@ -96,3 +96,9 @@ References: [WCAG 1.4.3 contrast](https://www.w3.org/WAI/WCAG22/Understanding/co
 ## Manual weather (2026-10-01)
 
 `components/ManualWeather.jsx` contains shared input/summary; `constants/manualWeather.js` normalizes blanks; `i18n/manualWeather.js` labels. TripsActivity sends observations on existing CRUD and private/public/detail views render them. See [weather behavior](WEATHER_AI.md).
+
+## Nearby places / insertion (2026-10-01)
+
+`components/NearbyPlaces.jsx` lives under ActivityItem in TripsActivity. It uses the saved/resolved map pin, searches only on click, clears stale results when filters change, cancels pending searches on close/unmount, and asks for day + position before adding. Day change resets placement to end. The page reloads itinerary through the existing store after addition; weather and existing edit handlers remain separate. Labels live in `i18n/nearby.js`.
+
+Search/add use `POST /activities/:activityId/nearby` and `/nearby/add`. Do not locally sort the saved itinerary: API owns the optional custom order so map, collaborators and shared links agree. Nearby adds intentionally have no scheduled time; set it from the existing editor. Search needs an activity pin; wait for map geocoding or save coordinates in Edit.

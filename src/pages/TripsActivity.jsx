@@ -1,3 +1,4 @@
+import NearbyPlaces from "@/components/NearbyPlaces";
 import { normalizeManualWeather } from "@/constants/manualWeather";
 import { ManualWeatherSummary } from "@/components/ManualWeather";
 import { useOutletContext } from "react-router-dom";
@@ -756,7 +757,9 @@ export default function TripActivity() {
                         onEdit={canEditTrip ? handleOpenEditActivityModal : undefined}
                         onDelete={canEditTrip ? handleDeleteActivity : undefined}
                         onView={setViewingActivity}
-                      />
+                      >
+                        <NearbyPlaces activity={act} trip={trip} coordinates={geoPoints.find(point => point.id === act.id)} canEdit={canEditTrip} onAdded={() => fetchTripDetails(tripId)} />
+                      </ActivityItem>
                     ))}
                   </div>
                 ) : (

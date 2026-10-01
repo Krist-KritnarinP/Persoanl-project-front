@@ -1,5 +1,15 @@
 # สถานะล่าสุด — Frontend / Social + Trip collaboration (2026-09-30)
 
+## Nearby places and itinerary insertion (2026-10-01)
+
+- Collapsed disclosure below each daily ActivityItem; filters radius 1–5 km, restaurants/cafés, attractions, parks/nature reserves, hotels/accommodation and result count 1–5. Search is on demand, with loading/error/empty states, straight-line distance, Google Maps links and provider attribution. Four UI languages; selected insertion form receives keyboard focus.
+- Add asks for a trip day and position: end, before or after an existing activity. Owner/editor can add; viewer can search/read. New activity has saved coordinates, correct activity type, target day date, price 0 and no assumed time/weather. Use normal Edit to schedule it.
+- Default provider is live OpenStreetMap/Overpass, ordered by Wikipedia/Wikidata references then distance. This is not review popularity. Optional server-only `GOOGLE_PLACES_API_KEY` enables Places API (New) POPULARITY ranking and actual ratings/review counts; no key configured here, Google path verified with mocks only. No billing provisioning or deployment performed.
+- Additive `days.activity_order` JSONB migration `npm run migrate:nearby` applied to configured DB. No existing rows rewritten; trips=5, days=36, activities=118 before/after. Custom order starts only when user adds a nearby place; untouched days retain original ordering. Later normal creates append to custom days. Public/private itinerary responses apply order and hide internal order metadata.
+- Verify: browser nearby/weather/trips 12/12 desktop/mobile with API mocks; Front build + unit 14/14 pass, lint 9 existing warnings; API unit 54 pass + 1 opt-in social SQL test skipped. Live Overpass returned three real named restaurants within 1 km of a public Bangkok coordinate. Prisma runtime read succeeded on configured DB; PostgreSQL smoke verified weather JSON/clear + insertion/normal append with temporary fixtures rolled back (sequence IDs can have gaps). Mobile nearby panel screenshot reviewed; no overflow.
+- Integration rerun: API `npm run test:itinerary:integration` explicitly creates disposable fixtures inside a rolled-back transaction; does not edit existing itinerary rows. Environment must have both feature migrations installed first. Localhost only; no push/deploy.
+
+
 ## Manual weather at day/activity level (2026-10-01)
 
 - Optional manual observations: 22 icon conditions, 15 description presets, custom description (1,000 characters), decimal Celsius temperature −100..70. Blank is null; 0 and negative readings remain valid. Codes localize in TH/EN/ZH/KO.
