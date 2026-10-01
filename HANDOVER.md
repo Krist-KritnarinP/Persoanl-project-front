@@ -1,3 +1,11 @@
+# DEPLOY LIVE — อ่านก่อนแตะงาน deploy (2026-10-01)
+
+- Repo ที่ใช้จริงมีแค่ 2 ตัวนี้: `PersonalProject_Front` ↔ GitHub `Krist-KritnarinP/Persoanl-project-front` และ `PersonalProject_API` ↔ GitHub `Krist-KritnarinP/Persoanl-project-Back` ห้ามใช้ `AIlhongdeploy` / `AIlhongdeploy-phase0` (monorepo backup เก่าใน `_AI_LHOUNG_BACKUP_2026-09-26/`) มา deploy เด็ดขาด
+- Front อยู่บน **Vercel** project `persoanl-project-front`: `https://persoanl-project-front.vercel.app` — Framework Vite, Build `npm run build`, Output `dist`; `vercel.json` (security headers + SPA rewrite) อยู่ใน repo นี้แล้ว
+- API อยู่บน **Render** service `Persoanl-project-Back`: `https://persoanl-project-back.onrender.com` (Singapore, Free; sleep 15 นาที เปิดครั้งแรกช้า ~50 วิ)
+- Env ที่ต้องตรงกัน: Vercel `VITE_API_URL` = URL Render + `/api`, `VITE_SITE_URL` = URL Vercel production; Render `FRONTEND_URL` = URL Vercel production (https ไม่มี `/` ท้าย)
+- Push ขึ้น `main` แล้ว Vercel/Render auto-deploy เอง (ถ้าไม่ deploy ให้เช็ค Settings ว่า auto-deploy เปิดอยู่); dev ในเครื่องยัง `npm run dev` (Vite 5173) คู่กับ API (8899) ด้วย `.env` localhost เหมือนเดิม
+
 # สถานะล่าสุด — Frontend / Social + Trip collaboration (2026-09-30)
 
 ## Landing feature heading trimmed (2026-10-01)
