@@ -25,15 +25,15 @@ export default function TravelingDog({ scenery = true }) {
               <path d="M91 128c8-8 17 0 13 7" stroke="#fff1d6" strokeWidth="8" />
             </g>
             <g className="journey-loading__leg journey-loading__leg--back" fill="#b87a44">
-              <path d="M138 170v26c-9 0-12 9-4 9h16l6-34Z" />
-              <path d="M192 170v26c-8 0-10 9-3 9h16l5-35Z" />
+              <path d="M138 170v35h20c8 0 5-9-3-9l1-25Z" />
+              <path d="M192 170v35h20c8 0 5-9-3-9l1-26Z" />
             </g>
             <path d="M113 146c5-15 32-18 56-14l37 7 11 28c-10 17-77 21-95 4-7-6-11-14-9-25Z" fill="#e6ab68" />
             <path d="M166 176c17 4 38-1 44-11l-8-15-22 6Z" fill="#fff1d6" stroke="none" />
             <g className="journey-loading__leg journey-loading__leg--front" fill="#e6ab68">
-              <path d="m124 164 3 32c-8 1-10 9-2 9h16l5-31" />
-              <path d="m186 168 4 28c-8 1-10 9-2 9h16l6-38" />
-              <path d="M125 199h15M188 199h15" stroke="#fff1d6" strokeWidth="7" />
+              <path d="m124 164 3 41h18c8 0 6-9-2-9l3-22" />
+              <path d="m186 168 4 37h18c8 0 6-9-2-9l4-29" />
+              <path d="M132 199h15M195 199h15" stroke="#fff1d6" strokeWidth="7" />
             </g>
             <path d="m198 145 13-4 8 18-17 5Z" fill="#d96954" />
             <path d="m193 105 1-34c1-6 7-7 11-1l17 29m-2 6 21-30c4-5 9-3 8 4l-2 40" fill="#e6ab68" />

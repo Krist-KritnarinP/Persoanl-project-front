@@ -1,5 +1,11 @@
 # สถานะล่าสุด — Frontend / Social + Trip collaboration (2026-09-30)
 
+## Travel dog paw direction (2026-10-01)
+
+- Corrected all four paw paths in shared `TravelingDog.jsx`: toes and cream paw markings now face the muzzle instead of the tail. Applies to loading and login; login's whole-character flip keeps paws aligned on the return walk. Animation timing and application logic unchanged.
+- Verify: build and loading/welcome-visuals browser checks (6 desktop/mobile cases); inspect generated dog screenshots. Local only; no push/deploy.
+
+
 ## Landing logo consistency (2026-10-01)
 
 - Replaced the landing header/footer compass + star wordmark with the same `/image/MiniDog.PNG` circular image, handwriting font, primary-to-accent text and responsive 40/48px image sizing used by the app header. Removed obsolete landing logo styles; links and app behavior unchanged.
