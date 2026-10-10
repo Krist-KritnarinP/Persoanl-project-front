@@ -1,5 +1,14 @@
 # DEPLOY LIVE — อ่านก่อนแตะงาน deploy (2026-10-01)
 
+## Trip PDF Export with Google Maps QR Codes (2026-10-10)
+
+- Added PDF export feature to the Itinerary page (`/trips/:tripId` and `/share/:token`):
+  - **Full Detail Mode (แบบเต็ม):** Comprehensive itinerary view with trip overview banner, travel dates, destinations, total days/activities/budget, notes/flight details/baggage rules, daily schedule cards, time badges, activity types, and per-activity Google Maps QR codes.
+  - **Compact Summary Mode (แบบย่อ):** Paper-saving summary table view displaying day, time, location, activity category, cost, and a compact Google Maps QR code on each row.
+  - **Google Maps Navigation QR Codes:** Every location generates a precision Google Maps URL (`gmapsActivityUrl` using exact coordinates `lat,lng` if present, or search query with destination fallback). Each QR code is vector SVG, rendered via `qrcode.react`, scannable with any smartphone camera and clickable in digital PDF viewers.
+  - **Native Browser Print/PDF Pipeline:** Modal with live document preview and customization toggles (Include QR, Show Cost, Include Notes). Prints directly via browser native print engine (`window.print()`) with `@media print` styling, ensuring crisp vector text, A4 pagination, and perfect Thai typography.
+  - **i18n & Verification:** Complete localized strings added for `th`, `en`, `zh`, and `ko`. All 18 unit tests passed (`npm test`), build passed (`npm run build`), lint passed (0 errors).
+
 ## Billing member and bill removal (2026-10-02)
 
 - Added Delete member and Delete bill controls to the trip billing page. Existing bill Edit/Void actions are visible under each expanded bill heading. Delete member is available only when no bill snapshot or repayment refers to that member; otherwise the page explains that the member should be archived. Delete bill is available only when no repayment ever referenced it, including reversed repayments. This keeps historical ledger references intact.

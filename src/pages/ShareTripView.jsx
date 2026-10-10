@@ -1,7 +1,7 @@
 import { ManualWeatherSummary } from "@/components/ManualWeather";
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { FiArrowLeft, FiClock, FiEye, FiUser } from "react-icons/fi";
+import { FiArrowLeft, FiClock, FiEye, FiUser, FiPrinter } from "react-icons/fi";
 import axios from "axios";
 import LoadingScreen from "@/components/LoadingScreen";
 import { getActivityTypeMeta } from "@/constants/activityTypes";
@@ -12,6 +12,7 @@ import TripInfoCard from "@/components/TripInfoCard";
 import TripMap from "@/components/TripMap";
 import TripNavCard from "@/components/TripNavCard";
 import { useTripCoordinates } from "@/hooks/useTripCoordinates";
+import TripPdfExportModal from "@/components/trips/TripPdfExportModal";
 
 const baseURL = import.meta.env.VITE_API_URL || "http://localhost:8899/api";
 
@@ -23,6 +24,7 @@ export default function ShareTripView() {
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
   const [selectedDayId, setSelectedDayId] = useState(null);
+  const [isPdfModalOpen, setIsPdfModalOpen] = useState(false);
   const { geoPoints, geoLoading } = useTripCoordinates(trip);
 
   const TYPE_META = getActivityTypeMeta(t);
@@ -108,7 +110,16 @@ export default function ShareTripView() {
         <span className="font-display text-2xl md:text-3xl tracking-wider bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent whitespace-nowrap">
           AI LHOUNG
         </span>
-        <div className="flex items-center gap-1 shrink-0">
+        <div className="flex items-center gap-1.5 shrink-0">
+          <button
+            type="button"
+            onClick={() => setIsPdfModalOpen(true)}
+            className="btn btn-outline btn-xs sm:btn-sm rounded-full gap-1 shadow-2xs"
+            title={t("export.btn")}
+          >
+            <FiPrinter className="text-xs sm:text-sm" />
+            <span className="hidden sm:inline">{t("export.btn")}</span>
+          </button>
           <span className="badge badge-accent badge-outline text-xs sm:text-sm">
             👁 {t("share.viewOnly")}
           </span>
@@ -230,6 +241,15 @@ export default function ShareTripView() {
           <FiArrowLeft /> {t("share.openApp")}
         </button>
       </div>
+
+      {/* EXPORT PDF MODAL */}
+      <TripPdfExportModal
+        isOpen={isPdfModalOpen}
+        onClose={() => setIsPdfModalOpen(false)}
+        trip={trip}
+        formatDate={formatDate}
+        formatZonedTime={formatTime}
+      />
     </div>
   );
 }

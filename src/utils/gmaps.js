@@ -29,3 +29,35 @@ export function pointOf(act) {
     return { lat: Number(act.latitude), lng: Number(act.longitude) };
   return act?.locationName || "";
 }
+
+// ลิงก์ Google Maps สำหรับกิจกรรมเดี่ยว: พิกัดพินแม่นยำ หรือค้นหาด้วยชื่อสถานที่
+export function gmapsActivityUrl(act, destination = "") {
+  if (!act) return "https://www.google.com/maps";
+  const lat =
+    act.latitude != null
+      ? Number(act.latitude)
+      : act.lat != null
+        ? Number(act.lat)
+        : null;
+  const lng =
+    act.longitude != null
+      ? Number(act.longitude)
+      : act.lng != null
+        ? Number(act.lng)
+        : null;
+
+  if (
+    lat != null &&
+    lng != null &&
+    !isNaN(lat) &&
+    !isNaN(lng) &&
+    (lat !== 0 || lng !== 0)
+  ) {
+    return `https://www.google.com/maps/search/?api=1&query=${lat},${lng}`;
+  }
+
+  const loc = act.locationName?.trim();
+  const dest = destination?.trim();
+  const query = [loc, dest].filter(Boolean).join(" ");
+  return gmapsSearchUrl(query || "Google Maps");
+}

@@ -1017,3 +1017,48 @@ select {
   .notification-row { grid-template-columns: 40px minmax(0, 1fr); }
   .notification-row > :last-child { grid-column: 2; justify-self: start; }
 }
+
+/* =========================================================
+   TRIP PDF PRINT STYLES
+   ========================================================= */
+@media print {
+  body {
+    background: #ffffff !important;
+    color: #0f172a !important;
+  }
+
+  /* Hide all other root elements so only the dedicated PDF container prints */
+  body > *:not(#trip-pdf-print-root) {
+    display: none !important;
+  }
+
+  #trip-pdf-print-root {
+    display: block !important;
+    position: relative !important;
+    width: 100% !important;
+    background: #ffffff !important;
+    color: #0f172a !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  .pdf-avoid-break {
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+  }
+
+  .pdf-page-break-before {
+    break-before: page !important;
+    page-break-before: always !important;
+  }
+
+  @page {
+    size: A4 portrait;
+    margin: 10mm 12mm 12mm 12mm;
+  }
+}

@@ -21,6 +21,7 @@ import {
   FiEye,
   FiUsers,
   FiUserPlus,
+  FiPrinter,
 } from "react-icons/fi";
 import { useTripActivityStore } from "@/stores/tripActivityStore";
 import useUserStore from "@/stores/userStore";
@@ -30,6 +31,7 @@ import { formatTripDate } from "@/utils/datetime";
 import { getActivityTypeMeta } from "@/constants/activityTypes";
 import TripOverviewStats from "@/components/trips/TripOverviewStats";
 import TripShareModal from "@/components/trips/TripShareModal";
+import TripPdfExportModal from "@/components/trips/TripPdfExportModal";
 import LoadingScreen from "@/components/LoadingScreen";
 import DayModal from "@/components/DayModal";
 import ActivityModal from "@/components/ActivityModal";
@@ -103,6 +105,7 @@ export default function TripActivity() {
   const [shareToken, setShareToken] = useState(null);
   const [shareLoading, setShareLoading] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [isPdfModalOpen, setIsPdfModalOpen] = useState(false);
 
   // Modals ดูข้อมูล (read-only)
   const [viewingActivity, setViewingActivity] = useState(null);
@@ -479,6 +482,15 @@ export default function TripActivity() {
           <FiArrowLeft /> {t("common.back")}
         </button>
         <div className="flex items-center gap-2 shrink-0">
+          <button
+            type="button"
+            onClick={() => setIsPdfModalOpen(true)}
+            className="btn btn-outline btn-sm rounded-full gap-1.5 shadow-2xs hover:bg-base-content/10"
+            title={t("export.btn")}
+          >
+            <FiPrinter className="text-sm" />
+            <span>{t("export.btn")}</span>
+          </button>
           {isTripOwner && <button
             onClick={openShare}
             className="btn btn-primary btn-sm rounded-full gap-1.5 shadow-md"
@@ -903,6 +915,15 @@ export default function TripActivity() {
           t={t}
         />
       )}
+
+      {/* EXPORT PDF MODAL */}
+      <TripPdfExportModal
+        isOpen={isPdfModalOpen}
+        onClose={() => setIsPdfModalOpen(false)}
+        trip={trip}
+        formatDate={formatDate}
+        formatZonedTime={formatZonedTime}
+      />
 
       <ActivityModal
         isOpen={isActivityModalOpen}
