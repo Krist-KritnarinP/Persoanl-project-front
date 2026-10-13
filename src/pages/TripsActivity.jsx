@@ -932,6 +932,7 @@ export default function TripActivity() {
         editingActivity={editingActivity}
         activityFormData={activityFormData}
         setActivityFormData={setActivityFormData}
+        destination={trip?.destination}
       />
 
       {/* VIEW MODALS (read-only) */}

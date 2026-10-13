@@ -40,3 +40,12 @@ test('leaving page aborts network and prevents queued requests and callbacks', a
   controller.abort(); await promise;
   assert.equal(count, 2); assert.equal(updates, 1);
 });
+
+test('resolveCountryHints extracts and maps Thai countries to English', async () => {
+  const { resolveCountryHints } = await import('../src/utils/geocode.js');
+  const hints = resolveCountryHints('ไอซ์แลนด์ + นอร์เวย์ + เดนมาร์ก');
+  assert.ok(hints.includes('Iceland'));
+  assert.ok(hints.includes('Norway'));
+  assert.ok(hints.includes('Denmark'));
+  assert.ok(hints.indexOf('Iceland') < hints.indexOf('ไอซ์แลนด์'));
+});

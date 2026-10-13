@@ -28,6 +28,7 @@ export default function ActivityModal({
   editingActivity,
   activityFormData,
   setActivityFormData,
+  destination = "",
 }) {
   const { t } = useLang();
   const [typeOpen, setTypeOpen] = useState(false);
@@ -38,7 +39,7 @@ export default function ActivityModal({
     if (!activityFormData.locationName?.trim()) return;
     setGeoLoading(true);
     try {
-      const hit = await geocodePlace(activityFormData.locationName);
+      const hit = await geocodePlace(activityFormData.locationName, destination);
       if (hit) {
         setActivityFormData({
           ...activityFormData,

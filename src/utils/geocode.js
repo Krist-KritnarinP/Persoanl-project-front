@@ -83,6 +83,64 @@ async function lookup(text, signal) {
     label: [props.name, props.city, props.country].filter(Boolean).join(", "),
   };
 }
+const THAI_COUNTRY_MAP = {
+  "ไอซ์แลนด์": "Iceland",
+  "ญี่ปุ่น": "Japan",
+  "เกาหลี": "South Korea",
+  "เกาหลีใต้": "South Korea",
+  "ไต้หวัน": "Taiwan",
+  "นอร์เวย์": "Norway",
+  "เดนมาร์ก": "Denmark",
+  "สวีเดน": "Sweden",
+  "ฟินแลนด์": "Finland",
+  "อังกฤษ": "United Kingdom",
+  "สหราชอาณาจักร": "United Kingdom",
+  "ฝรั่งเศส": "France",
+  "เยอรมนี": "Germany",
+  "เยอรมัน": "Germany",
+  "สวิตเซอร์แลนด์": "Switzerland",
+  "อิตาลี": "Italy",
+  "สเปน": "Spain",
+  "เนเธอร์แลนด์": "Netherlands",
+  "ออสเตรีย": "Austria",
+  "เช็ก": "Czech Republic",
+  "ฮังการี": "Hungary",
+  "จอร์เจีย": "Georgia",
+  "ตุรกี": "Turkey",
+  "เวียดนาม": "Vietnam",
+  "สิงคโปร์": "Singapore",
+  "มาเลเซีย": "Malaysia",
+  "อินโดนีเซีย": "Indonesia",
+  "ลาว": "Laos",
+  "กัมพูชา": "Cambodia",
+  "พม่า": "Myanmar",
+  "เมียนมา": "Myanmar",
+  "จีน": "China",
+  "ฮ่องกง": "Hong Kong",
+  "สหรัฐ": "United States",
+  "อเมริกา": "United States",
+  "แคนาดา": "Canada",
+  "ออสเตรเลีย": "Australia",
+  "นิวซีแลนด์": "New Zealand",
+  "ไทย": "Thailand",
+};
+
+export function resolveCountryHints(hint) {
+  if (!hint) return [];
+  const rawParts = String(hint).split(/[+,\/]/).map((s) => s.trim()).filter(Boolean);
+  const englishHints = [];
+  const originalHints = [];
+  for (const part of rawParts) {
+    originalHints.push(part);
+    for (const [thName, enName] of Object.entries(THAI_COUNTRY_MAP)) {
+      if (part.includes(thName) && !englishHints.includes(enName)) {
+        englishHints.push(enName);
+      }
+    }
+  }
+  return [...englishHints, ...originalHints];
+}
+
 // A shared request survives while another mounted view still needs it.
 export function geocodePlace(name, hint = "", { signal } = {}) {
   if (signal?.aborted) return Promise.reject(signal.reason);
@@ -98,11 +156,18 @@ export function geocodePlace(name, hint = "", { signal } = {}) {
     const timeout = setTimeout(() => controller.abort(), 6000);
     job.promise = (async () => {
       try {
-        let result = await lookup(
-          hint ? `${q}, ${hint}` : q,
-          controller.signal,
-        );
-        if (!result && hint) result = await lookup(q, controller.signal);
+        const countryHints = resolveCountryHints(hint);
+        let result = null;
+        for (const cHint of countryHints) {
+          result = await lookup(`${q}, ${cHint}`, controller.signal);
+          if (result) break;
+        }
+        if (!result && hint && !countryHints.includes(hint)) {
+          result = await lookup(`${q}, ${hint}`, controller.signal);
+        }
+        if (!result) {
+          result = await lookup(q, controller.signal);
+        }
         remember(key, result);
         return result;
       } catch {

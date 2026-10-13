@@ -1,5 +1,12 @@
 # DEPLOY LIVE — อ่านก่อนแตะงาน deploy (2026-10-01)
 
+## Geocoding destination country mapping & activity coordinates protection (2026-10-13)
+
+- Enhanced client geocoding pipeline (`src/utils/geocode.js`):
+  - Added `THAI_COUNTRY_MAP` and `resolveCountryHints()`: Automatically translates Thai country names (e.g. "ไอซ์แลนด์" -> "Iceland", "นอร์เวย์" -> "Norway", "เดนมาร์ก" -> "Denmark", "ญี่ปุ่น" -> "Japan") into English so international geocoding engines (Photon/Komoot) correctly prioritize locations within destination countries rather than matching homonymous locations in USA/UK/France.
+  - Passes `destination={trip?.destination}` from `TripsActivity.jsx` into `ActivityModal.jsx` so manual "ค้นหาพิกัด" (Find Coords) always uses the trip destination as a geocoding anchor.
+  - Verified with unit tests (`tests/geocode.test.js`) and complete build suite (19 unit tests passed).
+
 ## Trip PDF Export with Google Maps QR Codes (2026-10-10)
 
 - Added PDF export feature to the Itinerary page (`/trips/:tripId` and `/share/:token`):
