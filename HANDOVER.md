@@ -1,6 +1,12 @@
 # DEPLOY LIVE — อ่านก่อนแตะงาน deploy (2026-10-01)
 
-## Geocoding destination country mapping & activity coordinates protection (2026-10-13)
+## PDF Export: Weather badges & climate notes integration (2026-10-16)
+
+- Enhanced PDF export document (`src/components/trips/TripPdfDocument.jsx`):
+  - **Full Detail Mode:** Added weather badges to Day Header banners (temperature + condition icon + condition text) and per-activity tags bar (`icon + temp°C + condition + preset`), plus climate/safety tips box when `includeNotes` is enabled.
+  - **Compact Summary Mode:** Added weather badges in daily table section headers and inline under location names for quick reference while printing.
+  - Verified across desktop and print preview: all 19 unit tests passed, 0 lint errors, production build succeeded.
+
 
 - Enhanced client geocoding pipeline (`src/utils/geocode.js`):
   - Added `THAI_COUNTRY_MAP` and `resolveCountryHints()`: Automatically translates Thai country names (e.g. "ไอซ์แลนด์" -> "Iceland", "นอร์เวย์" -> "Norway", "เดนมาร์ก" -> "Denmark", "ญี่ปุ่น" -> "Japan") into English so international geocoding engines (Photon/Komoot) correctly prioritize locations within destination countries rather than matching homonymous locations in USA/UK/France.

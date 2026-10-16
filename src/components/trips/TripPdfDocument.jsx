@@ -30,6 +30,31 @@ const ACTIVITY_TYPE_DISPLAY = {
   },
 };
 
+const WEATHER_ICONS = {
+  clear: "🌤️",
+  sunny: "☀️",
+  partly_cloudy: "⛅",
+  mostly_cloudy: "🌥️",
+  overcast: "☁️",
+  drizzle: "🌦️",
+  rain: "🌧️",
+  showers: "🌦️",
+  heavy_rain: "🌧️",
+  thunderstorm: "⛈️",
+  snow: "🌨️",
+  heavy_snow: "❄️",
+  rain_snow: "🌨️",
+  sleet: "🧊",
+  freezing_rain: "🧊",
+  hail: "🧊",
+  fog: "🌫️",
+  haze: "🌫️",
+  windy: "💨",
+  dust: "🏜️",
+  smoke: "🌫️",
+  other: "🌈",
+};
+
 export default function TripPdfDocument({
   trip,
   mode = "full", // "full" | "compact"
@@ -67,6 +92,36 @@ export default function TripPdfDocument({
         badgeClass: "bg-slate-50 text-slate-700 border-slate-200",
       }
     );
+  };
+
+  const getWeatherMeta = (weather) => {
+    if (!weather) return null;
+    const condCode = weather.condition;
+    const hasCond = Boolean(condCode);
+    const hasTemp = weather.temperatureC !== "" && weather.temperatureC != null;
+    const hasPreset = Boolean(weather.descriptionCode);
+    const hasDesc = Boolean(weather.description && weather.description.trim());
+
+    if (!hasCond && !hasTemp && !hasPreset && !hasDesc) return null;
+
+    const icon = (hasCond && WEATHER_ICONS[condCode]) || "🌤️";
+    const condLabel = hasCond
+      ? (t ? t(`manualWeather.condition.${condCode}`) : condCode)
+      : null;
+    const tempStr = hasTemp ? `${weather.temperatureC}°C` : null;
+    const presetLabel = hasPreset
+      ? (t ? t(`manualWeather.preset.${weather.descriptionCode}`) : weather.descriptionCode)
+      : null;
+    const note = hasDesc ? weather.description.trim() : null;
+
+    return {
+      hasData: true,
+      icon,
+      condLabel,
+      tempStr,
+      presetLabel,
+      note,
+    };
   };
 
   const todayStr = useMemo(() => {
@@ -158,7 +213,7 @@ export default function TripPdfDocument({
             return (
               <div key={day.id} className="space-y-3">
                 {/* Day Header Banner */}
-                <div className="flex items-center justify-between bg-slate-100 border-l-4 border-emerald-600 px-4 py-2.5 rounded-r-xl pdf-avoid-break">
+                <div className="flex flex-wrap items-center justify-between bg-slate-100 border-l-4 border-emerald-600 px-4 py-2.5 rounded-r-xl pdf-avoid-break gap-2">
                   <div className="flex items-baseline gap-2.5">
                     <span className="text-base font-bold text-emerald-800">
                       Day {day.dayCount}
@@ -172,11 +227,35 @@ export default function TripPdfDocument({
                       </span>
                     )}
                   </div>
-                  {day.activities?.length > 0 && (
-                    <span className="text-xs text-slate-500 font-medium">
-                      {day.activities.length} กิจกรรม
-                    </span>
-                  )}
+                  <div className="flex items-center gap-2">
+                    {(() => {
+                      const dayWeather = getWeatherMeta(day.manualWeather);
+                      if (!dayWeather) return null;
+                      return (
+                        <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-white border border-slate-200 text-xs text-slate-700 shadow-2xs font-medium">
+                          <span>{dayWeather.icon}</span>
+                          {dayWeather.tempStr && (
+                            <span className="font-bold text-slate-900">{dayWeather.tempStr}</span>
+                          )}
+                          {dayWeather.condLabel && (
+                            <span className="text-slate-600 hidden md:inline">
+                              {dayWeather.condLabel}
+                            </span>
+                          )}
+                          {dayWeather.presetLabel && (
+                            <span className="text-slate-500 hidden md:inline">
+                              ({dayWeather.presetLabel})
+                            </span>
+                          )}
+                        </span>
+                      );
+                    })()}
+                    {day.activities?.length > 0 && (
+                      <span className="text-xs text-slate-500 font-medium">
+                        {day.activities.length} กิจกรรม
+                      </span>
+                    )}
+                  </div>
                 </div>
 
                 {day.description && (
@@ -194,6 +273,7 @@ export default function TripPdfDocument({
                       const timeStr = formatZonedTime
                         ? formatZonedTime(act.activityTime)
                         : act.activityTime;
+                      const actWeather = getWeatherMeta(act.manualWeather);
 
                       return (
                         <div
@@ -222,6 +302,20 @@ export default function TripPdfDocument({
                                   <span>{Number(act.price).toLocaleString()} ฿</span>
                                 </span>
                               )}
+                              {actWeather && (
+                                <span className="inline-flex items-center gap-1 text-sky-800 bg-sky-50 border border-sky-200 px-2 py-0.5 rounded-md text-[11px] font-medium">
+                                  <span>{actWeather.icon}</span>
+                                  {actWeather.tempStr && (
+                                    <span className="font-bold">{actWeather.tempStr}</span>
+                                  )}
+                                  {actWeather.condLabel && (
+                                    <span>{actWeather.condLabel}</span>
+                                  )}
+                                  {actWeather.presetLabel && (
+                                    <span className="text-sky-600">({actWeather.presetLabel})</span>
+                                  )}
+                                </span>
+                              )}
                             </div>
 
                             {/* Location Name */}
@@ -234,6 +328,17 @@ export default function TripPdfDocument({
                               <p className="text-xs sm:text-sm text-slate-600 whitespace-pre-line leading-relaxed pt-1">
                                 {act.description}
                               </p>
+                            )}
+
+                            {/* Weather note if present */}
+                            {includeNotes && actWeather?.note && (
+                              <div className="mt-1 text-xs text-sky-900 bg-sky-50/70 border border-sky-200/70 rounded-lg px-2.5 py-1.5 flex items-start gap-1.5 leading-relaxed">
+                                <span className="shrink-0">{actWeather.icon}</span>
+                                <div className="space-x-1">
+                                  <span className="font-bold text-sky-950">สภาพอากาศ:</span>
+                                  <span>{actWeather.note}</span>
+                                </div>
+                              </div>
                             )}
 
                             {/* Coordinates if available */}
@@ -314,11 +419,24 @@ export default function TripPdfDocument({
                       </span>
                     )}
                   </div>
-                  {day.activities?.length > 0 && (
-                    <span className="text-[11px] text-slate-500">
-                      {day.activities.length} รายการ
-                    </span>
-                  )}
+                  <div className="flex items-center gap-2">
+                    {(() => {
+                      const dayWeather = getWeatherMeta(day.manualWeather);
+                      if (!dayWeather) return null;
+                      return (
+                        <span className="inline-flex items-center gap-1 text-[11px] font-medium text-slate-700 bg-slate-50 border border-slate-200 px-1.5 py-0.5 rounded">
+                          <span>{dayWeather.icon}</span>
+                          {dayWeather.tempStr && <span className="font-bold">{dayWeather.tempStr}</span>}
+                          {dayWeather.condLabel && <span className="hidden sm:inline">{dayWeather.condLabel}</span>}
+                        </span>
+                      );
+                    })()}
+                    {day.activities?.length > 0 && (
+                      <span className="text-[11px] text-slate-500">
+                        {day.activities.length} รายการ
+                      </span>
+                    )}
+                  </div>
                 </div>
 
                 {hasActivities ? (
@@ -343,6 +461,7 @@ export default function TripPdfDocument({
                         const timeStr = formatZonedTime
                           ? formatZonedTime(act.activityTime)
                           : act.activityTime;
+                        const actWeather = getWeatherMeta(act.manualWeather);
 
                         return (
                           <tr key={act.id} className="pdf-avoid-break hover:bg-slate-50/50">
@@ -359,6 +478,21 @@ export default function TripPdfDocument({
                               {act.description && (
                                 <div className="text-[11px] text-slate-500 line-clamp-2 mt-0.5 leading-snug">
                                   {act.description}
+                                </div>
+                              )}
+                              {actWeather && (
+                                <div className="text-[10px] text-sky-800 flex flex-wrap items-center gap-1 mt-1 font-medium">
+                                  <span>{actWeather.icon}</span>
+                                  {actWeather.tempStr && (
+                                    <span className="font-bold">{actWeather.tempStr}</span>
+                                  )}
+                                  {actWeather.condLabel && <span>{actWeather.condLabel}</span>}
+                                  {actWeather.presetLabel && (
+                                    <span className="text-sky-600">({actWeather.presetLabel})</span>
+                                  )}
+                                  {actWeather.note && (
+                                    <span className="text-slate-500 truncate max-w-xs">• {actWeather.note}</span>
+                                  )}
                                 </div>
                               )}
                             </td>
