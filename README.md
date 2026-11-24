@@ -160,18 +160,7 @@ Create a `.env` file in the root directory by copying `.env.example`:
 cp .env.example .env
 ```
 
-Configure your environment variables:
-
-```env
-# Backend API Base URL
-VITE_API_URL=http://localhost:8899/api
-
-# Google OAuth Client ID (Optional for Google Sign-In)
-VITE_GOOGLE_CLIENT_ID=your_google_client_id_here.apps.googleusercontent.com
-
-# Production Site URL (Used for prerendering & canonical SEO)
-VITE_SITE_URL=http://localhost:5173
-```
+Refer to `.env.example` for local environment configuration options.
 
 ### 4. Run Development Server
 
