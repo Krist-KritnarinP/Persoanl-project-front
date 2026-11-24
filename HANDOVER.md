@@ -1,5 +1,13 @@
 # DEPLOY LIVE — อ่านก่อนแตะงาน deploy (2026-10-01)
 
+## GitHub Documentation: Professional README overhaul (2026-11-24)
+
+- Overhauled `README.md` from the generic Vite template to an enterprise-grade project showcase:
+  - Custom brand header with badges (React 19, Vite, TailwindCSS v4, DaisyUI, Leaflet, Vercel, Tests).
+  - Feature highlights (AI Itinerary Generator, Leaflet routing with destination-anchored geocoding, microclimate observations, satang-precision billing, printable PDF export with Google Maps QR codes).
+  - Comprehensive technology stack table, project directory tree, and state management overview.
+  - Step-by-step local setup, environment configuration, and verification commands (`npm test`, `npm run lint`, `npm run build`).
+
 ## PDF Export: Weather badges & climate notes integration (2026-10-16)
 
 - Enhanced PDF export document (`src/components/trips/TripPdfDocument.jsx`):
